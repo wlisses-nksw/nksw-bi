@@ -1,1 +1,614 @@
-{"generated_at":"1970-01-01T00:00:00Z","period":{"start":"","end":""}}
+{
+  "period": {
+    "start": "2026-04-01",
+    "end": "2026-04-09"
+  },
+  "dateRange": {
+    "startDate": "2026-04-01",
+    "endDate": "2026-04-09"
+  },
+  "generatedAt": "2026-04-09T22:47:43.826Z",
+  "propertyId": "374872616",
+  "overview": {
+    "sessions": 13363,
+    "users": 9044,
+    "newUsers": 7895,
+    "newUserRate": 0.5908104467559679,
+    "bounceRate": 0.5586320437027613,
+    "avgSessionDuration": 108.85070853288933,
+    "pagesPerSession": 2.7779690189328745,
+    "transactions": 83,
+    "purchaseRevenue": 65949.14998,
+    "sessionConversionRate": 0.005762179151388162,
+    "addToCarts": 1326,
+    "checkouts": 312,
+    "purchases": 80,
+    "averageOrderValue": 794.5680720481928,
+    "funnelSummary": {
+      "sessions": 13363,
+      "addToCarts": 1326,
+      "checkouts": 312,
+      "purchases": 80,
+      "sessionToCartRate": 0.0992292149966325,
+      "cartToCheckoutRate": 0.23529411764705882,
+      "checkoutToPurchaseRate": 0.2564102564102564,
+      "overallConvRate": 0.005986679637805882
+    }
+  },
+  "channels": [
+    {
+      "channel": "Paid Social",
+      "sessions": 5604,
+      "transactions": 12,
+      "revenue": 6861.520002,
+      "bounceRate": 0.6980728051391863,
+      "avgDuration": 61.246282023554606,
+      "convRate": 0.0021413276231263384
+    },
+    {
+      "channel": "Organic Social",
+      "sessions": 4752,
+      "transactions": 21,
+      "revenue": 19974.74999,
+      "bounceRate": 0.4696969696969697,
+      "avgDuration": 109.62947206271042,
+      "convRate": 0.004419191919191919
+    },
+    {
+      "channel": "Direct",
+      "sessions": 1053,
+      "transactions": 20,
+      "revenue": 20292.399995999996,
+      "bounceRate": 0.38366571699905033,
+      "avgDuration": 198.87864959829062,
+      "convRate": 0.019943019943019943
+    },
+    {
+      "channel": "Unassigned",
+      "sessions": 975,
+      "transactions": 16,
+      "revenue": 4941.869992999999,
+      "bounceRate": 0.5682051282051283,
+      "avgDuration": 151.8862236266667,
+      "convRate": 0.009230769230769232
+    },
+    {
+      "channel": "Organic Search",
+      "sessions": 379,
+      "transactions": 9,
+      "revenue": 7506.879998,
+      "bounceRate": 0.3034300791556728,
+      "avgDuration": 267.2295044221636,
+      "convRate": 0.023746701846965697
+    },
+    {
+      "channel": "Referral",
+      "sessions": 325,
+      "transactions": 3,
+      "revenue": 5872.499999,
+      "bounceRate": 0.3507692307692308,
+      "avgDuration": 187.20602318461536,
+      "convRate": 0.009230769230769232
+    },
+    {
+      "channel": "Email",
+      "sessions": 146,
+      "transactions": 2,
+      "revenue": 499.230002,
+      "bounceRate": 0.3561643835616438,
+      "avgDuration": 341.9703551164384,
+      "convRate": 0.0136986301369863
+    },
+    {
+      "channel": "Organic Shopping",
+      "sessions": 15,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.26666666666666666,
+      "avgDuration": 1388.1380102666667,
+      "convRate": 0
+    },
+    {
+      "channel": "Paid Other",
+      "sessions": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1,
+      "avgDuration": 8.634648,
+      "convRate": 0
+    }
+  ],
+  "daily": [
+    {
+      "date": "01/04/2026",
+      "dateRaw": "20260401",
+      "sessions": 1914,
+      "transactions": 8,
+      "revenue": 1670.0999890000003,
+      "addToCarts": 129
+    },
+    {
+      "date": "02/04/2026",
+      "dateRaw": "20260402",
+      "sessions": 1896,
+      "transactions": 10,
+      "revenue": 8794.749998,
+      "addToCarts": 146
+    },
+    {
+      "date": "03/04/2026",
+      "dateRaw": "20260403",
+      "sessions": 1785,
+      "transactions": 15,
+      "revenue": 14950.880005,
+      "addToCarts": 185
+    },
+    {
+      "date": "04/04/2026",
+      "dateRaw": "20260404",
+      "sessions": 1764,
+      "transactions": 6,
+      "revenue": 5100.1999940000005,
+      "addToCarts": 176
+    },
+    {
+      "date": "05/04/2026",
+      "dateRaw": "20260405",
+      "sessions": 1765,
+      "transactions": 10,
+      "revenue": 7959.799997,
+      "addToCarts": 215
+    },
+    {
+      "date": "06/04/2026",
+      "dateRaw": "20260406",
+      "sessions": 1344,
+      "transactions": 10,
+      "revenue": 10877.949991,
+      "addToCarts": 149
+    },
+    {
+      "date": "07/04/2026",
+      "dateRaw": "20260407",
+      "sessions": 1311,
+      "transactions": 14,
+      "revenue": 13439.370007999998,
+      "addToCarts": 150
+    },
+    {
+      "date": "08/04/2026",
+      "dateRaw": "20260408",
+      "sessions": 1247,
+      "transactions": 10,
+      "revenue": 3156.099998,
+      "addToCarts": 135
+    },
+    {
+      "date": "09/04/2026",
+      "dateRaw": "20260409",
+      "sessions": 400,
+      "transactions": 0,
+      "revenue": 0,
+      "addToCarts": 41
+    }
+  ],
+  "landingPages": [
+    {
+      "page": "/",
+      "channel": "Organic Social",
+      "sessions": 2041,
+      "transactions": 14,
+      "revenue": 13800.699993,
+      "bounceRate": 0.3165115139637433,
+      "avgDuration": 125.7638897956884,
+      "convRate": 0.006859382655560999
+    },
+    {
+      "page": "/colecoes/wave",
+      "channel": "Organic Social",
+      "sessions": 850,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5494117647058824,
+      "avgDuration": 59.43815796470588,
+      "convRate": 0
+    },
+    {
+      "page": "/colecoes/muse",
+      "channel": "Paid Social",
+      "sessions": 526,
+      "transactions": 4,
+      "revenue": 3084.9800020000002,
+      "bounceRate": 0.5418250950570342,
+      "avgDuration": 94.90640626806083,
+      "convRate": 0.0076045627376425855
+    },
+    {
+      "page": "/colecoes/nectar",
+      "channel": "Paid Social",
+      "sessions": 460,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5695652173913044,
+      "avgDuration": 72.59375802391304,
+      "convRate": 0
+    },
+    {
+      "page": "/colecoes/blueberry",
+      "channel": "Organic Social",
+      "sessions": 449,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5278396436525612,
+      "avgDuration": 129.01359426948775,
+      "convRate": 0
+    },
+    {
+      "page": "/",
+      "channel": "Paid Social",
+      "sessions": 410,
+      "transactions": 3,
+      "revenue": 1246.000002,
+      "bounceRate": 0.5073170731707317,
+      "avgDuration": 79.87110849024391,
+      "convRate": 0.007317073170731708
+    },
+    {
+      "page": "/produtos/calcinha-alana-leopard",
+      "channel": "Paid Social",
+      "sessions": 314,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.678343949044586,
+      "avgDuration": 129.58954007006372,
+      "convRate": 0
+    },
+    {
+      "page": "/",
+      "channel": "Direct",
+      "sessions": 305,
+      "transactions": 2,
+      "revenue": 4578.499998,
+      "bounceRate": 0.3016393442622951,
+      "avgDuration": 241.6458081967213,
+      "convRate": 0.006557377049180328
+    },
+    {
+      "page": "/",
+      "channel": "Organic Search",
+      "sessions": 272,
+      "transactions": 6,
+      "revenue": 4189.329997,
+      "bounceRate": 0.17647058823529413,
+      "avgDuration": 316.1784761102941,
+      "convRate": 0.022058823529411766
+    },
+    {
+      "page": "/",
+      "channel": "Unassigned",
+      "sessions": 220,
+      "transactions": 3,
+      "revenue": 2510.649997,
+      "bounceRate": 0.37727272727272726,
+      "avgDuration": 202.48193685,
+      "convRate": 0.013636363636363636
+    },
+    {
+      "page": "/colecoes/muse",
+      "channel": "Organic Social",
+      "sessions": 214,
+      "transactions": 1,
+      "revenue": 255.2,
+      "bounceRate": 0.794392523364486,
+      "avgDuration": 87.96248398130842,
+      "convRate": 0.004672897196261682
+    },
+    {
+      "page": "/colecoes/nacre",
+      "channel": "Organic Social",
+      "sessions": 192,
+      "transactions": 1,
+      "revenue": 1431.650002,
+      "bounceRate": 0.5989583333333334,
+      "avgDuration": 64.08690476041666,
+      "convRate": 0.005208333333333333
+    },
+    {
+      "page": "/produtos/top-liv-noir",
+      "channel": "Paid Social",
+      "sessions": 176,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.7386363636363636,
+      "avgDuration": 76.33975960227274,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/top-ariel-lagoon",
+      "channel": "Paid Social",
+      "sessions": 138,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.7101449275362319,
+      "avgDuration": 55.81931751449275,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/saia-aurora-pearl",
+      "channel": "Paid Social",
+      "sessions": 132,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5757575757575758,
+      "avgDuration": 70.97848212121212,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/top-ariel-sand-duna",
+      "channel": "Paid Social",
+      "sessions": 116,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.8448275862068966,
+      "avgDuration": 11.751462844827586,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/top-nia-coralle",
+      "channel": "Paid Social",
+      "sessions": 116,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.7155172413793104,
+      "avgDuration": 53.604660499999994,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/saia-auris-stardust",
+      "channel": "Paid Social",
+      "sessions": 112,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.6428571428571429,
+      "avgDuration": 25.50719863392857,
+      "convRate": 0
+    },
+    {
+      "page": "/produtos/top-perla-pearl",
+      "channel": "Organic Social",
+      "sessions": 112,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.7857142857142857,
+      "avgDuration": 48.41893595535714,
+      "convRate": 0
+    },
+    {
+      "page": "/colecoes/wave",
+      "channel": "Unassigned",
+      "sessions": 110,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.509090909090909,
+      "avgDuration": 73.05061232727273,
+      "convRate": 0
+    }
+  ],
+  "sources": [
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "Catalog Campaign",
+      "sessions": 3810,
+      "transactions": 4,
+      "revenue": 2207.439996,
+      "bounceRate": 0.7587926509186351,
+      "convRate": 0.0010498687664041995
+    },
+    {
+      "source": "instagram",
+      "medium": "linktree",
+      "campaign": "home",
+      "sessions": 1227,
+      "transactions": 13,
+      "revenue": 12588.499993000001,
+      "bounceRate": 0.17929910350448247,
+      "convRate": 0.010594947025264874
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "[AMAI] - Muse Collection",
+      "sessions": 776,
+      "transactions": 4,
+      "revenue": 3084.980003,
+      "bounceRate": 0.5824742268041238,
+      "convRate": 0.005154639175257732
+    },
+    {
+      "source": "instagram.com",
+      "medium": "referral",
+      "campaign": "(referral)",
+      "sessions": 726,
+      "transactions": 1,
+      "revenue": 1297.700001,
+      "bounceRate": 0.49449035812672176,
+      "convRate": 0.0013774104683195593
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "Social Testing Campaign",
+      "sessions": 579,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5837651122625216,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "Wave Collection Campaign",
+      "sessions": 220,
+      "transactions": 1,
+      "revenue": 251.199999,
+      "bounceRate": 0.5,
+      "convRate": 0.004545454545454545
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "[AMAI] - 8/28-Social Testing Campaign",
+      "sessions": 169,
+      "transactions": 2,
+      "revenue": 994.8000030000001,
+      "bounceRate": 0.4911242603550296,
+      "convRate": 0.011834319526627219
+    },
+    {
+      "source": "facebook",
+      "medium": "referral",
+      "campaign": "(referral)",
+      "sessions": 71,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.971830985915493,
+      "convRate": 0
+    },
+    {
+      "source": "l.instagram.com",
+      "medium": "referral",
+      "campaign": "(referral)",
+      "sessions": 52,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.38461538461538464,
+      "convRate": 0
+    },
+    {
+      "source": "m.facebook.com",
+      "medium": "referral",
+      "campaign": "(referral)",
+      "sessions": 22,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.45454545454545453,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "(not set)",
+      "campaign": "(not set)",
+      "sessions": 21,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "[AMAI]+-+Muse+Collection",
+      "sessions": 13,
+      "transactions": 1,
+      "revenue": 323.100002,
+      "bounceRate": 0.6923076923076923,
+      "convRate": 0.07692307692307693
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "Social+Testing+Campaign",
+      "sessions": 8,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "7/9 - tCatalog Campaign",
+      "sessions": 5,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.6,
+      "convRate": 0
+    },
+    {
+      "source": "m.facebook.com",
+      "medium": "paid",
+      "campaign": "6814445535876",
+      "sessions": 4,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "6814445535876",
+      "sessions": 3,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.6666666666666666,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "{{campaign.name}}",
+      "sessions": 3,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.6666666666666666,
+      "convRate": 0
+    },
+    {
+      "source": "l.facebook.com",
+      "medium": "referral",
+      "campaign": "(referral)",
+      "sessions": 3,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.3333333333333333,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "ads",
+      "campaign": "{{adset.name}}",
+      "sessions": 2,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1,
+      "convRate": 0
+    },
+    {
+      "source": "facebook",
+      "medium": "paid",
+      "campaign": "May Collections Campaign",
+      "sessions": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0,
+      "convRate": 0
+    }
+  ],
+  "funnel": {
+    "itemsViewed": 17567,
+    "addToCarts": 1326,
+    "checkouts": 312,
+    "purchases": 80,
+    "revenue": 65949.14998000002,
+    "itemsPurchased": 210,
+    "rates": {
+      "viewToCart": 0.07548243866340297,
+      "cartToCheckout": 0.23529411764705882,
+      "checkoutToPay": 0.2564102564102564,
+      "overall": 0.0045539932828599075
+    }
+  },
+  "generated_at": "2026-04-09T22:47:40Z"
+}
