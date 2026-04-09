@@ -1,0 +1,103 @@
+name: Atualizar Dados do Dashboard
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # A cada 15 minutos
+  workflow_dispatch:           # Permite rodar manualmente
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Definir período atual
+        run: |
+          echo "START=$(date -u +%Y-%m-01)"       >> $GITHUB_ENV
+          echo "END=$(date -u +%Y-%m-%d)"          >> $GITHUB_ENV
+          echo "TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+
+      # ── GA4 ────────────────────────────────────────────────────────────
+      - name: Buscar dados GA4
+        run: |
+          curl -sL "${{ secrets.GA4_URL }}?period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/ga4.json --max-time 30 || echo '{}' > /tmp/ga4.json
+
+          if jq -e '.overview' /tmp/ga4.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/ga4.json > data/ga4.json
+            echo "✅ GA4 atualizado"
+          else
+            echo "⚠️ Resposta GA4 inválida — mantendo arquivo existente"
+            cat /tmp/ga4.json
+          fi
+
+      # ── SHEETS — cada seção separada ───────────────────────────────────
+      - name: Buscar dados Vendas
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=vendas&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/vendas.json --max-time 30 || echo '{"ok":false}' > /tmp/vendas.json
+
+          if jq -e '.ok' /tmp/vendas.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/vendas.json > data/vendas.json
+            echo "✅ Vendas atualizado"
+          else
+            echo "⚠️ Vendas inválido — mantendo arquivo existente"
+          fi
+
+      - name: Buscar dados Produtos
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=produtos&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/produtos.json --max-time 30 || echo '{"ok":false}' > /tmp/produtos.json
+
+          if jq -e '.ok' /tmp/produtos.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/produtos.json > data/produtos.json
+            echo "✅ Produtos atualizado"
+          else
+            echo "⚠️ Produtos inválido — mantendo arquivo existente"
+          fi
+
+      - name: Buscar dados Pedidos
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=pedidos&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/pedidos.json --max-time 30 || echo '{"ok":false}' > /tmp/pedidos.json
+
+          if jq -e '.ok' /tmp/pedidos.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/pedidos.json > data/pedidos.json
+            echo "✅ Pedidos atualizado"
+          else
+            echo "⚠️ Pedidos inválido — mantendo arquivo existente"
+          fi
+
+      - name: Buscar dados Clientes
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=clientes&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/clientes.json --max-time 30 || echo '{"ok":false}' > /tmp/clientes.json
+
+          if jq -e '.ok' /tmp/clientes.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/clientes.json > data/clientes.json
+            echo "✅ Clientes atualizado"
+          else
+            echo "⚠️ Clientes inválido — mantendo arquivo existente"
+          fi
+
+      # ── Commit e push ──────────────────────────────────────────────────
+      - name: Salvar alterações
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet \
+            && echo "Sem alterações nos dados." \
+            || (git commit -m "data: atualizar $(date -u +'%Y-%m-%d %H:%M') UTC" && git push)
