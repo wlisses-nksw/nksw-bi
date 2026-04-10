@@ -1,1 +1,17 @@
-{"ok":false,"generated_at":"1970-01-01T00:00:00Z","period":{"start":"","end":""}}
+{
+  "ok": true,
+  "produtos": {
+    "lista": [],
+    "categorias": []
+  },
+  "periodo": {
+    "inicio": "2026-04-01",
+    "fim": "2026-04-10",
+    "label": "custom"
+  },
+  "generated_at": "2026-04-10T06:22:09Z",
+  "period": {
+    "start": "2026-04-01",
+    "end": "2026-04-10"
+  }
+}

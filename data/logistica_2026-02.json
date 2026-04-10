@@ -1,0 +1,2604 @@
+{
+  "ok": true,
+  "logistica": {
+    "statusList": [
+      {
+        "status": "Entregue",
+        "total": 430
+      }
+    ],
+    "pedidos": [
+      {
+        "pedido": "3479",
+        "data": "28/02/2026",
+        "cliente": "Mariana Stern",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3478",
+        "data": "28/02/2026",
+        "cliente": "Gabriela Kreutzfeldt",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3477",
+        "data": "28/02/2026",
+        "cliente": "Juliana Menezes Sampaio",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3476",
+        "data": "28/02/2026",
+        "cliente": "Raissa Santos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3475",
+        "data": "28/02/2026",
+        "cliente": "Júlia Caires",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3474",
+        "data": "28/02/2026",
+        "cliente": "Renata Cortopassi Sales Dias",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3473",
+        "data": "28/02/2026",
+        "cliente": "Renata Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3472",
+        "data": "28/02/2026",
+        "cliente": "Karen CAVINATO",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3470",
+        "data": "28/02/2026",
+        "cliente": "Ariana Vieira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3469",
+        "data": "28/02/2026",
+        "cliente": "Catarina Lee Moraes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3467",
+        "data": "28/02/2026",
+        "cliente": "Elizabeth Pontes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3466",
+        "data": "28/02/2026",
+        "cliente": "Ana Vaz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3465",
+        "data": "28/02/2026",
+        "cliente": "Ana Christina Maia",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3464",
+        "data": "28/02/2026",
+        "cliente": "Daniele Aparecida Tomé da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3463",
+        "data": "28/02/2026",
+        "cliente": "Carolina Idehara",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3462",
+        "data": "28/02/2026",
+        "cliente": "Carolina Bosco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3461",
+        "data": "28/02/2026",
+        "cliente": "Manuella Morena",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3460",
+        "data": "28/02/2026",
+        "cliente": "Renata Saad Valle",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3459",
+        "data": "28/02/2026",
+        "cliente": "Melany Jade Souza",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3458",
+        "data": "28/02/2026",
+        "cliente": "Maria Eugênia Barbosa Goncalves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3457",
+        "data": "28/02/2026",
+        "cliente": "Mariana Correa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3456",
+        "data": "28/02/2026",
+        "cliente": "Maria Batista",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3455",
+        "data": "27/02/2026",
+        "cliente": "Ana Claudia Oliveira de Araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3454",
+        "data": "27/02/2026",
+        "cliente": "Ana Claudia Oliveira de Araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3453",
+        "data": "27/02/2026",
+        "cliente": "Renata Cortopassi Sales Dias",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3452",
+        "data": "27/02/2026",
+        "cliente": "Luiz Eduardo Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3451",
+        "data": "27/02/2026",
+        "cliente": "Débora Silva Alencar",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3450",
+        "data": "27/02/2026",
+        "cliente": "Bruna Esteves Sá",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3449",
+        "data": "27/02/2026",
+        "cliente": "Maria alves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3448",
+        "data": "27/02/2026",
+        "cliente": "Ana Paula da Cruz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3447",
+        "data": "27/02/2026",
+        "cliente": "Denise Pierre",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3446",
+        "data": "27/02/2026",
+        "cliente": "Ecleia Florentino Rosa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3445",
+        "data": "27/02/2026",
+        "cliente": "Lara Berenice",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3444",
+        "data": "27/02/2026",
+        "cliente": "Jéssica Canuto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3443",
+        "data": "27/02/2026",
+        "cliente": "Monica Malheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3442",
+        "data": "27/02/2026",
+        "cliente": "Patrícia Helena Domingos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3441",
+        "data": "27/02/2026",
+        "cliente": "Patricia Matiotti",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3440",
+        "data": "27/02/2026",
+        "cliente": "Cássia Linge",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3439",
+        "data": "27/02/2026",
+        "cliente": "Sabrina Sallé",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3438",
+        "data": "27/02/2026",
+        "cliente": "Karina Bigucci",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3437",
+        "data": "27/02/2026",
+        "cliente": "Joana Pereira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3436",
+        "data": "27/02/2026",
+        "cliente": "Lilian Manuelly",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3435",
+        "data": "27/02/2026",
+        "cliente": "Daniele Aparecida Tomé da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3434",
+        "data": "27/02/2026",
+        "cliente": "Ludmila Roriz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3433",
+        "data": "27/02/2026",
+        "cliente": "Lucelia Campos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3432",
+        "data": "27/02/2026",
+        "cliente": "Juliana DE MATTOS",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3431",
+        "data": "27/02/2026",
+        "cliente": "Erica Da Costa Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3430",
+        "data": "27/02/2026",
+        "cliente": "Giselle Duque",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3429",
+        "data": "27/02/2026",
+        "cliente": "Lorena da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3428",
+        "data": "27/02/2026",
+        "cliente": "Raisa Carvalho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3427",
+        "data": "27/02/2026",
+        "cliente": "Maria Eduarda Dohnert",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3426",
+        "data": "27/02/2026",
+        "cliente": "Mayra Couto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3425",
+        "data": "27/02/2026",
+        "cliente": "Daiane Guedes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3424",
+        "data": "27/02/2026",
+        "cliente": "Vanessa Melo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3423",
+        "data": "26/02/2026",
+        "cliente": "Debora Lobo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3422",
+        "data": "26/02/2026",
+        "cliente": "Sabrina Sallé",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3421",
+        "data": "26/02/2026",
+        "cliente": "Roberta Lauritzen",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3420",
+        "data": "26/02/2026",
+        "cliente": "Verônica Vieira da Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3419",
+        "data": "26/02/2026",
+        "cliente": "Larissa Galvanin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3418",
+        "data": "26/02/2026",
+        "cliente": "Catieli Hohenberger Cavalheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3417",
+        "data": "26/02/2026",
+        "cliente": "Daniela Gonçalves Freitas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3416",
+        "data": "26/02/2026",
+        "cliente": "Samara Gazzola",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3415",
+        "data": "26/02/2026",
+        "cliente": "Laiane Sousa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3414",
+        "data": "26/02/2026",
+        "cliente": "Mariane Rodrigues",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3413",
+        "data": "26/02/2026",
+        "cliente": "Fernanda Assis",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3412",
+        "data": "26/02/2026",
+        "cliente": "Milena Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3411",
+        "data": "26/02/2026",
+        "cliente": "Marina Nascimento",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3410",
+        "data": "26/02/2026",
+        "cliente": "Giselle Salotto Akel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3405",
+        "data": "26/02/2026",
+        "cliente": "Larissa Cardoso Farkas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3404",
+        "data": "26/02/2026",
+        "cliente": "Marina Bianco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3403",
+        "data": "26/02/2026",
+        "cliente": "Gabriela Machado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3402",
+        "data": "26/02/2026",
+        "cliente": "Manuella Rocha Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3401",
+        "data": "26/02/2026",
+        "cliente": "Elisabete Moscatto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3400",
+        "data": "26/02/2026",
+        "cliente": "Bruna Dinelli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3398",
+        "data": "26/02/2026",
+        "cliente": "Fernanda Terlizzi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3396",
+        "data": "26/02/2026",
+        "cliente": "Talitha Grazielle Kitamura",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3395",
+        "data": "26/02/2026",
+        "cliente": "Patricia Moreira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3394",
+        "data": "26/02/2026",
+        "cliente": "Julianna Bogea",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3393",
+        "data": "25/02/2026",
+        "cliente": "Barbara Dalla Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3392",
+        "data": "25/02/2026",
+        "cliente": "Vania Rodrigues de Sousa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3391",
+        "data": "25/02/2026",
+        "cliente": "Carina Mendes Azenha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3390",
+        "data": "25/02/2026",
+        "cliente": "Alessandra Adao",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3389",
+        "data": "25/02/2026",
+        "cliente": "Jaqueline Machado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3388",
+        "data": "25/02/2026",
+        "cliente": "Gardenia Gardingo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3387",
+        "data": "25/02/2026",
+        "cliente": "Joyce Pinheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3386",
+        "data": "25/02/2026",
+        "cliente": "Amanda Niquini",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3385",
+        "data": "25/02/2026",
+        "cliente": "Rachel Paes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3384",
+        "data": "25/02/2026",
+        "cliente": "MarthA Kater",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3383",
+        "data": "25/02/2026",
+        "cliente": "Munique Aguiar freitas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3382",
+        "data": "25/02/2026",
+        "cliente": "Rebeca gomes pacheco mota",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3381",
+        "data": "25/02/2026",
+        "cliente": "Jovita Fernandes de Castro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3380",
+        "data": "25/02/2026",
+        "cliente": "Debora Parreiras Di Matteo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3379",
+        "data": "25/02/2026",
+        "cliente": "Liliane Barros Pereira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3378",
+        "data": "25/02/2026",
+        "cliente": "Danielle Saldanha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3377",
+        "data": "25/02/2026",
+        "cliente": "Luciana Lourenco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3376",
+        "data": "25/02/2026",
+        "cliente": "Vilhena Figueiredo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3375",
+        "data": "25/02/2026",
+        "cliente": "Waldirneia De Lima",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3374",
+        "data": "25/02/2026",
+        "cliente": "Giovanna T MARCHESCHI  ROSA",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3373",
+        "data": "25/02/2026",
+        "cliente": "Anna Czech",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3372",
+        "data": "25/02/2026",
+        "cliente": "Jessica Almeida",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3371",
+        "data": "25/02/2026",
+        "cliente": "Camila Caroline Carvalho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3370",
+        "data": "25/02/2026",
+        "cliente": "Janaina firmino neves loiola",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3368",
+        "data": "25/02/2026",
+        "cliente": "Clarisa Sundfeld",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3367",
+        "data": "25/02/2026",
+        "cliente": "Talita Tomazini",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3366",
+        "data": "25/02/2026",
+        "cliente": "Isadora Savazzi Rizzi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3365",
+        "data": "25/02/2026",
+        "cliente": "Barbara Starling",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3364",
+        "data": "25/02/2026",
+        "cliente": "Ketsia Vasconcelos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3363",
+        "data": "25/02/2026",
+        "cliente": "Giane Oliveira Da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3362",
+        "data": "25/02/2026",
+        "cliente": "Fernanda Salomao Amador",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3361",
+        "data": "24/02/2026",
+        "cliente": "Juliana Caroline Pinheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3360",
+        "data": "24/02/2026",
+        "cliente": "Mariana Parreiras",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3358",
+        "data": "24/02/2026",
+        "cliente": "Lidiane Bossolan",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3357",
+        "data": "24/02/2026",
+        "cliente": "Michelle Velloso",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3356",
+        "data": "24/02/2026",
+        "cliente": "Priscila Ribeiro Carneiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3355",
+        "data": "24/02/2026",
+        "cliente": "Milena Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3354",
+        "data": "24/02/2026",
+        "cliente": "Milena Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3352",
+        "data": "24/02/2026",
+        "cliente": "Patricia Yoshimoto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3351",
+        "data": "24/02/2026",
+        "cliente": "Ana paula Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3349",
+        "data": "24/02/2026",
+        "cliente": "Karine Guimarães",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3348",
+        "data": "24/02/2026",
+        "cliente": "Maira Dos Anjos Ferreira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3347",
+        "data": "24/02/2026",
+        "cliente": "Liana Araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3346",
+        "data": "24/02/2026",
+        "cliente": "Simone Maia Feu",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3345",
+        "data": "24/02/2026",
+        "cliente": "Leticia machado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3344",
+        "data": "24/02/2026",
+        "cliente": "Priscila Santiago",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3343",
+        "data": "24/02/2026",
+        "cliente": "Leda Sampaio",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3342",
+        "data": "24/02/2026",
+        "cliente": "Erica Da Costa Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3341",
+        "data": "24/02/2026",
+        "cliente": "Danielle Fernandes Luz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3340",
+        "data": "24/02/2026",
+        "cliente": "Mariana Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3339",
+        "data": "24/02/2026",
+        "cliente": "Rafaela Cristina Nogueira Ramos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3338",
+        "data": "24/02/2026",
+        "cliente": "Julia Zarth",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3337",
+        "data": "24/02/2026",
+        "cliente": "Mariane Reis",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3336",
+        "data": "24/02/2026",
+        "cliente": "Flávia Sabbato",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3335",
+        "data": "24/02/2026",
+        "cliente": "Amanda Fernandes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3334",
+        "data": "24/02/2026",
+        "cliente": "Geovanna Junqueira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3333",
+        "data": "24/02/2026",
+        "cliente": "Micheli geusiani da Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3332",
+        "data": "24/02/2026",
+        "cliente": "Danielle Aragão valentim matsubara",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3331",
+        "data": "24/02/2026",
+        "cliente": "Magda mattos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3330",
+        "data": "24/02/2026",
+        "cliente": "Mary Tavares",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3329",
+        "data": "24/02/2026",
+        "cliente": "Jessica Almeida",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3328",
+        "data": "24/02/2026",
+        "cliente": "Jessica Almeida",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3327",
+        "data": "24/02/2026",
+        "cliente": "Renata Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3326",
+        "data": "24/02/2026",
+        "cliente": "Flavia Roberta Sousa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3325",
+        "data": "24/02/2026",
+        "cliente": "Marina Vilela",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3324",
+        "data": "24/02/2026",
+        "cliente": "Flavia Roberta Sousa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3323",
+        "data": "24/02/2026",
+        "cliente": "Kassia e Amanda Fonseca",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3322",
+        "data": "24/02/2026",
+        "cliente": "Samara Ribeiro Vargas de Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3321",
+        "data": "24/02/2026",
+        "cliente": "Raíssa Bonna colares Bonna Colares Moreira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3320",
+        "data": "24/02/2026",
+        "cliente": "Janete Souza da silva araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3319",
+        "data": "24/02/2026",
+        "cliente": "Ana paula Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3318",
+        "data": "23/02/2026",
+        "cliente": "Kassandra Vieira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3317",
+        "data": "23/02/2026",
+        "cliente": "Pricilla Schlindwein",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3316",
+        "data": "23/02/2026",
+        "cliente": "Mayra Fernandes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3315",
+        "data": "23/02/2026",
+        "cliente": "Sheila Klein",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3314",
+        "data": "23/02/2026",
+        "cliente": "Amanda Altafin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3313",
+        "data": "23/02/2026",
+        "cliente": "Germana Goncalves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3312",
+        "data": "23/02/2026",
+        "cliente": "Pry Armoa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3311",
+        "data": "23/02/2026",
+        "cliente": "Sandra choseki da silva zilli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3310",
+        "data": "23/02/2026",
+        "cliente": "Tarsila Rodrigues",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3309",
+        "data": "23/02/2026",
+        "cliente": "Paula ORRO",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3308",
+        "data": "23/02/2026",
+        "cliente": "Talita Tomazini",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3307",
+        "data": "23/02/2026",
+        "cliente": "Patrícia De Araújo Melo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3306",
+        "data": "23/02/2026",
+        "cliente": "Renata Novais",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3305",
+        "data": "23/02/2026",
+        "cliente": "Maria Da Graça Quadros Scaff Quirino",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3304",
+        "data": "23/02/2026",
+        "cliente": "Pry Armoa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3303",
+        "data": "23/02/2026",
+        "cliente": "Priscila Donikian",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3302",
+        "data": "23/02/2026",
+        "cliente": "Rafaela Fleig Lunardi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3301",
+        "data": "23/02/2026",
+        "cliente": "Letícia Miranda Demito",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3300",
+        "data": "23/02/2026",
+        "cliente": "Joana Bronze",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3299",
+        "data": "23/02/2026",
+        "cliente": "Beatriz  Baraldi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3298",
+        "data": "23/02/2026",
+        "cliente": "Ester Mendes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3297",
+        "data": "23/02/2026",
+        "cliente": "Rayanne Castro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3296",
+        "data": "23/02/2026",
+        "cliente": "Gabriella Marçola",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3295",
+        "data": "23/02/2026",
+        "cliente": "Nayra Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3294",
+        "data": "23/02/2026",
+        "cliente": "Priscilla Martins Alves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3293",
+        "data": "23/02/2026",
+        "cliente": "Flávia KLEM de Mattos Miquelito",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3292",
+        "data": "23/02/2026",
+        "cliente": "Yasmin da Costa Magalhaes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3290",
+        "data": "23/02/2026",
+        "cliente": "Eloisa Lobe Roos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3289",
+        "data": "23/02/2026",
+        "cliente": "Karla Meireles",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3288",
+        "data": "23/02/2026",
+        "cliente": "Victória KUWAMOTO NAKAMA",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3287",
+        "data": "23/02/2026",
+        "cliente": "Jessica Magalhães Bretas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3286",
+        "data": "23/02/2026",
+        "cliente": "Clariana Virgini",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3285",
+        "data": "23/02/2026",
+        "cliente": "Priscilla Martins Alves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3284",
+        "data": "22/02/2026",
+        "cliente": "Gabriela Arêas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3283",
+        "data": "22/02/2026",
+        "cliente": "Daphnee Mendes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3282",
+        "data": "22/02/2026",
+        "cliente": "Nathalia Vieira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3281",
+        "data": "22/02/2026",
+        "cliente": "Fabiana Calil",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3280",
+        "data": "22/02/2026",
+        "cliente": "Flavia Favoretto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3279",
+        "data": "22/02/2026",
+        "cliente": "Heloisa Resende",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3278",
+        "data": "22/02/2026",
+        "cliente": "Fernanda Lorenski",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3277",
+        "data": "22/02/2026",
+        "cliente": "Leticia Neves Klöppel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3276",
+        "data": "22/02/2026",
+        "cliente": "Marta Fernandes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3275",
+        "data": "22/02/2026",
+        "cliente": "Marcos Miguel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3274",
+        "data": "22/02/2026",
+        "cliente": "Bruna Esteves Sá",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3273",
+        "data": "22/02/2026",
+        "cliente": "Nitiene Carvalho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3272",
+        "data": "22/02/2026",
+        "cliente": "Amanda Klein",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3271",
+        "data": "22/02/2026",
+        "cliente": "Júlia Rodrigues Silva Salomão Nagem",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3270",
+        "data": "22/02/2026",
+        "cliente": "Monica Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3268",
+        "data": "22/02/2026",
+        "cliente": "Jessica dutra",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3267",
+        "data": "22/02/2026",
+        "cliente": "Anolivia Arruda",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3266",
+        "data": "22/02/2026",
+        "cliente": "Erica carla Figueirêdo Cauduro Salgado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3265",
+        "data": "22/02/2026",
+        "cliente": "Karoline Muniz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3264",
+        "data": "22/02/2026",
+        "cliente": "Nadjanine Linhares casimiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3263",
+        "data": "22/02/2026",
+        "cliente": "Fabiana Ribeiro De Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3262",
+        "data": "22/02/2026",
+        "cliente": "Letícia Soares zeferino",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3261",
+        "data": "22/02/2026",
+        "cliente": "Joyce Pinheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3260",
+        "data": "22/02/2026",
+        "cliente": "Fabiana Ribeiro De Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3259",
+        "data": "22/02/2026",
+        "cliente": "Sabrina Budal",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3258",
+        "data": "22/02/2026",
+        "cliente": "Priscila Lamounier",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3257",
+        "data": "22/02/2026",
+        "cliente": "Livia Gonçalves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3256",
+        "data": "22/02/2026",
+        "cliente": "Regiane Gonçalves da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3255",
+        "data": "22/02/2026",
+        "cliente": "Juliana Silveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3254",
+        "data": "22/02/2026",
+        "cliente": "Laura Flores Carvalho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3253",
+        "data": "22/02/2026",
+        "cliente": "Raíssa Nachef",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3252",
+        "data": "22/02/2026",
+        "cliente": "Viviane Minello",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3251",
+        "data": "22/02/2026",
+        "cliente": "Amanda Laghi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3250",
+        "data": "21/02/2026",
+        "cliente": "Ariane Martins",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3249",
+        "data": "21/02/2026",
+        "cliente": "Ana Cristhina Pessoa de Barros",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3248",
+        "data": "21/02/2026",
+        "cliente": "Lilian Aparecida Souza Alves da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3247",
+        "data": "21/02/2026",
+        "cliente": "Stephania Neves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3246",
+        "data": "21/02/2026",
+        "cliente": "Livia Gonçalves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3245",
+        "data": "21/02/2026",
+        "cliente": "Mercedes Berlin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3244",
+        "data": "21/02/2026",
+        "cliente": "Roberta Calheiros",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3243",
+        "data": "21/02/2026",
+        "cliente": "Bruna muller",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3242",
+        "data": "21/02/2026",
+        "cliente": "Suzana villaboim",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3241",
+        "data": "21/02/2026",
+        "cliente": "Luciana Dias",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3240",
+        "data": "21/02/2026",
+        "cliente": "Daniela Setubal",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3239",
+        "data": "21/02/2026",
+        "cliente": "Diana Ferreira Dos Santos Norbert Costa Gabriel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3238",
+        "data": "21/02/2026",
+        "cliente": "Karen Cunha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3237",
+        "data": "20/02/2026",
+        "cliente": "Carla Assuncao",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3236",
+        "data": "20/02/2026",
+        "cliente": "Bruna Lívia - Tetelestai Consultoria Financeira LTDA",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3235",
+        "data": "20/02/2026",
+        "cliente": "Isabelle Pereira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3234",
+        "data": "20/02/2026",
+        "cliente": "Ana Maria Mendes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3233",
+        "data": "20/02/2026",
+        "cliente": "Laura Gonçalves Almeida Neiva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3232",
+        "data": "20/02/2026",
+        "cliente": "Gabriela Salata",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3231",
+        "data": "20/02/2026",
+        "cliente": "Simone Baptista Clemente",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3230",
+        "data": "20/02/2026",
+        "cliente": "Camila Pedrilho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3229",
+        "data": "20/02/2026",
+        "cliente": "Thais Delmonte de Baère",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3228",
+        "data": "19/02/2026",
+        "cliente": "Karla Petrelli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3227",
+        "data": "19/02/2026",
+        "cliente": "Josiany Pimentel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3226",
+        "data": "19/02/2026",
+        "cliente": "Milena Dalpra",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3225",
+        "data": "19/02/2026",
+        "cliente": "Zara Maria de Melo Sales Matos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3224",
+        "data": "19/02/2026",
+        "cliente": "Keid Waleria da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3223",
+        "data": "18/02/2026",
+        "cliente": "Tatiana Bertozzo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3222",
+        "data": "18/02/2026",
+        "cliente": "Alessandra Hashiguti",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3221",
+        "data": "18/02/2026",
+        "cliente": "Barbara Camarotti",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3220",
+        "data": "18/02/2026",
+        "cliente": "Orneya Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3219",
+        "data": "17/02/2026",
+        "cliente": "Jéssica Oliveira Lucas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3218",
+        "data": "17/02/2026",
+        "cliente": "Graciane Andrade Ferreira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3217",
+        "data": "17/02/2026",
+        "cliente": "Brenda Monteiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3216",
+        "data": "17/02/2026",
+        "cliente": "Nathalia Dantas",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3215",
+        "data": "17/02/2026",
+        "cliente": "Joana dark",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3214",
+        "data": "16/02/2026",
+        "cliente": "Beatriz De Freitas Marcos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3212",
+        "data": "16/02/2026",
+        "cliente": "Daniele Salomão Queiroz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3211",
+        "data": "16/02/2026",
+        "cliente": "Nancy Mazon",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3210",
+        "data": "16/02/2026",
+        "cliente": "Andressa p Marães",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3209",
+        "data": "16/02/2026",
+        "cliente": "Ana bauer",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3208",
+        "data": "16/02/2026",
+        "cliente": "Julianna Bogea",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3207",
+        "data": "16/02/2026",
+        "cliente": "Suzana Neves cunha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3206",
+        "data": "16/02/2026",
+        "cliente": "Fernanda Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3205",
+        "data": "15/02/2026",
+        "cliente": "Anna Czech",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3204",
+        "data": "15/02/2026",
+        "cliente": "Luciana Guedes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3203",
+        "data": "15/02/2026",
+        "cliente": "Tatiane Sudati",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3202",
+        "data": "15/02/2026",
+        "cliente": "Jose Adriano",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3201",
+        "data": "15/02/2026",
+        "cliente": "Manoela Fassina",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3200",
+        "data": "15/02/2026",
+        "cliente": "Janete Dambros",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3199",
+        "data": "15/02/2026",
+        "cliente": "Luciana Barreto Soares",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3198",
+        "data": "15/02/2026",
+        "cliente": "Fernanda Altenbernd Azevedo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3197",
+        "data": "15/02/2026",
+        "cliente": "Luciana Chen",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3196",
+        "data": "15/02/2026",
+        "cliente": "Thamiris Gomes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3195",
+        "data": "15/02/2026",
+        "cliente": "Fernanda stelmachuk",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3194",
+        "data": "15/02/2026",
+        "cliente": "Rosiandra Reis",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3193",
+        "data": "14/02/2026",
+        "cliente": "Lucianne Pontes Saraiva Justo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3192",
+        "data": "14/02/2026",
+        "cliente": "Luciana Pilar",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3191",
+        "data": "14/02/2026",
+        "cliente": "Mayara Rocha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3190",
+        "data": "14/02/2026",
+        "cliente": "Maira Lima Acioli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3189",
+        "data": "14/02/2026",
+        "cliente": "Silvia Espírito Santo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3187",
+        "data": "14/02/2026",
+        "cliente": "Larissa Derossi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3186",
+        "data": "13/02/2026",
+        "cliente": "Sarah Almeida Beraldo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3185",
+        "data": "13/02/2026",
+        "cliente": "Nadia Yusuf",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3184",
+        "data": "13/02/2026",
+        "cliente": "Cleia Assis",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3183",
+        "data": "13/02/2026",
+        "cliente": "Juçanã Maximiliano",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3182",
+        "data": "13/02/2026",
+        "cliente": "Kamila l goncalves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3181",
+        "data": "13/02/2026",
+        "cliente": "Thêmis Cury",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3180",
+        "data": "13/02/2026",
+        "cliente": "Bruna Bolcont",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3179",
+        "data": "13/02/2026",
+        "cliente": "Luciana Pereira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3178",
+        "data": "12/02/2026",
+        "cliente": "Julia Galindo Sebe",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3176",
+        "data": "12/02/2026",
+        "cliente": "Martha Costa Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3175",
+        "data": "12/02/2026",
+        "cliente": "Juliana Caroline Pinheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3174",
+        "data": "12/02/2026",
+        "cliente": "Eduarda Boscardin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3173",
+        "data": "12/02/2026",
+        "cliente": "Paloma Gonzalez",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3171",
+        "data": "12/02/2026",
+        "cliente": "Yasmine Ereio Venancio Zaher",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3170",
+        "data": "12/02/2026",
+        "cliente": "Millena Goulart",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3169",
+        "data": "12/02/2026",
+        "cliente": "Karolinny Ferrás",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3168",
+        "data": "12/02/2026",
+        "cliente": "Paula Romeiro Frota Orro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3167",
+        "data": "12/02/2026",
+        "cliente": "Caroline Lima",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3166",
+        "data": "11/02/2026",
+        "cliente": "Karine Guimarães",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3165",
+        "data": "11/02/2026",
+        "cliente": "Pedro Lopes de Souza",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3164",
+        "data": "11/02/2026",
+        "cliente": "Cintia Couceiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3163",
+        "data": "11/02/2026",
+        "cliente": "Hyana Patrícia Borges machado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3162",
+        "data": "11/02/2026",
+        "cliente": "Greice Franco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3161",
+        "data": "11/02/2026",
+        "cliente": "Francieli Mosena",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3160",
+        "data": "11/02/2026",
+        "cliente": "Pamela Araújo Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3158",
+        "data": "11/02/2026",
+        "cliente": "Louisa Schäfer",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3157",
+        "data": "11/02/2026",
+        "cliente": "Camila O de Castro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3156",
+        "data": "10/02/2026",
+        "cliente": "Bárbara Braga",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3155",
+        "data": "10/02/2026",
+        "cliente": "Rosângela Ghizoni",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3154",
+        "data": "10/02/2026",
+        "cliente": "Francine Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3153",
+        "data": "10/02/2026",
+        "cliente": "Ana Beatriz Queiroz Pacheco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3152",
+        "data": "10/02/2026",
+        "cliente": "Barbara Villela",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3151",
+        "data": "10/02/2026",
+        "cliente": "Claudia Araújo Valadares Motta",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3150",
+        "data": "10/02/2026",
+        "cliente": "Fernanda Martins",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3149",
+        "data": "10/02/2026",
+        "cliente": "Raquel Buch",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3148",
+        "data": "10/02/2026",
+        "cliente": "Gabriela de Souza",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3145",
+        "data": "09/02/2026",
+        "cliente": "Tatiana Ramires Benites",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3144",
+        "data": "09/02/2026",
+        "cliente": "Carolina Arcoverde de Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3143",
+        "data": "09/02/2026",
+        "cliente": "Paula Cruz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3142",
+        "data": "09/02/2026",
+        "cliente": "Maria alves",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3141",
+        "data": "09/02/2026",
+        "cliente": "Laysa Fortuna de Oliveira Rebouças",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3140",
+        "data": "09/02/2026",
+        "cliente": "Shanna Garcia",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3139",
+        "data": "09/02/2026",
+        "cliente": "Elisangela Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3138",
+        "data": "09/02/2026",
+        "cliente": "Thabata Rosa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3137",
+        "data": "09/02/2026",
+        "cliente": "Gabriella Nogueira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3136",
+        "data": "09/02/2026",
+        "cliente": "Taissa Miranda Bezerra",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3135",
+        "data": "09/02/2026",
+        "cliente": "Paloma Stephany Resende Cardoso",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3134",
+        "data": "09/02/2026",
+        "cliente": "Carolina Dias",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3133",
+        "data": "09/02/2026",
+        "cliente": "Leticia Nazarian",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3132",
+        "data": "09/02/2026",
+        "cliente": "Milena Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3131",
+        "data": "08/02/2026",
+        "cliente": "Stéphanie Ustulin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3129",
+        "data": "08/02/2026",
+        "cliente": "Maria Cláudia Bucchianeri Pinheiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3128",
+        "data": "08/02/2026",
+        "cliente": "Luciana Carvalho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3127",
+        "data": "08/02/2026",
+        "cliente": "Aline Cunha Gahyva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3126",
+        "data": "08/02/2026",
+        "cliente": "Jessica dutra",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3125",
+        "data": "08/02/2026",
+        "cliente": "Natália FELIPPE",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3124",
+        "data": "08/02/2026",
+        "cliente": "Jaqueline Barbeito de Vasconcellos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3123",
+        "data": "08/02/2026",
+        "cliente": "Andrea Pimenta",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3122",
+        "data": "08/02/2026",
+        "cliente": "Barbara Starling",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3121",
+        "data": "07/02/2026",
+        "cliente": "Giulia Lewgoy",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3120",
+        "data": "07/02/2026",
+        "cliente": "Giulia Lewgoy",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3119",
+        "data": "07/02/2026",
+        "cliente": "Rafaela Covolan",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3118",
+        "data": "07/02/2026",
+        "cliente": "Bruna Campos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3116",
+        "data": "07/02/2026",
+        "cliente": "Camila de melo baptista abelha",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3115",
+        "data": "06/02/2026",
+        "cliente": "Cláudia lavouras",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3114",
+        "data": "06/02/2026",
+        "cliente": "Paloma Cristina Ballarini Gomes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3112",
+        "data": "06/02/2026",
+        "cliente": "Beatriz Cruz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3111",
+        "data": "06/02/2026",
+        "cliente": "Renata Horta",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3110",
+        "data": "06/02/2026",
+        "cliente": "Mônica Cristina Vaz Pretto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3108",
+        "data": "06/02/2026",
+        "cliente": "Denise Varicoda",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3107",
+        "data": "06/02/2026",
+        "cliente": "Cristiane Calabrez Vieira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3106",
+        "data": "06/02/2026",
+        "cliente": "Rafaela Colodette",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3105",
+        "data": "06/02/2026",
+        "cliente": "Carine Nascimento",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3104",
+        "data": "06/02/2026",
+        "cliente": "Lizya Marie",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3103",
+        "data": "06/02/2026",
+        "cliente": "Fabio Vianna",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3102",
+        "data": "06/02/2026",
+        "cliente": "Amanda Melo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3101",
+        "data": "06/02/2026",
+        "cliente": "Karina Azar",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3100",
+        "data": "06/02/2026",
+        "cliente": "Thaisa RODRIGUES BARBOSA",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3097",
+        "data": "05/02/2026",
+        "cliente": "Marina FleurySobral",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3096",
+        "data": "05/02/2026",
+        "cliente": "Ana Teresa Altoé Rennó",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3095",
+        "data": "05/02/2026",
+        "cliente": "Lucia amorimLucia Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3094",
+        "data": "05/02/2026",
+        "cliente": "Gabriela Linardi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3093",
+        "data": "05/02/2026",
+        "cliente": "Carmem Ferrao",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3092",
+        "data": "05/02/2026",
+        "cliente": "Eliane Moraes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3091",
+        "data": "05/02/2026",
+        "cliente": "Bruna Momm Duarte",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3090",
+        "data": "05/02/2026",
+        "cliente": "Flavia Alves Hiar",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3089",
+        "data": "05/02/2026",
+        "cliente": "Giovanna Galzerano",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3088",
+        "data": "05/02/2026",
+        "cliente": "Mariana Tabosa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3087",
+        "data": "05/02/2026",
+        "cliente": "Regiane TAN",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3086",
+        "data": "05/02/2026",
+        "cliente": "Samira Martins Ribeiro",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3085",
+        "data": "05/02/2026",
+        "cliente": "Bruna Rosa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3084",
+        "data": "04/02/2026",
+        "cliente": "Amani Yassin",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3083",
+        "data": "04/02/2026",
+        "cliente": "Emilly Anne Guimarães Leite",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3082",
+        "data": "04/02/2026",
+        "cliente": "Rebeca França",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3081",
+        "data": "04/02/2026",
+        "cliente": "Leila Cantarella da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3080",
+        "data": "04/02/2026",
+        "cliente": "Pamela Araújo Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3079",
+        "data": "04/02/2026",
+        "cliente": "Krisnan Sorrentino",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3078",
+        "data": "04/02/2026",
+        "cliente": "Roberta BARBOSA",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3077",
+        "data": "04/02/2026",
+        "cliente": "Lu Volpato",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3076",
+        "data": "04/02/2026",
+        "cliente": "Ana Flavia Navilli Pereira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3075",
+        "data": "04/02/2026",
+        "cliente": "Layana Cristina de Oliveira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3074",
+        "data": "04/02/2026",
+        "cliente": "Maria Victoria Dias",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3073",
+        "data": "04/02/2026",
+        "cliente": "Krisnan Sorrentino",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3072",
+        "data": "04/02/2026",
+        "cliente": "Sabrina da Costa Allers",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3071",
+        "data": "03/02/2026",
+        "cliente": "Gabrielle Bevilaqua",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3070",
+        "data": "03/02/2026",
+        "cliente": "Mariana Tabosa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3069",
+        "data": "03/02/2026",
+        "cliente": "Anny Caroline Lopes Maia",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3067",
+        "data": "03/02/2026",
+        "cliente": "Paula Fiorentini",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3066",
+        "data": "03/02/2026",
+        "cliente": "Isabelle Karine de Lima Abrantes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3065",
+        "data": "03/02/2026",
+        "cliente": "Rafaela Cintra Couto",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3064",
+        "data": "03/02/2026",
+        "cliente": "Sabrina Almeida Veloso Vieira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3063",
+        "data": "03/02/2026",
+        "cliente": "Marina Azoubel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3062",
+        "data": "03/02/2026",
+        "cliente": "Joyce Andrade Reinaldo da Cruz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3061",
+        "data": "03/02/2026",
+        "cliente": "Oscarina Braga Furtado",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3059",
+        "data": "03/02/2026",
+        "cliente": "Thais PUPIN",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3058",
+        "data": "03/02/2026",
+        "cliente": "Marina Vilela Muniz",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3057",
+        "data": "03/02/2026",
+        "cliente": "Talitha Grazielle Kitamura",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3056",
+        "data": "03/02/2026",
+        "cliente": "Milene Elisandra Mira Pavan",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3055",
+        "data": "03/02/2026",
+        "cliente": "Elisandra campos de Araújo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3054",
+        "data": "03/02/2026",
+        "cliente": "Tatiana Matzinger",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3053",
+        "data": "03/02/2026",
+        "cliente": "Eterna Araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3052",
+        "data": "03/02/2026",
+        "cliente": "Cristiane GALLEGO",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3051",
+        "data": "03/02/2026",
+        "cliente": "Letícia Bilibio Lunelli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3049",
+        "data": "02/02/2026",
+        "cliente": "Amanda Araujo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3048",
+        "data": "02/02/2026",
+        "cliente": "Isabele cajé Caje",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3047",
+        "data": "02/02/2026",
+        "cliente": "Jhemilyn Souza",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3046",
+        "data": "02/02/2026",
+        "cliente": "Louize De Araújo Brito Figueiredo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3045",
+        "data": "02/02/2026",
+        "cliente": "Olivia Semblano",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3044",
+        "data": "02/02/2026",
+        "cliente": "Regiane Gonçalves da Silva",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3043",
+        "data": "02/02/2026",
+        "cliente": "Lorena Sapori",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3042",
+        "data": "02/02/2026",
+        "cliente": "Gabriela Fialho",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3041",
+        "data": "02/02/2026",
+        "cliente": "Erika MARCONDES",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3040",
+        "data": "02/02/2026",
+        "cliente": "Fabiana",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3038",
+        "data": "02/02/2026",
+        "cliente": "Mariana Romitelli Dall Acqua",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3037",
+        "data": "02/02/2026",
+        "cliente": "Mônica Maria Montenegro Gomes",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3036",
+        "data": "02/02/2026",
+        "cliente": "Sorane Ogibowski",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3035",
+        "data": "02/02/2026",
+        "cliente": "Mariana Lo Re",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3034",
+        "data": "02/02/2026",
+        "cliente": "Fernanda Kochi",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3033",
+        "data": "02/02/2026",
+        "cliente": "Livia Costa",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3032",
+        "data": "02/02/2026",
+        "cliente": "Duceaine Fonseca Bueno",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3031",
+        "data": "01/02/2026",
+        "cliente": "Carolina Pederzoli",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3030",
+        "data": "01/02/2026",
+        "cliente": "Izabela Santos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3029",
+        "data": "01/02/2026",
+        "cliente": "Rebeca Tinoco",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3028",
+        "data": "01/02/2026",
+        "cliente": "Caroline Camargo",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3027",
+        "data": "01/02/2026",
+        "cliente": "Adriana Chaves Lima Miguel",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3026",
+        "data": "01/02/2026",
+        "cliente": "Carlane Lira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3025",
+        "data": "01/02/2026",
+        "cliente": "Carmem Ferrao",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3024",
+        "data": "01/02/2026",
+        "cliente": "Ariele Soares",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3023",
+        "data": "01/02/2026",
+        "cliente": "Daniela Santos",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3022",
+        "data": "01/02/2026",
+        "cliente": "Carla Rodrigues",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3021",
+        "data": "01/02/2026",
+        "cliente": "Paula Lima",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3020",
+        "data": "01/02/2026",
+        "cliente": "Giulia Vianna Caseira",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "3019",
+        "data": "01/02/2026",
+        "cliente": "Patricia Moreira",
+        "status": "Entregue"
+      }
+    ],
+    "totalPedidos": 430
+  },
+  "periodo": {
+    "inicio": "2026-02-01",
+    "fim": "2026-02-28",
+    "label": "custom"
+  },
+  "generated_at": "2026-04-10T06:22:09Z",
+  "period": {
+    "start": "2026-02-01",
+    "end": "2026-02-28"
+  }
+}
