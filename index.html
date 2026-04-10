@@ -915,6 +915,45 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
+      <!-- ══ Rankings de Sellout ══ -->
+      <div class="section-header" style="margin-top:4px">
+        <div><div class="section-title">Sellout por Dimensão</div><div class="section-sub" id="vendasRankSub">Unidades vendidas no período • Tipo/Tecido/Coleção: últimos 6 meses (catálogo)</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="vendasRankingsGrid">
+        <!-- Card Produtos -->
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🛍 TOP PRODUTOS</div>
+            <div style="font-size:10px;color:#9ca3af">período selecionado · unid. vendidas</div>
+          </div>
+          <div id="rankProdutos" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
+        </div>
+        <!-- Card Categoria/Coleção -->
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">📂 TOP COLEÇÃO</div>
+            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
+          </div>
+          <div id="rankColecao" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
+        </div>
+        <!-- Card Tecido -->
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🧵 TOP TECIDO</div>
+            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
+          </div>
+          <div id="rankTecido" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
+        </div>
+        <!-- Card Tipo -->
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">👗 TOP TIPO</div>
+            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
+          </div>
+          <div id="rankTipo" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
+        </div>
+      </div>
+
       <!-- Evolução Mensal de Receita (com comparação ano anterior) -->
       <div class="section-header"><div><div class="section-title">Evolução Mensal de Receita</div><div class="section-sub">Ano atual vs ano anterior</div></div></div>
       <div class="chart-card"><div class="chart-wrap"><canvas id="salesChart" class="chart-canvas"></canvas></div></div>
@@ -3575,6 +3614,69 @@ function setYoYBadge(badgeId, cur, prev) {
   el.className = 'kpi-badge ' + cls;
 }
 
+/* ===== RANKING SELLOUT (Vendas × Estoque) ===== */
+function _renderVendasRankings(topProdutos) {
+  // ── Card Produtos (period-filtered, from getVendas) ──
+  var rankProdEl = document.getElementById('rankProdutos');
+  if (rankProdEl) {
+    if (topProdutos && topProdutos.length) {
+      var maxQtd = topProdutos[0].qtd || 1;
+      rankProdEl.innerHTML = topProdutos.slice(0, 15).map(function(p) {
+        var pct = Math.round(p.qtd / maxQtd * 100);
+        return '<div style="margin-bottom:6px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">' +
+            '<span style="font-size:11px;color:#111827;font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + p.produto + '">' + p.produto + '</span>' +
+            '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:6px;white-space:nowrap">' + fmtNum(p.qtd) + ' un.</span>' +
+          '</div>' +
+          '<div style="height:4px;background:#f3f4f6;border-radius:2px"><div style="height:4px;width:' + pct + '%;background:#c20000;border-radius:2px"></div></div>' +
+        '</div>';
+      }).join('');
+    } else {
+      rankProdEl.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Conecte o Apps Script para ver os dados</div>';
+    }
+  }
+
+  // ── Cards de dimensão (Coleção, Tecido, Tipo) a partir de _estoqueData ──
+  if (!_estoqueData || !_estoqueData.length) return;
+
+  var byColecao = {}, byTecido = {}, byTipo = {};
+  _estoqueData.forEach(function(p) {
+    var v = p.vendas6m || 0;
+    if (!v) return;
+    var col = p.colecao || '—';
+    var tec = p.tecido  || '—';
+    var tip = p.tipo    || '—';
+    byColecao[col] = (byColecao[col] || 0) + v;
+    byTecido[tec]  = (byTecido[tec]  || 0) + v;
+    byTipo[tip]    = (byTipo[tip]    || 0) + v;
+  });
+
+  function rankList(byObj, elId, color) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    var items = Object.keys(byObj).filter(function(k){ return k !== '—' && byObj[k] > 0; })
+      .map(function(k){ return { label: k, qtd: byObj[k] }; })
+      .sort(function(a, b){ return b.qtd - a.qtd; })
+      .slice(0, 12);
+    if (!items.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Sem dados</div>'; return; }
+    var maxV = items[0].qtd;
+    el.innerHTML = items.map(function(it) {
+      var pct = Math.round(it.qtd / maxV * 100);
+      return '<div style="margin-bottom:6px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">' +
+          '<span style="font-size:11px;color:#111827;font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + it.label + '">' + it.label + '</span>' +
+          '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:6px;white-space:nowrap">' + fmtNum(it.qtd) + ' un.</span>' +
+        '</div>' +
+        '<div style="height:4px;background:#f3f4f6;border-radius:2px"><div style="height:4px;width:' + pct + '%;background:' + color + ';border-radius:2px"></div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  rankList(byColecao, 'rankColecao', '#3b82f6');
+  rankList(byTecido,  'rankTecido',  '#8b5cf6');
+  rankList(byTipo,    'rankTipo',    '#10b981');
+}
+
 /* ===== APPLY — VENDAS ===== */
 function applyVendasData(d, prevD) {
   if (!d || !d.kpis) return;
@@ -3653,6 +3755,9 @@ function applyVendasData(d, prevD) {
   if (fd.porEstado && fd.porEstado.length) {
     initEstadoChart(fd.porEstado.slice(0, 10));
   }
+
+  // ── Rankings de Sellout ──
+  _renderVendasRankings(d.topProdutos || []);
 
   // ── Tabela de Cupons ──
   var cupomData = fd.porCupom || d.porCupom || [];
@@ -3750,6 +3855,8 @@ async function loadEstoquePage() {
 
     applyEstoqueData(d);
     _estoqueLoaded = true;
+    // Se a aba Vendas já tem dados carregados, re-renderiza rankings com catálogo novo
+    if (_lastVendasData) _renderVendasRankings(_lastVendasData.topProdutos || []);
   } catch(e) {
     console.warn('loadEstoquePage error:', e.message);
     if (kpisEl) kpisEl.innerHTML = '<div class="kpi-card" style="text-align:center;color:#dc2626;grid-column:1/-1;padding:20px">Erro ao carregar estoque.</div>';

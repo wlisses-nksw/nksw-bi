@@ -360,7 +360,7 @@ function getVendas(dates, statusFilter) {
 
   var topProdutos = Object.keys(byProduto).map(function (p) {
     return { produto: p, receita: round2(byProduto[p].receita), qtd: byProduto[p].qtd };
-  }).sort(function (a, b) { return b.receita - a.receita; }).slice(0, 10);
+  }).sort(function (a, b) { return b.qtd - a.qtd; }).slice(0, 50);
 
   var motivosCancel = Object.keys(byMotivo).map(function (m) {
     return { motivo: m, qtd: byMotivo[m] };
