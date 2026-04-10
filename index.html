@@ -3224,7 +3224,7 @@ function isCurrentMonth() {
   try {
     var now = new Date();
     var s   = new Date(customStart);
-    return s.getFullYear() === now.getFullYear() && s.getMonth() === now.getMonth();
+    return s.getUTCFullYear() === now.getFullYear() && s.getUTCMonth() === now.getMonth();
   } catch(e) { return false; }
 }
 
@@ -3232,7 +3232,7 @@ function isCurrentMonth() {
 function getSelectedMonthKey() {
   try {
     var d = new Date(customStart);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
   } catch(e) { return null; }
 }
 
