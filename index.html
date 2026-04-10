@@ -989,16 +989,16 @@ tbody tr:hover{background:#fafafa}
         <div><div class="section-title">Saúde do Estoque</div></div>
       </div>
 
-      <div id="estoqueSugestoes" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+      <div id="estoqueSugestoes" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px">
         <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:20px">Carregando...</div>
       </div>
-
-      <div id="estoqueKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px"></div>
 
       <!-- ══ SEÇÃO 3: ESTOQUE NKSW ══ -->
       <div class="section-header" style="margin-bottom:14px">
         <div><div class="section-title">Estoque NKSW</div></div>
       </div>
+
+      <div id="estoqueKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
 
       <!-- Barra de Filtros + CSV -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
@@ -3631,46 +3631,56 @@ function _selloutActivePeriod() {
 }
 
 function _renderSelloutRankings() {
-  if (!_estoqueRankData || !_estoqueRankData.length) return;
+  var hasRankData = _estoqueRankData && _estoqueRankData.length > 0;
+  var hasEstData  = _estoqueData && _estoqueData.length > 0;
+  if (!hasRankData && !hasEstData) return;
 
-  var period    = _selloutActivePeriod();
-  var startKey  = period[0], endKey = period[1];
-  var keys      = _estoqueMesesKeys;
+  var period   = _selloutActivePeriod();
+  var startKey = period[0], endKey = period[1];
 
-  // Índices das colunas que caem no período
+  // Índices das colunas mensais no período (só quando rankData disponível)
   var activeIdx = [];
-  keys.forEach(function(k, i) { if (k && k >= startKey && k <= endKey) activeIdx.push(i); });
+  _estoqueMesesKeys.forEach(function(k, i) { if (k && k >= startKey && k <= endKey) activeIdx.push(i); });
 
-  // Atualiza sub-label com o período
   var subEl = document.getElementById('selloutPeriodSub');
   if (subEl) {
-    if (activeIdx.length) {
-      subEl.textContent = 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey);
-    } else {
-      subEl.textContent = 'Período sem colunas mensais mapeadas — reimplante o Apps Script';
-    }
+    subEl.textContent = hasRankData && activeIdx.length
+      ? 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey)
+      : hasRankData
+        ? 'Reimplante o Apps Script para filtro por período'
+        : 'Últimos 6 meses (reimplante o Apps Script para filtro por período)';
   }
 
-  // Acumuladores
   var byProduto = {}, byColecao = {}, byTecido = {}, byTipo = {};
 
-  _estoqueRankData.forEach(function(p) {
-    var qtd = 0;
-    if (activeIdx.length) {
-      activeIdx.forEach(function(i) { qtd += (p.vm && p.vm[i]) ? p.vm[i] : 0; });
-    } else {
-      // Fallback: soma todas as colunas quando período não mapeado
-      if (p.vm) p.vm.forEach(function(v) { qtd += v || 0; });
-    }
-    if (!qtd) return;
-
-    var nome = p.nome || p.codigo || '?';
-    byProduto[nome] = (byProduto[nome] || 0) + qtd;
-
-    var col = p.colecao || ''; if (col) byColecao[col] = (byColecao[col] || 0) + qtd;
-    var tec = p.tecido  || ''; if (tec) byTecido[tec]  = (byTecido[tec]  || 0) + qtd;
-    var tip = p.tipo    || ''; if (tip) byTipo[tip]     = (byTipo[tip]    || 0) + qtd;
-  });
+  if (hasRankData) {
+    // Fonte primária: rankData com vm[] por mês
+    _estoqueRankData.forEach(function(p) {
+      var qtd = 0;
+      if (activeIdx.length) {
+        activeIdx.forEach(function(i) { qtd += (p.vm && p.vm[i]) ? p.vm[i] : 0; });
+      } else {
+        if (p.vm) p.vm.forEach(function(v) { qtd += v || 0; });
+      }
+      if (!qtd) return;
+      var nome = p.nome || p.codigo || '?';
+      byProduto[nome] = (byProduto[nome] || 0) + qtd;
+      var col = p.colecao || ''; if (col) byColecao[col] = (byColecao[col] || 0) + qtd;
+      var tec = p.tecido  || ''; if (tec) byTecido[tec]  = (byTecido[tec]  || 0) + qtd;
+      var tip = p.tipo    || ''; if (tip) byTipo[tip]     = (byTipo[tip]    || 0) + qtd;
+    });
+  } else {
+    // Fallback: _estoqueData com vendas6m (GAS antigo, sem rankData)
+    _estoqueData.forEach(function(p) {
+      var qtd = p.vendas6m || 0;
+      if (!qtd) return;
+      var nome = p.nome || p.codigo || '?';
+      byProduto[nome] = (byProduto[nome] || 0) + qtd;
+      var col = p.colecao || ''; if (col) byColecao[col] = (byColecao[col] || 0) + qtd;
+      var tec = p.tecido  || ''; if (tec) byTecido[tec]  = (byTecido[tec]  || 0) + qtd;
+      var tip = p.tipo    || ''; if (tip) byTipo[tip]     = (byTipo[tip]    || 0) + qtd;
+    });
+  }
 
   function renderRankList(byObj, elId, color) {
     var el = document.getElementById(elId);
@@ -3923,13 +3933,21 @@ function applyEstoqueData(d) {
   var r = d.resumo || {};
   _estoqueThreshold = r.threshold || 5;
 
-  // Armazena dados de ranking para re-render ao mudar período
+  // Compatibilidade: formato novo (d.todos) e antigo (d.curvaAB + d.semEstoque + d.estBaixo)
+  if (d.todos && d.todos.length) {
+    _estoqueData = d.todos;
+  } else {
+    var allMap = {};
+    (d.curvaAB || []).concat(d.semEstoque || []).concat(d.estBaixo || []).forEach(function(p) {
+      if (p && p.chave) allMap[p.chave] = p;
+    });
+    _estoqueData = Object.keys(allMap).map(function(k){ return allMap[k]; });
+  }
+
+  // Ranking de mais vendidos (novo formato com rankData + mesesKeys)
   if (d.rankData  && d.rankData.length)  _estoqueRankData  = d.rankData;
   if (d.mesesKeys && d.mesesKeys.length) _estoqueMesesKeys = d.mesesKeys;
   _renderSelloutRankings();
-
-  // Todos os SKUs vêm de d.todos (único array a partir desta versão do GAS)
-  _estoqueData = d.todos || [];
 
   // ── KPI cards ──
   var kpisEl = document.getElementById('estoqueKpis');
