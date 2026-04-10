@@ -81,6 +81,20 @@ jobs:
             echo "⚠️ Clientes inválido — mantendo arquivo existente"
           fi
 
+      - name: Buscar dados Logística
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=logistica&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/logistica.json --max-time 30 || echo '{"ok":false}' > /tmp/logistica.json
+
+          if jq -e '.ok' /tmp/logistica.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/logistica.json > data/logistica.json
+            echo "✅ Logística atualizado"
+          else
+            echo "⚠️ Logística inválido — mantendo arquivo existente"
+          fi
+
       - name: Buscar dados Produtos
         run: |
           curl -sL "${{ secrets.SHEETS_URL }}?section=produtos&period=custom&startDate=${START}&endDate=${END}" \
@@ -103,7 +117,7 @@ jobs:
             S=$(date -u -d "${i} months ago" +%Y-%m-01)
             E=$(date -u -d "$(date -u -d "${i} months ago" +%Y-%m-01) +1 month -1 day" +%Y-%m-%d)
 
-            for section in vendas pedidos clientes; do
+            for section in vendas pedidos clientes logistica; do
               FILE="data/${section}_${KEY}.json"
               # Pula se arquivo já existe e está OK
               if [ -f "$FILE" ] && jq -e '.ok' "$FILE" > /dev/null 2>&1; then
