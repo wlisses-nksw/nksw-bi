@@ -95,6 +95,21 @@ jobs:
             echo "⚠️ Logística inválido — mantendo arquivo existente"
           fi
 
+      - name: Buscar dados Estoque
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=estoque" \
+            -o /tmp/estoque.json --max-time 60 || echo '{"ok":false}' > /tmp/estoque.json
+
+          if jq -e '.ok' /tmp/estoque.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" \
+              '. + {"generated_at":$ts}' \
+              /tmp/estoque.json > data/estoque.json
+            echo "✅ Estoque atualizado"
+          else
+            echo "⚠️ Estoque inválido — mantendo arquivo existente"
+            cat /tmp/estoque.json
+          fi
+
       - name: Buscar dados Produtos
         run: |
           curl -sL "${{ secrets.SHEETS_URL }}?section=produtos&period=custom&startDate=${START}&endDate=${END}" \

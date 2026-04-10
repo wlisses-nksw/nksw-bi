@@ -42,6 +42,11 @@ var CONFIG = {
   ID_VENDAS:   '',
   ID_PRODUTOS: '',
   ID_PEDIDOS:  '',
+
+  // Planilha de Estoque (Base SKU Estoque)
+  ID_ESTOQUE:      '1-Plx4DoYz2pnD1CDYqp5MDACBAhm_-fMTI3ENqlxfh0',
+  ABA_ESTOQUE:     'Base SKU Estoque',
+  ESTOQUE_BAIXO:   5,   // unidades — abaixo disso = estoque baixo
 };
 
 /* ===== MAPEAMENTO DE COLUNAS =====
@@ -112,6 +117,7 @@ function doGet(e) {
     if (section === 'pedidos'   || section === 'all') result.pedidos   = getPedidos(dates);
     if (section === 'clientes'  || section === 'all') result.clientes  = getClientes(p);
     if (section === 'logistica' || section === 'all') result.logistica = getLogistica(dates);
+    if (section === 'estoque')                        result.estoque   = getEstoque();
 
     result.periodo = {
       inicio: fmtDate(dates.start),
@@ -988,4 +994,99 @@ function jsonOut(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ===== ESTOQUE — Base SKU Estoque ===== */
+function getEstoque() {
+  try {
+    var ss    = SpreadsheetApp.openById(CONFIG.ID_ESTOQUE);
+    var sheet = ss.getSheetByName(CONFIG.ABA_ESTOQUE);
+    if (!sheet) return { ok: false, error: 'Aba "' + CONFIG.ABA_ESTOQUE + '" nao encontrada' };
+
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) return { ok: false, error: 'Sem dados na aba de estoque' };
+
+    // Lê até coluna AH (34 colunas)
+    var NCOLS = 34;
+    var rows  = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
+
+    // Índices 0-based conforme mapeamento:
+    // A=0 chave | C=2 código | D=3 nome | E=4 cor | F=5 tamanho
+    // J=9 tipo  | K=10 coleção | N=13 tecido | P=15 curva
+    // Q=16 estoque | AG=32 total vendas | AH=33 vendas 6m
+    var I_CHAVE  = 0, I_COD = 2, I_NOME = 3, I_COR = 4, I_TAM = 5;
+    var I_TIPO   = 9, I_COL = 10, I_TEC = 13;
+    var I_CURVA  = 15, I_EST = 16;
+    var I_TVEND  = 32, I_V6M = 33;
+
+    var LIMITE = CONFIG.ESTOQUE_BAIXO;
+
+    var produtos = [];
+    rows.forEach(function(r) {
+      var cod  = trim(String(r[I_COD]  || ''));
+      var nome = trim(String(r[I_NOME] || ''));
+      if (!cod && !nome) return;
+
+      var curva   = trim(String(r[I_CURVA] || '')).toUpperCase();
+      var estoque = parseInt(r[I_EST]) || 0;
+      var tvend   = parseNum(r[I_TVEND]);
+      var v6m     = parseNum(r[I_V6M]);
+
+      produtos.push({
+        chave:   trim(String(r[I_CHAVE] || '')),
+        codigo:  cod,
+        nome:    nome,
+        cor:     trim(String(r[I_COR]  || '')),
+        tamanho: trim(String(r[I_TAM]  || '')),
+        tipo:    trim(String(r[I_TIPO] || '')),
+        colecao: trim(String(r[I_COL]  || '')),
+        tecido:  trim(String(r[I_TEC]  || '')),
+        curva:   curva,
+        estoque: estoque,
+        totalVendas: Math.round(tvend),
+        vendas6m:    Math.round(v6m),
+      });
+    });
+
+    // Listas derivadas
+    var curvaA       = produtos.filter(function(p) { return p.curva === 'A'; });
+    var curvaB       = produtos.filter(function(p) { return p.curva === 'B'; });
+    var curvaAB      = produtos.filter(function(p) { return p.curva === 'A' || p.curva === 'B'; });
+    var semEstoque   = produtos.filter(function(p) { return p.estoque === 0; });
+    var estBaixo     = produtos.filter(function(p) { return p.estoque > 0 && p.estoque <= LIMITE; });
+    var criticos     = produtos.filter(function(p) { return p.estoque <= LIMITE; }); // sem + baixo
+
+    // Ordena por relevância (mais vendido nos últimos 6m primeiro)
+    function byV6m(a, b) { return b.vendas6m - a.vendas6m || b.totalVendas - a.totalVendas; }
+    curvaAB   .sort(byV6m);
+    semEstoque.sort(byV6m);
+    estBaixo  .sort(byV6m);
+    criticos  .sort(byV6m);
+
+    // Semáforo de status de estoque
+    function statusEst(p) {
+      if (p.estoque === 0)       return 'sem';
+      if (p.estoque <= LIMITE)   return 'baixo';
+      return 'ok';
+    }
+    curvaAB.forEach(function(p) { p.statusEst = statusEst(p); });
+
+    return {
+      resumo: {
+        total:        produtos.length,
+        totalA:       curvaA.length,
+        totalB:       curvaB.length,
+        semEstoque:   semEstoque.length,
+        estBaixo:     estBaixo.length,
+        criticos:     criticos.length,
+        threshold:    LIMITE,
+      },
+      curvaAB:    curvaAB,
+      semEstoque: semEstoque,
+      estBaixo:   estBaixo,
+    };
+
+  } catch (err) {
+    return { ok: false, error: 'Erro em getEstoque: ' + err.message };
+  }
 }
