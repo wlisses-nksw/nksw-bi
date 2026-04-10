@@ -46,6 +46,7 @@ var CONFIG = {
   // Planilha de Estoque (Base SKU Estoque)
   ID_ESTOQUE:      '1-Plx4DoYz2pnD1CDYqp5MDACBAhm_-fMTI3ENqlxfh0',
   ABA_ESTOQUE:     'Base SKU Estoque',
+  ABA_RANK:        'Base Produto Cor',  // ranking de mais vendidos por produto/cor
   ESTOQUE_BAIXO:   5,   // unidades — abaixo disso = estoque baixo
 };
 
@@ -997,6 +998,55 @@ function jsonOut(data) {
 }
 
 /* ===== ESTOQUE — Base SKU Estoque ===== */
+// Lê aba "Base Produto Cor" para rankings de mais vendidos
+// Colunas: A=código B=nome C=coleção D=tecido E=categoria H–V=meses W=total X=vendas6m
+function getRankData(ss) {
+  try {
+    var sheet = ss.getSheetByName(CONFIG.ABA_RANK);
+    if (!sheet) return { rankData: [], mesesKeys: [] };
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) return { rankData: [], mesesKeys: [] };
+
+    var NCOLS = 24; // A até X
+    var headerRow = sheet.getRange(1, 1, 1, NCOLS).getValues()[0];
+
+    // Colunas H–V = índices 7–21 (0-based) → 15 meses
+    var mesesKeys = [];
+    for (var ci = 7; ci <= 21; ci++) {
+      mesesKeys.push(parseMonthKey(headerRow[ci]) || '');
+    }
+
+    var rows = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
+    var rankData = [];
+
+    rows.forEach(function(r) {
+      var cod  = trim(String(r[0] || ''));
+      var nome = trim(String(r[1] || ''));
+      if (!cod && !nome) return;
+
+      var vm = [];
+      for (var i = 7; i <= 21; i++) {
+        vm.push(Math.round(parseNum(r[i]) || 0));
+      }
+
+      rankData.push({
+        codigo:     cod,
+        nome:       nome,
+        colecao:    trim(String(r[2] || '')),
+        tecido:     trim(String(r[3] || '')),
+        tipo:       trim(String(r[4] || '')),  // categoria
+        vm:         vm,
+        totalVendas: Math.round(parseNum(r[22]) || 0),
+        vendas6m:    Math.round(parseNum(r[23]) || 0),
+      });
+    });
+
+    return { rankData: rankData, mesesKeys: mesesKeys };
+  } catch(e) {
+    return { rankData: [], mesesKeys: [], error: e.message };
+  }
+}
+
 // Converte cabeçalho de coluna mensal para 'YYYY-MM'
 function parseMonthKey(h) {
   if (!h) return null;
@@ -1024,6 +1074,7 @@ function parseMonthKey(h) {
 function getEstoque() {
   try {
     var ss    = SpreadsheetApp.openById(CONFIG.ID_ESTOQUE);
+    var rankResult = getRankData(ss);
     var sheet = ss.getSheetByName(CONFIG.ABA_ESTOQUE);
     if (!sheet) return { ok: false, error: 'Aba "' + CONFIG.ABA_ESTOQUE + '" nao encontrada' };
 
@@ -1032,16 +1083,6 @@ function getEstoque() {
 
     // Lê até coluna AH (34 colunas)
     var NCOLS = 34;
-    // Lê cabeçalhos para identificar colunas de mês (R=17 até AF=31, 0-based)
-    var headerRow  = sheet.getRange(1, 1, 1, NCOLS).getValues()[0];
-    var mesesKeys  = [];                // e.g. ['2025-01','2025-02',...]
-    var mesIndices = [];               // índices 0-based das colunas de mês
-    for (var ci = 17; ci <= 31; ci++) {
-      var mk = parseMonthKey(headerRow[ci]);
-      mesesKeys.push(mk || '');
-      mesIndices.push(ci);
-    }
-
     var rows  = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
 
     // Índices 0-based conforme mapeamento:
@@ -1066,8 +1107,6 @@ function getEstoque() {
       var tvend   = parseNum(r[I_TVEND]);
       var v6m     = parseNum(r[I_V6M]);
 
-      var vm = mesIndices.map(function(ci) { return Math.round(parseNum(r[ci]) || 0); });
-
       produtos.push({
         chave:   trim(String(r[I_CHAVE] || '')),
         codigo:  cod,
@@ -1081,7 +1120,6 @@ function getEstoque() {
         estoque: estoque,
         totalVendas: Math.round(tvend),
         vendas6m:    Math.round(v6m),
-        _vm:         vm,   // temporário — só usado para montar rankData, não vai para todos
       });
     });
 
@@ -1108,31 +1146,6 @@ function getEstoque() {
     }
     curvaAB.forEach(function(p) { p.statusEst = statusEst(p); });
 
-    // Agrupa por código para ranking (soma variantes P/M/G/GG etc.)
-    var curvaOrder = { A: 3, B: 2, C: 1 };
-    var rankMap = {};
-    produtos.forEach(function(p) {
-      var key = p.codigo || p.nome;
-      if (!key) return;
-      if (!rankMap[key]) {
-        rankMap[key] = {
-          codigo:  p.codigo,
-          nome:    p.nome,
-          tipo:    p.tipo,
-          tecido:  p.tecido,
-          colecao: p.colecao,
-          curva:   p.curva,
-          vm:      p._vm.slice(),
-        };
-      } else {
-        var e = rankMap[key];
-        if ((curvaOrder[p.curva] || 0) > (curvaOrder[e.curva] || 0)) e.curva = p.curva;
-        p._vm.forEach(function(v, i) { e.vm[i] = (e.vm[i] || 0) + v; });
-      }
-      delete p._vm; // remove campo temporário do objeto todos
-    });
-    var rankData = Object.keys(rankMap).map(function(k) { return rankMap[k]; });
-
     return {
       ok: true,
       resumo: {
@@ -1144,8 +1157,8 @@ function getEstoque() {
         criticos:   criticos.length,
         threshold:  LIMITE,
       },
-      mesesKeys:  mesesKeys,
-      rankData:   rankData,
+      mesesKeys:  rankResult.mesesKeys,
+      rankData:   rankResult.rankData,
       todos:      produtos,
       curvaAB:    curvaAB,
       semEstoque: semEstoque,
