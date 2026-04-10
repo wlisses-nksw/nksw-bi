@@ -1133,23 +1133,23 @@ function getEstoque() {
     });
     var rankData = Object.keys(rankMap).map(function(k) { return rankMap[k]; });
 
+    var nSemEstoque = produtos.filter(function(p){ return p.estoque === 0; }).length;
+    var nEstBaixo   = produtos.filter(function(p){ return p.estoque > 0 && p.estoque <= LIMITE; }).length;
+
     return {
       ok: true,
       resumo: {
-        total:        produtos.length,
-        totalA:       curvaA.length,
-        totalB:       curvaB.length,
-        semEstoque:   semEstoque.length,
-        estBaixo:     estBaixo.length,
-        criticos:     criticos.length,
-        threshold:    LIMITE,
+        total:      produtos.length,
+        totalA:     curvaA.length,
+        totalB:     curvaB.length,
+        semEstoque: nSemEstoque,
+        estBaixo:   nEstBaixo,
+        criticos:   nSemEstoque + nEstBaixo,
+        threshold:  LIMITE,
       },
-      mesesKeys:  mesesKeys,
-      rankData:   rankData,
-      todos:      produtos,
-      curvaAB:    curvaAB,
-      semEstoque: semEstoque,
-      estBaixo:   estBaixo,
+      mesesKeys: mesesKeys,
+      rankData:  rankData,
+      todos:     produtos,
     };
 
   } catch (err) {

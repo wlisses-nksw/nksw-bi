@@ -953,11 +953,11 @@ tbody tr:hover{background:#fafafa}
     <!-- ============================================================ -->
     <div class="page" id="page-produtos">
 
-      <!-- ══ RANKING SELLOUT ══ -->
+      <!-- ══ SEÇÃO 1: MAIS VENDIDOS ══ -->
       <div class="section-header" style="margin-bottom:10px">
-        <div><div class="section-title">Sellout por Dimensão</div><div class="section-sub" id="selloutPeriodSub">Carregando...</div></div>
+        <div><div class="section-title">Mais Vendidos</div><div class="section-sub" id="selloutPeriodSub">Carregando...</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="vendasRankingsGrid">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px" id="vendasRankingsGrid">
         <div class="kpi-card" style="padding:0;overflow:hidden">
           <div style="padding:10px 14px 8px;border-bottom:1px solid #f3f4f6">
             <div style="font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">🛍 TOP PRODUTOS</div>
@@ -984,15 +984,21 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
-      <!-- ══ GESTÃO DE ESTOQUE ══ -->
-
-      <!-- Cards de Sugestão Gerencial -->
-      <div id="estoqueSugestoes" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-        <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:20px">Carregando análise de estoque...</div>
+      <!-- ══ SEÇÃO 2: SAÚDE DO ESTOQUE ══ -->
+      <div class="section-header" style="margin-bottom:14px">
+        <div><div class="section-title">Saúde do Estoque</div></div>
       </div>
 
-      <!-- KPIs -->
-      <div id="estoqueKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
+      <div id="estoqueSugestoes" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+        <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:20px">Carregando...</div>
+      </div>
+
+      <div id="estoqueKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px"></div>
+
+      <!-- ══ SEÇÃO 3: ESTOQUE NKSW ══ -->
+      <div class="section-header" style="margin-bottom:14px">
+        <div><div class="section-title">Estoque NKSW</div></div>
+      </div>
 
       <!-- Barra de Filtros + CSV -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
@@ -1478,7 +1484,7 @@ const PAGE_INFO = {
   marketing:{title:'📣 Marketing',sub:'Meta Ads + Google Analytics 4 · act_282317327'},
   webanalytics:{title:'🌐 Web Analytics',sub:'Google Analytics 4 · Taxa de conversão'},
   vendas:{title:'💰 Vendas',sub:'Faturamento por canal · Todos os canais'},
-  produtos:{title:'📦 Produtos',sub:'Lucratividade · Margem · Performance'},
+  produtos:{title:'📦 Produtos',sub:''},
   pedidos:{title:'🛒 Pedidos',sub:'Monitoramento em tempo real dos pedidos'},
   clientes:{title:'👥 Clientes',sub:'Base · LTV · RFM · Cohort'},
   logistica:{title:'🚚 Logística',sub:'Entregas · SLA · Devoluções'},
@@ -3922,21 +3928,8 @@ function applyEstoqueData(d) {
   if (d.mesesKeys && d.mesesKeys.length) _estoqueMesesKeys = d.mesesKeys;
   _renderSelloutRankings();
 
-  // Armazena todos os SKUs para filtro/sort client-side
-  // Junta curvaAB + semEstoque + estBaixo + restante de forma deduplicada pelo campo chave
-  var allMap = {};
-  (d.todos || []).concat(d.curvaAB || []).concat(d.semEstoque || []).concat(d.estBaixo || []).forEach(function(p) {
-    if (p && p.chave) allMap[p.chave] = p;
-  });
-  _estoqueData = Object.values ? Object.values(allMap) : Object.keys(allMap).map(function(k){ return allMap[k]; });
-
-  // Se a API não retornou d.todos, montar a partir das listas disponíveis
-  if (!d.todos && _estoqueData.length === 0) {
-    _estoqueData = (d.curvaAB || []).concat(
-      (d.semEstoque || []).filter(function(p){ return !p.curva || p.curva === 'C'; }),
-      (d.estBaixo   || []).filter(function(p){ return !p.curva || p.curva === 'C'; })
-    );
-  }
+  // Todos os SKUs vêm de d.todos (único array a partir desta versão do GAS)
+  _estoqueData = d.todos || [];
 
   // ── KPI cards ──
   var kpisEl = document.getElementById('estoqueKpis');
