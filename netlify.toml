@@ -1,0 +1,4 @@
+[build]
+  # Ignora o rebuild quando apenas arquivos de dados mudaram (commits do GitHub Actions)
+  # Só reconstrói quando arquivos de código (HTML, JS, CSS, workflow) forem alterados
+  ignore = "git diff --quiet HEAD^ HEAD -- . ':(exclude)data/'"
