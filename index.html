@@ -1604,6 +1604,11 @@ function changeNavMonth(delta) {
   document.getElementById('customDateRow').classList.remove('open');
   document.querySelectorAll('.tb-pill').forEach(function(p){ p.classList.remove('active'); });
   updateNavPeriodLabel();
+
+  // Rankings usam dados já em memória — atualiza imediatamente sem esperar fetches
+  var pgProd = document.getElementById('page-produtos');
+  if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
+
   showIndLoading();
   var allFetches = [
     loadMarketing().catch(function(){}),
@@ -1618,9 +1623,6 @@ function changeNavMonth(delta) {
     hideIndLoading();
     renderIndicadores();
     renderVisaoGeral();
-    // Re-renderiza rankings de sellout se Produtos estiver ativo
-    var pgProd = document.getElementById('page-produtos');
-    if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
   });
 }
 
@@ -1640,12 +1642,13 @@ function applyCustomDate() {
   currentPeriod = 'custom';
   _navLabel = '';
   document.getElementById('customDateRow').classList.remove('open');
+  // Rankings atualizam imediatamente com dados em memória
+  var pgProd = document.getElementById('page-produtos');
+  if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
   renderIndicadores();
   loadMarketing();
   loadGA4Data();
   if (getSheetsUrl()) loadAllSheetsData();
-  var pgProd = document.getElementById('page-produtos');
-  if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
 }
 
 function getMetaDateParam() {
