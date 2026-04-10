@@ -1066,14 +1066,14 @@ tbody tr:hover{background:#fafafa}
       </div>
       <div class="table-wrap" style="margin-bottom:24px">
         <table>
-          <thead><tr><th>Segmento</th><th>Clientes</th><th>Pedidos</th><th>Receita Total</th><th>Ticket Médio</th><th>Ação Sugerida</th></tr></thead>
+          <thead><tr><th>Segmento</th><th>Clientes</th><th>Pedidos</th><th>Receita Total</th><th>Ticket Médio</th><th>Racional</th><th>Ação Sugerida</th></tr></thead>
           <tbody id="rfmBody"></tbody>
         </table>
       </div>
 
       <!-- Cohort -->
       <div class="section-header">
-        <div><div class="section-title">Análise de Cohort</div><div class="section-sub">Retenção por safra — % clientes que recompraram nos meses seguintes</div></div>
+        <div><div class="section-title">Análise de Cohort</div><div class="section-sub">Retenção por safra — % clientes que recompraram nos meses seguintes · <span id="cacMetaNote" style="color:#f59e0b">CAC e Gasto requerem Meta Ads conectado</span></div></div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="coh-filter">
             <select id="cohortMonthsSel" onchange="onCohortFilterChange()">
@@ -2972,7 +2972,10 @@ async function loadClientesPage() {
 
     // Cruza gasto Meta Ads nas safras
     var monthlySpend = await fetchMetaMonthlySpend();
-    if (d.cohort && Object.keys(monthlySpend).length) {
+    var hasMeta = Object.keys(monthlySpend).length > 0;
+    var cacNote = document.getElementById('cacMetaNote');
+    if (cacNote) cacNote.style.display = hasMeta ? 'none' : '';
+    if (d.cohort && hasMeta) {
       d.cohort = d.cohort.map(function(c) {
         var spend = monthlySpend[c.safra] || 0;
         return Object.assign({}, c, {
@@ -3767,6 +3770,7 @@ function applyClientesData(d) {
           '<td>' + fmtNum(r.pedidos) + '</td>' +
           '<td><strong>' + fmtBRL(r.receita) + '</strong></td>' +
           '<td>' + fmtBRL(ticket) + '</td>' +
+          '<td style="font-size:12px;color:#374151">' + (r.racional || '—') + '</td>' +
           '<td style="font-size:12px;color:#6b7280">' + (r.acao || '—') + '</td>' +
           '</tr>';
       }).join('');
@@ -3778,28 +3782,32 @@ function applyClientesData(d) {
     var abcGrid = document.getElementById('abcGrid');
     if (abcGrid) {
       var abcCfg = {
-        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb' },
-        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff' },
-        C: { icon: '👤', label: 'Ocasional', border: '#9ca3af', bg: '#f9fafb' },
+        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb', criterio: '> 3 compras · ≥ R$3.000' },
+        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff', criterio: '≤ 2 compras · ≥ R$2.000' },
+        C: { icon: '👤', label: 'Ocasional', border: '#9ca3af', bg: '#f9fafb', criterio: 'Demais clientes' },
       };
       abcGrid.innerHTML = d.abc.map(function(cls) {
         var cfg = abcCfg[cls.classe] || abcCfg['C'];
-        // Barra de progresso visual para % de receita
-        var barW = cls.pctRevenue || 0;
+        var barW = Math.min(cls.pctRevenue || 0, 100);
+        var diasTxt = cls.avgDaysBetween > 0 ? cls.avgDaysBetween + ' dias' : '—';
         return '<div class="kpi-card" style="border-left:4px solid ' + cfg.border + ';background:' + cfg.bg + '">' +
           '<div class="kpi-header"><span class="kpi-icon">' + cfg.icon + '</span>' +
             '<span class="kpi-label">Classe ' + cls.classe + ' — ' + cfg.label + '</span></div>' +
-          '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin:10px 0 6px">' +
+          '<div style="font-size:10px;color:#9ca3af;margin:-4px 0 8px;font-style:italic">' + cfg.criterio + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px">' +
             '<div><div class="kpi-value" style="font-size:24px;line-height:1">' + fmtNum(cls.count) + '</div>' +
               '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + cls.pctCount + '% dos clientes</div></div>' +
             '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:#111">' + fmtBRL(cls.revenue) + '</div>' +
               '<div style="font-size:11px;color:#6b7280">' + cls.pctRevenue + '% da receita</div></div>' +
           '</div>' +
-          '<div style="background:#e5e7eb;border-radius:4px;height:6px;margin:8px 0">' +
+          '<div style="background:#e5e7eb;border-radius:4px;height:6px;margin:6px 0 10px">' +
             '<div style="background:' + cfg.border + ';width:' + barW + '%;height:6px;border-radius:4px"></div>' +
           '</div>' +
-          '<div style="font-size:11px;color:#6b7280">Ticket médio: <strong>' + fmtBRL(cls.ticketMedio) + '</strong>' +
-            ' · Range: ' + fmtBRL(cls.minTicket) + ' – ' + fmtBRL(cls.maxTicket) + '</div>' +
+          '<div style="display:flex;gap:16px;font-size:11px;color:#6b7280">' +
+            '<span>🎫 Ticket médio: <strong>' + fmtBRL(cls.ticketMedio) + '</strong></span>' +
+            '<span>📅 Tempo médio: <strong>' + diasTxt + '</strong></span>' +
+          '</div>' +
+          '<div style="font-size:11px;color:#9ca3af;margin-top:4px">Range: ' + fmtBRL(cls.minTicket) + ' – ' + fmtBRL(cls.maxTicket) + '</div>' +
         '</div>';
       }).join('');
     }

@@ -123,14 +123,14 @@ function getClientesData(params) {
     function mScore(val)  { return val  > p80 ? 5 : val  > p60 ? 4 : val  > p40 ? 3 : val  > p20 ? 2 : 1; }
 
     var rfmDefs = {
-      'Champions':  { icon: '🏆', acao: 'Programa fidelidade & embaixadores' },
-      'VIPs':       { icon: '💎', acao: 'Tratamento exclusivo & upsell premium' },
-      'Fiéis':      { icon: '🔁', acao: 'Programa de pontos & recompensa' },
-      'Potenciais': { icon: '🌱', acao: 'Incentivar 2ª compra com oferta especial' },
-      'Novos':      { icon: '✨', acao: 'Boas-vindas & onboarding por email' },
-      'Em Risco':   { icon: '⚠️', acao: 'Campanha de reativação urgente' },
-      'Dormentes':  { icon: '💤', acao: 'Desconto exclusivo de reativação' },
-      'Perdidos':   { icon: '❌', acao: 'Win-back agressivo ou limpeza da base' },
+      'Champions':  { icon: '🏆', racional: 'Compram muito, frequentemente e de forma recente — núcleo do negócio',              acao: 'Programa fidelidade & embaixadores' },
+      'VIPs':       { icon: '💎', racional: 'Alto valor e alta fidelidade — potencial de Champions com o estímulo certo',          acao: 'Tratamento exclusivo & upsell premium' },
+      'Fiéis':      { icon: '🔁', racional: 'Compram com regularidade — base sólida de receita recorrente',                       acao: 'Programa de pontos & recompensa' },
+      'Potenciais': { icon: '🌱', racional: 'Fizeram 2ª compra recentemente — janela de oportunidade para fidelizar',              acao: 'Incentivar 2ª compra com oferta especial' },
+      'Novos':      { icon: '✨', racional: 'Primeira compra recente — vão decidir se viram fiéis ou somem',                       acao: 'Boas-vindas & onboarding por email' },
+      'Em Risco':   { icon: '⚠️', racional: 'Foram bons clientes mas estão sumindo — janela de reativação fechando',               acao: 'Campanha de reativação urgente' },
+      'Dormentes':  { icon: '💤', racional: 'Compraram algumas vezes e pararam — difíceis de reativar sem estímulo forte',         acao: 'Desconto exclusivo de reativação' },
+      'Perdidos':   { icon: '❌', racional: 'Muito tempo sem comprar e baixo engajamento — avaliar custo x benefício de reativar', acao: 'Win-back agressivo ou limpeza da base' },
     };
     var rfmGroups = {};
     Object.keys(rfmDefs).forEach(function(k) {
@@ -163,54 +163,61 @@ function getClientesData(params) {
           base:     g.base,
           Pedidos:  g.Pedidos,
           receita:  Math.round(g.receita),
+          racional: rfmDefs[k].racional,
           acao:     rfmDefs[k].acao,
         };
       })
       .sort(function(a, b) { return b.receita - a.receita; });
 
-    // ── Curva ABC ─────────────────────────────────────────────────────────
-    var sortedByValue = clientList.slice().sort(function(a, b) { return b.totalSpent - a.totalSpent; });
-    var abcTotal = sortedByValue.reduce(function(s, c) { return s + c.totalSpent; }, 0);
+    // ── Curva ABC (regras de negócio) ─────────────────────────────────────
+    // A: > 3 compras E >= R$3.000 · B: <= 2 compras E >= R$2.000 · C: restante
     var abcStats = {
-      A: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
-      B: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
-      C: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
+      A: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
+      B: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
+      C: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
     };
-    var cumRev = 0;
-    sortedByValue.forEach(function(c) {
-      cumRev += c.totalSpent;
-      var cumPct = abcTotal > 0 ? cumRev / abcTotal : 1;
-      c.abcClass = cumPct <= 0.80 ? 'A' : cumPct <= 0.95 ? 'B' : 'C';
-      var st = abcStats[c.abcClass];
+    clientList.forEach(function(c) {
+      var cls;
+      if      (c.numOrders > 3  && c.totalSpent >= 3000) cls = 'A';
+      else if (c.numOrders <= 2 && c.totalSpent >= 2000) cls = 'B';
+      else                                                cls = 'C';
+      c.abcClass = cls;
+      var st = abcStats[cls];
       st.count++;
-      st.revenue += c.totalSpent;
+      st.revenue     += c.totalSpent;
+      st.totalOrders += c.numOrders;
       if (c.totalSpent > 0) {
         st.minTicket = Math.min(st.minTicket, c.totalSpent);
         st.maxTicket = Math.max(st.maxTicket, c.totalSpent);
       }
+      if (c.avgGap != null) { st.gapSum += c.avgGap; st.gapCount++; }
     });
-    // Subgrupos de VIP (Classe A) por recência — base da decisão
-    var vipA = sortedByValue.filter(function(c) { return c.abcClass === 'A'; });
+
+    var abcTotal = clientList.reduce(function(s, c) { return s + c.totalSpent; }, 0);
+
+    // Subgrupos de VIP (Classe A) por recência
+    var vipA = clientList.filter(function(c) { return c.abcClass === 'A'; });
     var vipAtivos   = vipA.filter(function(c) { return c.recency <= 180; });
     var vipTrabalho = vipA.filter(function(c) { return c.recency > 180 && c.recency <= 540; });
     var vipPerdidos = vipA.filter(function(c) { return c.recency > 540; });
     function subGroup(list) {
-      var rev = list.reduce(function(s, c) { return s + c.totalSpent; }, 0);
-      var avgRec = list.length > 0 ? Math.round(list.reduce(function(s, c) { return s + c.recency; }, 0) / list.length) : 0;
-      var avgTicket = list.length > 0 ? Math.round(rev / list.length) : 0;
-      return { count: list.length, revenue: Math.round(rev), avgRecency: avgRec, ticketMedio: avgTicket };
+      var rev     = list.reduce(function(s, c) { return s + c.totalSpent; }, 0);
+      var orders  = list.reduce(function(s, c) { return s + c.numOrders; }, 0);
+      var avgRec  = list.length > 0 ? Math.round(list.reduce(function(s, c) { return s + c.recency; }, 0) / list.length) : 0;
+      return { count: list.length, revenue: Math.round(rev), avgRecency: avgRec, ticketMedio: orders > 0 ? Math.round(rev / orders) : 0 };
     }
     var abc = ['A', 'B', 'C'].map(function(cls) {
       var st = abcStats[cls];
       var row = {
-        classe:      cls,
-        count:       st.count,
-        revenue:     Math.round(st.revenue),
-        pctCount:    total > 0 ? Math.round(st.count / total * 100) : 0,
-        pctRevenue:  abcTotal > 0 ? Math.round(st.revenue / abcTotal * 100) : 0,
-        ticketMedio: st.count > 0 ? Math.round(st.revenue / st.count) : 0,
-        minTicket:   st.minTicket === Infinity ? 0 : Math.round(st.minTicket),
-        maxTicket:   Math.round(st.maxTicket),
+        classe:          cls,
+        count:           st.count,
+        revenue:         Math.round(st.revenue),
+        pctCount:        total > 0 ? Math.round(st.count / total * 100) : 0,
+        pctRevenue:      abcTotal > 0 ? Math.round(st.revenue / abcTotal * 100) : 0,
+        ticketMedio:     st.totalOrders > 0 ? Math.round(st.revenue / st.totalOrders) : 0,
+        avgDaysBetween:  st.gapCount > 0 ? Math.round(st.gapSum / st.gapCount) : 0,
+        minTicket:       st.minTicket === Infinity ? 0 : Math.round(st.minTicket),
+        maxTicket:       Math.round(st.maxTicket),
       };
       if (cls === 'A') {
         row.vipAtivos   = subGroup(vipAtivos);
