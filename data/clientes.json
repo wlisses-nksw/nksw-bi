@@ -5,9 +5,9 @@
       "total": 23049,
       "recompras": 7381,
       "pctRecomp": 32,
-      "ltv": 766.9,
+      "ltv": 767,
       "avgDaysBetween": 272,
-      "totalReceita": 17676164.79
+      "totalReceita": 17676165
     },
     "rfm": [
       {
@@ -21,49 +21,49 @@
         "segmento": "❌ Perdidos",
         "base": 15986,
         "pedidos": 18920,
-        "receita": 6565900.51,
+        "receita": 6565901,
         "acao": "Win-back agressivo ou limpeza da base"
       },
       {
         "segmento": "⚠️ Em Risco",
         "base": 1022,
         "pedidos": 3294,
-        "receita": 712634.17,
+        "receita": 712634,
         "acao": "Campanha de reativação urgente"
       },
       {
         "segmento": "💤 Dormentes",
         "base": 829,
         "pedidos": 905,
-        "receita": 517168.01,
+        "receita": 517168,
         "acao": "Desconto exclusivo de reativação"
       },
       {
         "segmento": "🏆 Champions",
         "base": 87,
         "pedidos": 650,
-        "receita": 343191.92,
+        "receita": 343192,
         "acao": "Programa fidelidade & embaixadores"
       },
       {
         "segmento": "✨ Novos",
         "base": 408,
         "pedidos": 408,
-        "receita": 217230.12,
+        "receita": 217230,
         "acao": "Boas-vindas & onboarding por email"
       },
       {
         "segmento": "🌱 Potenciais",
         "base": 103,
         "pedidos": 206,
-        "receita": 78172.37,
+        "receita": 78172,
         "acao": "Incentivar 2ª compra com oferta especial"
       },
       {
         "segmento": "🔁 Fiéis",
         "base": 27,
         "pedidos": 85,
-        "receita": 23287.69,
+        "receita": 23288,
         "acao": "Programa de pontos & recompensa"
       }
     ],
@@ -71,7 +71,7 @@
       {
         "safra": "Abr. 2025",
         "clientes": 80,
-        "receita": 79564.89,
+        "receita": 79565,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -105,7 +105,7 @@
       {
         "safra": "Mai. 2025",
         "clientes": 251,
-        "receita": 271653.85,
+        "receita": 271654,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -139,7 +139,7 @@
       {
         "safra": "Jun. 2025",
         "clientes": 295,
-        "receita": 335565.15,
+        "receita": 335565,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -173,7 +173,7 @@
       {
         "safra": "Jul. 2025",
         "clientes": 466,
-        "receita": 568997.64,
+        "receita": 568998,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -207,7 +207,7 @@
       {
         "safra": "Ago. 2025",
         "clientes": 324,
-        "receita": 403918.98,
+        "receita": 403919,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -241,7 +241,7 @@
       {
         "safra": "Set. 2025",
         "clientes": 359,
-        "receita": 391252.94,
+        "receita": 391253,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -275,7 +275,7 @@
       {
         "safra": "Out. 2025",
         "clientes": 291,
-        "receita": 358457.43,
+        "receita": 358457,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -309,7 +309,7 @@
       {
         "safra": "Nov. 2025",
         "clientes": 514,
-        "receita": 540791.14,
+        "receita": 540791,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -343,7 +343,7 @@
       {
         "safra": "Dez. 2025",
         "clientes": 287,
-        "receita": 325765.83,
+        "receita": 325766,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -377,7 +377,7 @@
       {
         "safra": "Jan. 2026",
         "clientes": 278,
-        "receita": 264558.64,
+        "receita": 264559,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -411,7 +411,7 @@
       {
         "safra": "Fev. 2026",
         "clientes": 200,
-        "receita": 186502.9,
+        "receita": 186503,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -445,7 +445,7 @@
       {
         "safra": "Mar. 2026",
         "clientes": 361,
-        "receita": 262667.21,
+        "receita": 262667,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -479,7 +479,7 @@
       {
         "safra": "Abr. 2026",
         "clientes": 63,
-        "receita": 60472.02,
+        "receita": 60472,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -510,6 +510,44 @@
           null
         ]
       }
+    ],
+    "abc": [
+      {
+        "classe": "A",
+        "count": 10968,
+        "revenue": 14140540,
+        "pctCount": 48,
+        "pctRevenue": 80,
+        "ticketMedio": 1289,
+        "minTicket": 516,
+        "maxTicket": 32775,
+        "aAtivos": 2257,
+        "aRisco": 8711
+      },
+      {
+        "classe": "B",
+        "count": 7066,
+        "revenue": 2651600,
+        "pctCount": 31,
+        "pctRevenue": 15,
+        "ticketMedio": 375,
+        "minTicket": 248,
+        "maxTicket": 516,
+        "aAtivos": null,
+        "aRisco": null
+      },
+      {
+        "classe": "C",
+        "count": 5015,
+        "revenue": 884025,
+        "pctCount": 22,
+        "pctRevenue": 5,
+        "ticketMedio": 176,
+        "minTicket": 1,
+        "maxTicket": 248,
+        "aAtivos": null,
+        "aRisco": null
+      }
     ]
   },
   "periodo": {
@@ -517,7 +555,7 @@
     "fim": "2026-04-10",
     "label": "custom"
   },
-  "generated_at": "2026-04-10T13:02:29Z",
+  "generated_at": "2026-04-10T14:33:29Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-10"
