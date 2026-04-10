@@ -397,7 +397,8 @@ function getVendas(dates, statusFilter) {
 
 /* ===== PRODUTOS ===== */
 function getProdutos() {
-  var rows = readSheet(CONFIG.ABA_PRODUTOS, CONFIG.ID_PRODUTOS);
+  var rows;
+  try { rows = readSheet(CONFIG.ABA_PRODUTOS, CONFIG.ID_PRODUTOS); } catch(e) { return { lista: [], categorias: [] }; }
   if (rows.length < 2) return { lista: [], categorias: [] };
 
   var h  = rows[0];
