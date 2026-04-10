@@ -1010,30 +1010,6 @@ tbody tr:hover{background:#fafafa}
       <span id="estBaixoBadge"   style="display:none">0</span>
       <span id="estBaixoSub"     style="display:none"></span>
 
-      <!-- Calculadora de Precificação -->
-      <div class="section-header" style="margin-top:8px">
-        <div>
-          <div class="section-title">Calculadora de Precificação</div>
-          <div class="section-sub">Calcule o preço ideal com base na margem desejada</div>
-        </div>
-      </div>
-      <div class="calc-card">
-        <div class="calc-row">
-          <div class="calc-field">
-            <label>Custo do Produto (R$)</label>
-            <input type="number" id="calcCusto" placeholder="Ex: 60,00" oninput="calcPreco()"/>
-          </div>
-          <div class="calc-field">
-            <label>Margem Desejada (%)</label>
-            <input type="number" id="calcMargem" placeholder="Ex: 70" oninput="calcPreco()"/>
-          </div>
-        </div>
-        <div class="calc-result" id="calcResult" style="display:none">
-          <div class="calc-res-item"><div class="cri-label">Preço Sugerido</div><div class="cri-value" id="calcPrecoVal">—</div></div>
-          <div class="calc-res-item"><div class="cri-label">Lucro Estimado</div><div class="cri-value" id="calcLucroVal">—</div></div>
-          <div class="calc-res-item"><div class="cri-label">Markup</div><div class="cri-value" id="calcMarkupVal">—</div></div>
-        </div>
-      </div>
     </div>
 
     <!-- ============================================================ -->
@@ -1529,8 +1505,9 @@ function updateTopbar(page) {
   var isMetas    = page === 'metas';
   var isClientes = page === 'clientes';
   var isAdmin    = page === 'admin';
-  if (globalNav)  globalNav.style.display  = (isMetas || isClientes || isAdmin) ? 'none' : 'flex';
-  if (customRow)  customRow.style.display  = (isMetas || isClientes || isAdmin) ? 'none' : '';
+  var isProdutos = page === 'produtos';
+  if (globalNav)  globalNav.style.display  = (isMetas || isClientes || isAdmin || isProdutos) ? 'none' : 'flex';
+  if (customRow)  customRow.style.display  = (isMetas || isClientes || isAdmin || isProdutos) ? 'none' : '';
   if (metasNav)   metasNav.style.display   = isMetas ? 'flex' : 'none';
   var newUserBtn = document.getElementById('topbar-new-user-btn');
   if (newUserBtn) newUserBtn.style.display = isAdmin ? '' : 'none';
@@ -3738,16 +3715,25 @@ var _estoqueSortAsc      = true;
 
 /* ── loader ── */
 async function loadEstoquePage() {
+  var kpisEl = document.getElementById('estoqueKpis');
   try {
-    var kpisEl = document.getElementById('estoqueKpis');
     if (kpisEl) kpisEl.innerHTML = '<div class="kpi-card" style="text-align:center;color:#9ca3af;grid-column:1/-1;padding:20px">Carregando dados de estoque...</div>';
 
-    // 1. JSON estático cacheado pelo GitHub Actions
+    // 1. Cache localStorage (TTL 60 min) — evita request a cada troca de aba
+    var cached = getCache('estoque');
+    if (cached && cached.resumo) {
+      applyEstoqueData(cached);
+      _estoqueLoaded = true;
+      return;
+    }
+
+    // 2. JSON estático do GitHub Actions
     // data/estoque.json é o próprio objeto { ok, resumo, todos, curvaAB, semEstoque, estBaixo }
-    var staticData = await fetchStaticJSON('estoque');
+    // Usa TTL de 2h pois estoque não é period-dependent
+    var staticData = await fetchStaticJSONEstoque();
     var d = (staticData && staticData.ok && staticData.resumo) ? staticData : null;
 
-    // 2. Fallback: Apps Script direto (doGet devolve { ok, estoque: {...} })
+    // 3. Fallback: Apps Script direto (doGet devolve { ok, estoque: {...} })
     if (!d) {
       var raw = await fetchSheets('estoque', '', '');
       if (raw && raw.ok && raw.estoque) d = raw.estoque;
@@ -3758,11 +3744,31 @@ async function loadEstoquePage() {
       return;
     }
 
+    // Salva no cache por 60 min
+    try { localStorage.setItem(CACHE_VER + 'estoque', JSON.stringify({ ts: Date.now(), maxMs: 60*60000, data: d })); } catch(e) {}
+
     applyEstoqueData(d);
     _estoqueLoaded = true;
   } catch(e) {
     console.warn('loadEstoquePage error:', e.message);
+    if (kpisEl) kpisEl.innerHTML = '<div class="kpi-card" style="text-align:center;color:#dc2626;grid-column:1/-1;padding:20px">Erro ao carregar estoque.</div>';
   }
+}
+
+// Fetch do estoque com TTL de 2h (não é filtrado por período)
+async function fetchStaticJSONEstoque() {
+  try {
+    var r = await fetch(STATIC_DATA_URL + 'estoque.json?_=' + Math.floor(Date.now() / 120000)); // cache bust a cada 2 min
+    if (!r.ok) return null;
+    var obj = await r.json();
+    if (!obj || !obj.ok) return null;
+    // Aceita arquivo de até 2h (estoque não muda a cada minuto)
+    if (obj.generated_at) {
+      var ageMin = (Date.now() - new Date(obj.generated_at).getTime()) / 60000;
+      if (ageMin > 120) return null;
+    }
+    return obj;
+  } catch(e) { return null; }
 }
 
 /* ── helpers visuais ── */
