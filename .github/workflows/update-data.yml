@@ -69,7 +69,7 @@ jobs:
 
       - name: Buscar dados Clientes
         run: |
-          curl -sL "${{ secrets.SHEETS_URL }}?section=clientes&period=custom&startDate=${START}&endDate=${END}" \
+          curl -sL "${{ secrets.SHEETS_URL }}?section=clientes&cohortMonths=24&period=custom&startDate=${START}&endDate=${END}" \
             -o /tmp/clientes.json --max-time 30 || echo '{"ok":false}' > /tmp/clientes.json
 
           if jq -e '.ok' /tmp/clientes.json > /dev/null 2>&1; then
@@ -79,6 +79,20 @@ jobs:
             echo "✅ Clientes atualizado"
           else
             echo "⚠️ Clientes inválido — mantendo arquivo existente"
+          fi
+
+      - name: Buscar dados Produtos
+        run: |
+          curl -sL "${{ secrets.SHEETS_URL }}?section=produtos&period=custom&startDate=${START}&endDate=${END}" \
+            -o /tmp/produtos.json --max-time 30 || echo '{"ok":false}' > /tmp/produtos.json
+
+          if jq -e '.ok' /tmp/produtos.json > /dev/null 2>&1; then
+            jq --arg ts "$TS" --arg s "$START" --arg e "$END" \
+              '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+              /tmp/produtos.json > data/produtos.json
+            echo "✅ Produtos atualizado"
+          else
+            echo "⚠️ Produtos inválido — mantendo arquivo existente"
           fi
 
       # ── Commit e push ──────────────────────────────────────────────────
