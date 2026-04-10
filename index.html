@@ -1112,7 +1112,7 @@ tbody tr:hover{background:#fafafa}
       <div id="vipActionPanel" style="display:none">
         <div style="font-size:12px;font-weight:700;color:#6b7280;letter-spacing:.08em;margin-bottom:12px;text-transform:uppercase">Classe A — Plano de Ação por Recência</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:8px" id="vipCards"></div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:4px">Recência: VIP Ativos ≤ 180 dias · Trabalhar Agora 181–540 dias · VIP Perdidos > 540 dias</div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:4px">Recência: VIP Ativos ≤ 180 dias · Reaquecer 181–365 dias · Em Risco > 365 dias</div>
       </div>
     </div>
 
@@ -1421,12 +1421,19 @@ const MOCK = {
     {id:'#3894',produto:'CALCINHA ARIEL — LAGOON',status:'Aprovado',valor:149.00,data:'18/03/2026 20:15'},
   ],
   rfm: [
-    {seg:'🏆 Fiéis',base:175,pedidos:361,receita:288332,acao:'Programa fidelidade'},
-    {seg:'⚠️ Em Risco',base:203,pedidos:287,receita:198440,acao:'Campanha reativação'},
-    {seg:'🌱 Novos',base:487,pedidos:487,receita:156230,acao:'Onboarding email'},
-    {seg:'💤 Dormentes',base:1234,pedidos:1234,receita:412100,acao:'Desconto reativação'},
-    {seg:'💎 VIPs',base:42,pedidos:298,receita:187440,acao:'Tratamento exclusivo'},
-    {seg:'🔄 Potenciais',base:356,pedidos:712,receita:220180,acao:'Up-sell premium'},
+    {seg:'💎 VIP Ativo',           base:906, pedidos:12684,receita:4752000,racional:'Top clientes comprando regularmente — núcleo da marca',      acao:'Programa VIP exclusivo, acesso antecipado a lançamentos'},
+    {seg:'🔔 VIP Reaquecer',       base:484, pedidos:5808, receita:2351000,racional:'Top clientes esfriando — janela de reconquista urgente',      acao:'Contato personalizado, oferta exclusiva de reengajamento'},
+    {seg:'⚠️ VIP Em Risco',        base:433, pedidos:4763, receita:1890000,racional:'Top clientes inativos há +1 ano — risco de perda permanente', acao:'Win-back urgente com benefício exclusivo'},
+    {seg:'🌟 Alto Valor Ativo',    base:438, pedidos:2628, receita:1560000,racional:'Top 20% em gasto, comprando regularmente — potencial VIP',    acao:'Incentivar frequência, convidar para clube exclusivo'},
+    {seg:'🌡️ Alto Valor Morno',    base:424, pedidos:2120, receita:1280000,racional:'Alto gasto histórico mas comprando menos — risco de perda',   acao:'Reativação personalizada, oferta complementar'},
+    {seg:'🚨 Alto Valor Em Risco', base:387, pedidos:1548, receita:980000, racional:'Gastaram muito mas inativos 1-2 anos — impacto alto se perdidos',acao:'Win-back agressivo, desconto significativo'},
+    {seg:'❄️ Alto Valor Hibernado',base:302, pedidos:906,  receita:620000, racional:'Alto gasto, sem compra há +2 anos — avaliar custo de reativação',acao:'Campanha aniversário, avaliar ROI'},
+    {seg:'🚀 Potencial Ativo',     base:178, pedidos:712,  receita:340000, racional:'Bom score comprando regularmente — caminho para Alto Valor',  acao:'Cross-sell e upsell, linha premium'},
+    {seg:'💡 Potencial Morno',     base:154, pedidos:462,  receita:210000, racional:'Bom histórico mas comprando menos — precisam de estímulo',     acao:'E-mail de reengajamento com curadoria'},
+    {seg:'⏸️ Potencial Inativo',   base:1969,pedidos:5907, receita:1840000,racional:'Bom comportamento anterior mas sumiram — reativação relevante', acao:'Fluxo automatizado com incentivo progressivo'},
+    {seg:'✨ Novo/Eventual',        base:1225,pedidos:1470, receita:390000, racional:'Compra recente mas baixo score — ainda avaliando a marca',    acao:'Boas-vindas, pesquisa satisfação, oferta 2ª compra'},
+    {seg:'💤 Baixo Engajamento',   base:16049,pedidos:16049,receita:3240000,racional:'Compras raras há muito tempo — baixo potencial imediato',     acao:'Automação de baixo custo, campanhas sazonais'},
+    {seg:'🌱 Emergente',           base:1,   pedidos:1,    receita:249,    racional:'Primeira compra muito recente — momento decisivo da experiência',acao:'Impressionar na pós-compra, capturar feedback'},
   ],
   cohort: [
     {safra:'Set. 2025',cac:0,clientes:469,receita:447934,gasto:0,m:[100,22,15,8]},
@@ -2850,7 +2857,8 @@ function renderClientes() {
         '<td>' + fmtNum(r.pedidos) + '</td>' +
         '<td><strong>' + fmtBRL(r.receita) + '</strong></td>' +
         '<td>' + fmtBRL(ticket) + '</td>' +
-        '<td style="font-size:12px;color:#6b7280">' + r.acao + '</td>' +
+        '<td style="font-size:11px;color:#374151;max-width:220px">' + (r.racional || '—') + '</td>' +
+        '<td style="font-size:11px;color:#6b7280">' + (r.acao || '—') + '</td>' +
         '</tr>';
     }).join('');
   }
@@ -3765,14 +3773,19 @@ function applyClientesData(d) {
     if (rfmBody) {
       // Racional definido client-side (funciona mesmo sem reimplantar Apps Script)
       var RFM_RACIONAL = {
-        'Champions':  'Compram muito, com frequência e recentemente — são o núcleo do negócio e os maiores embaixadores da marca',
-        'VIPs':       'Alto valor de compra e alta fidelidade — têm potencial de virar Champions com o estímulo certo',
-        'Fiéis':      'Compram com regularidade e constância — formam a base sólida de receita recorrente',
-        'Potenciais': 'Fizeram a 2ª compra recentemente — estão na janela de oportunidade para virar fiéis',
-        'Novos':      'Primeira compra recente — vão decidir nos próximos 90 dias se ficam ou somem',
-        'Em Risco':   'Foram bons clientes mas estão sumindo — a janela de reativação está fechando',
-        'Dormentes':  'Compraram algumas vezes e pararam — precisam de estímulo forte para voltar',
-        'Perdidos':   'Muito tempo sem comprar e baixo engajamento — avaliar se o custo de reativação compensa',
+        'VIP Ativo':            'Top clientes com score RFM máximo comprando nos últimos 6 meses — núcleo e embaixadores da marca',
+        'VIP Reaquecer':        'Top clientes esfriando (6-12 meses sem compra) — janela de reconquista antes da perda definitiva',
+        'VIP Em Risco':         'Top clientes inativos há mais de 1 ano — risco real de perda permanente de alto valor',
+        'Alto Valor Ativo':     'Gasto histórico no top 20% da base, comprando nos últimos 6 meses — candidatos naturais ao grupo VIP',
+        'Alto Valor Morno':     'Alto gasto histórico (top 20%) mas comprando menos — risco de migrar para concorrente',
+        'Alto Valor Em Risco':  'Muito gastaram, mas inativos há 1 a 2 anos — recuperação difícil, impacto alto se perdidos',
+        'Alto Valor Hibernado': 'Ex-clientes de alto valor sem compra há mais de 2 anos — avaliar custo x benefício de reativação',
+        'Potencial Ativo':      'Bom score RFM (12-13) comprando regularmente — caminho claro para Alto Valor se a frequência aumentar',
+        'Potencial Morno':      'Bom histórico mas comprando menos — precisam de estímulo para voltar ao ritmo anterior',
+        'Potencial Inativo':    'Tinham bom comportamento de compra mas sumiram — reativação pode gerar retorno relevante',
+        'Novo/Eventual':        'Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vínculo',
+        'Baixo Engajamento':    'Compras raras ou únicas há muito tempo — base de baixo potencial imediato, custo alto de reativação',
+        'Emergente':            'Primeira compra muito recente — ainda formando opinião sobre a marca, momento decisivo da experiência',
       };
       rfmBody.innerHTML = d.rfm.map(function(r) {
         var ticket = r.pedidos > 0 ? r.receita / r.pedidos : 0;
@@ -3797,9 +3810,9 @@ function applyClientesData(d) {
     var abcGrid = document.getElementById('abcGrid');
     if (abcGrid) {
       var abcCfg = {
-        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb', criterio: '≥ 10 compras · ≥ R$10.000' },
-        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff', criterio: '≥ 5 compras · ≥ R$5.000' },
-        C: { icon: '👤', label: 'Ocasional', border: '#9ca3af', bg: '#f9fafb', criterio: 'Demais clientes' },
+        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb', criterio: 'Score RFM 14–15 (top engajamento + valor)' },
+        B: { icon: '🌟', label: 'Alto Valor', border: '#3b82f6', bg: '#eff6ff', criterio: 'Score 12–13 ou top 20% em gasto (M=5)' },
+        C: { icon: '👤', label: 'Base',       border: '#9ca3af', bg: '#f9fafb', criterio: 'Score ≤ 11 sem destaque em gasto' },
       };
       abcGrid.innerHTML = d.abc.map(function(cls) {
         var cfg = abcCfg[cls.classe] || abcCfg['C'];
@@ -3841,17 +3854,17 @@ function applyClientesData(d) {
           urgencia: 'MANTER',  urgBg: '#dcfce7', urgColor: '#15803d',
         },
         {
-          key: 'vipTrabalho', icon: '⚡', title: 'Trabalhar Agora',
+          key: 'vipTrabalho', icon: '🔔', title: 'VIP Reaquecer',
           color: '#d97706', bg: '#fffbeb', border: '#f59e0b',
-          tag: '181–540 dias', tagColor: '#92400e',
-          acao: 'Campanha personalizada: WhatsApp, gift, oferta exclusiva.',
+          tag: '181–365 dias', tagColor: '#92400e',
+          acao: 'Contato personalizado pelo atendente, oferta exclusiva de reengajamento.',
           urgencia: 'URGENTE',  urgBg: '#fef3c7', urgColor: '#92400e',
         },
         {
-          key: 'vipPerdidos', icon: '🔴', title: 'VIP Perdidos',
+          key: 'vipPerdidos', icon: '⚠️', title: 'VIP Em Risco',
           color: '#dc2626', bg: '#fff5f5', border: '#ef4444',
-          tag: '> 540 dias', tagColor: '#991b1b',
-          acao: 'Win-back agressivo ou limpeza da base.',
+          tag: '> 365 dias', tagColor: '#991b1b',
+          acao: 'Win-back urgente com benefício exclusivo, ligação direta do gerente de contas.',
           urgencia: 'AVALIAR',  urgBg: '#fee2e2', urgColor: '#991b1b',
         },
       ];

@@ -110,7 +110,7 @@ function getClientesData(params) {
     var avgDays      = gapList.length > 0
       ? gapList.reduce(function(s, c) { return s + c.avgGap; }, 0) / gapList.length : 0;
 
-    // ── RFM Scoring ───────────────────────────────────────────────────────
+    // ── RFM Scoring (R percentil da base, F fixo, M percentil monetario) ─
     var sortedSpent = clientList.map(function(c) { return c.totalSpent; }).sort(function(a, b) { return a - b; });
     var n = sortedSpent.length;
     var p20 = sortedSpent[Math.floor(n * 0.2)] || 0;
@@ -118,37 +118,58 @@ function getClientesData(params) {
     var p60 = sortedSpent[Math.floor(n * 0.6)] || 0;
     var p80 = sortedSpent[Math.floor(n * 0.8)] || 0;
 
-    function rScore(days) { return days <= 30 ? 5 : days <= 60 ? 4 : days <= 90 ? 3 : days <= 180 ? 2 : 1; }
+    // R: percentil de recência (menor = mais recente = score maior)
+    var sortedRec = clientList.map(function(c) { return c.recency; }).sort(function(a, b) { return a - b; });
+    var rp20 = sortedRec[Math.floor(n * 0.2)] || 0;
+    var rp40 = sortedRec[Math.floor(n * 0.4)] || 0;
+    var rp60 = sortedRec[Math.floor(n * 0.6)] || 0;
+    var rp80 = sortedRec[Math.floor(n * 0.8)] || 0;
+
+    function rScore(days) { return days <= rp20 ? 5 : days <= rp40 ? 4 : days <= rp60 ? 3 : days <= rp80 ? 2 : 1; }
     function fScore(num)  { return num  >= 9  ? 5 : num  >= 5  ? 4 : num  >= 3  ? 3 : num  >= 2  ? 2 : 1; }
     function mScore(val)  { return val  > p80 ? 5 : val  > p60 ? 4 : val  > p40 ? 3 : val  > p20 ? 2 : 1; }
 
+    // ── 13 Segmentos RFM (metodologia planilha Curva ABC RFM) ────────────
     var rfmDefs = {
-      'Champions':  { icon: '🏆', racional: 'Compram muito, frequentemente e de forma recente — núcleo do negócio',              acao: 'Programa fidelidade & embaixadores' },
-      'VIPs':       { icon: '💎', racional: 'Alto valor e alta fidelidade — potencial de Champions com o estímulo certo',          acao: 'Tratamento exclusivo & upsell premium' },
-      'Fiéis':      { icon: '🔁', racional: 'Compram com regularidade — base sólida de receita recorrente',                       acao: 'Programa de pontos & recompensa' },
-      'Potenciais': { icon: '🌱', racional: 'Fizeram 2ª compra recentemente — janela de oportunidade para fidelizar',              acao: 'Incentivar 2ª compra com oferta especial' },
-      'Novos':      { icon: '✨', racional: 'Primeira compra recente — vão decidir se viram fiéis ou somem',                       acao: 'Boas-vindas & onboarding por email' },
-      'Em Risco':   { icon: '⚠️', racional: 'Foram bons clientes mas estão sumindo — janela de reativação fechando',               acao: 'Campanha de reativação urgente' },
-      'Dormentes':  { icon: '💤', racional: 'Compraram algumas vezes e pararam — difíceis de reativar sem estímulo forte',         acao: 'Desconto exclusivo de reativação' },
-      'Perdidos':   { icon: '❌', racional: 'Muito tempo sem comprar e baixo engajamento — avaliar custo x benefício de reativar', acao: 'Win-back agressivo ou limpeza da base' },
+      'VIP Ativo':            { icon: '💎', racional: 'Top clientes com score RFM maximo (14-15) comprando nos ultimos 6 meses — nucleo e embaixadores da marca.',           acao: 'Programa VIP exclusivo, acesso antecipado a lancamentos, presentes personalizados' },
+      'VIP Reaquecer':        { icon: '🔔', racional: 'Top clientes esfriando (6-12 meses sem compra) — janela de reconquista antes da perda definitiva.',                   acao: 'Contato personalizado pelo atendente, oferta exclusiva de reengajamento' },
+      'VIP Em Risco':         { icon: '⚠️', racional: 'Top clientes inativos ha mais de 1 ano — risco real de perda permanente de alto valor.',                              acao: 'Win-back urgente com beneficio exclusivo, ligacao direta do gerente de contas' },
+      'Alto Valor Ativo':     { icon: '🌟', racional: 'Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.',               acao: 'Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium' },
+      'Alto Valor Morno':     { icon: '🌡️', racional: 'Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.',                              acao: 'Reativacao personalizada, oferta de produto complementar ao historico de compras' },
+      'Alto Valor Em Risco':  { icon: '🚨', racional: 'Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.',                         acao: 'Campanha win-back agressiva, desconto significativo ou produto exclusivo' },
+      'Alto Valor Hibernado': { icon: '❄️', racional: 'Ex-clientes de alto valor sem compra ha mais de 2 anos — avaliar custo x beneficio de reativacao.',                   acao: 'Campanha em data especial (aniversario), avaliar ROI antes de investir na reativacao' },
+      'Potencial Ativo':      { icon: '🚀', racional: 'Bom score RFM (12-13) comprando regularmente — caminho claro para Alto Valor se a frequencia aumentar.',              acao: 'Cross-sell e upsell, apresentar linha premium, recomendacao personalizada' },
+      'Potencial Morno':      { icon: '💡', racional: 'Bom historico mas comprando menos — precisam de estimulo para voltar ao ritmo anterior.',                              acao: 'E-mail de reengajamento com curadoria baseada no historico de compras' },
+      'Potencial Inativo':    { icon: '⏸️', racional: 'Tinham bom comportamento de compra mas sumiu — reativacao pode gerar retorno relevante.',                             acao: 'Fluxo de reativacao automatizado com incentivo progressivo (oferta escalonada)' },
+      'Novo/Eventual':        { icon: '✨', racional: 'Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.',                acao: 'Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra' },
+      'Baixo Engajamento':    { icon: '💤', racional: 'Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.',                 acao: 'Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume' },
+      'Emergente':            { icon: '🌱', racional: 'Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.',               acao: 'Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato' },
     };
     var rfmGroups = {};
-    Object.keys(rfmDefs).forEach(function(k) {
-      rfmGroups[k] = { base: 0, Pedidos: 0, receita: 0 };
-    });
+    Object.keys(rfmDefs).forEach(function(k) { rfmGroups[k] = { base: 0, Pedidos: 0, receita: 0 }; });
 
     clientList.forEach(function(c) {
       var r = rScore(c.recency), f = fScore(c.numOrders), m = mScore(c.totalSpent);
-      var seg;
-      if      (r >= 4 && f >= 4 && m >= 4)   seg = 'Champions';
-      else if (m >= 5 || (f >= 4 && m >= 4)) seg = 'VIPs';
-      else if (r >= 3 && f >= 3)              seg = 'Fiéis';
-      else if (r >= 4 && f === 1)             seg = 'Novos';
-      else if (r >= 3 && f === 2)             seg = 'Potenciais';
-      else if (r <= 2 && f >= 3)              seg = 'Em Risco';
-      else if (r >= 2 && r <= 3)              seg = 'Dormentes';
-      else                                     seg = 'Perdidos';
+      var score = r + f + m;
+      c.rScore = r; c.fScore = f; c.mScore = m; c.rfmScore = score;
 
+      // ABC por score RFM: A=14-15, B=12-13 ou M=5, C=restante
+      if      (score >= 14)            c.abcClass = 'A';
+      else if (score >= 12 || m === 5) c.abcClass = 'B';
+      else                             c.abcClass = 'C';
+
+      // Segmento RFM (13 segmentos com recencia)
+      var rec = c.recency;
+      var seg;
+      if (score >= 14) {
+        seg = rec <= 180 ? 'VIP Ativo' : rec <= 365 ? 'VIP Reaquecer' : 'VIP Em Risco';
+      } else if (m === 5) {
+        seg = rec <= 180 ? 'Alto Valor Ativo' : rec <= 365 ? 'Alto Valor Morno' : rec <= 730 ? 'Alto Valor Em Risco' : 'Alto Valor Hibernado';
+      } else if (score >= 12) {
+        seg = rec <= 180 ? 'Potencial Ativo' : rec <= 365 ? 'Potencial Morno' : 'Potencial Inativo';
+      } else {
+        seg = (rec <= 60 && c.numOrders === 1) ? 'Emergente' : rec <= 365 ? 'Novo/Eventual' : 'Baixo Engajamento';
+      }
       rfmGroups[seg].base++;
       rfmGroups[seg].Pedidos += c.numOrders;
       rfmGroups[seg].receita += c.totalSpent;
@@ -169,20 +190,15 @@ function getClientesData(params) {
       })
       .sort(function(a, b) { return b.receita - a.receita; });
 
-    // ── Curva ABC (regras de negócio) ─────────────────────────────────────
-    // A: > 3 compras E >= R$3.000 · B: <= 2 compras E >= R$2.000 · C: restante
+    // ── Curva ABC (baseada em score RFM — classificacao ja feita acima) ──
+    // A: Score 14-15  ·  B: Score 12-13 ou M=5  ·  C: restante
     var abcStats = {
       A: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
       B: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
       C: { count: 0, revenue: 0, totalOrders: 0, minTicket: Infinity, maxTicket: 0, gapSum: 0, gapCount: 0 },
     };
     clientList.forEach(function(c) {
-      var cls;
-      if      (c.numOrders >= 10 && c.totalSpent >= 10000) cls = 'A';
-      else if (c.numOrders >= 5  && c.totalSpent >= 5000)  cls = 'B';
-      else                                                cls = 'C';
-      c.abcClass = cls;
-      var st = abcStats[cls];
+      var st = abcStats[c.abcClass];
       st.count++;
       st.revenue     += c.totalSpent;
       st.totalOrders += c.numOrders;
@@ -195,11 +211,11 @@ function getClientesData(params) {
 
     var abcTotal = clientList.reduce(function(s, c) { return s + c.totalSpent; }, 0);
 
-    // Subgrupos de VIP (Classe A) por recência
-    var vipA = clientList.filter(function(c) { return c.abcClass === 'A'; });
+    // Subgrupos de VIP (Classe A) por recencia — alinhado com segmentos RFM
+    var vipA       = clientList.filter(function(c) { return c.abcClass === 'A'; });
     var vipAtivos   = vipA.filter(function(c) { return c.recency <= 180; });
-    var vipTrabalho = vipA.filter(function(c) { return c.recency > 180 && c.recency <= 540; });
-    var vipPerdidos = vipA.filter(function(c) { return c.recency > 540; });
+    var vipTrabalho = vipA.filter(function(c) { return c.recency > 180 && c.recency <= 365; });
+    var vipPerdidos = vipA.filter(function(c) { return c.recency > 365; });
     function subGroup(list) {
       var rev     = list.reduce(function(s, c) { return s + c.totalSpent; }, 0);
       var orders  = list.reduce(function(s, c) { return s + c.numOrders; }, 0);
