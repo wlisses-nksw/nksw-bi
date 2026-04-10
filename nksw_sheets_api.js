@@ -1055,8 +1055,12 @@ function parseMonthKey(h) {
     : String(h).trim();
   if (!s) return null;
   if (/^\d{4}-\d{2}$/.test(s)) return s;
+  // MM/YYYY ou MM-YYYY (ano 4 dígitos)
   var m = s.match(/^(\d{1,2})[\/\-](\d{4})$/);
   if (m) return m[2] + '-' + ('0' + m[1]).slice(-2);
+  // MM/YY ou MM-YY (ano 2 dígitos, ex: 01/25 → 2025-01)
+  m = s.match(/^(\d{1,2})[\/\-](\d{2})$/);
+  if (m) return '20' + m[2] + '-' + ('0' + m[1]).slice(-2);
   var ptM = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   var enM = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
   m = s.toLowerCase().match(/^([a-záéíóúãõ]+)[\/\-\s](\d{2,4})$/);
