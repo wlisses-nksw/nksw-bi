@@ -1072,6 +1072,7 @@ function getEstoque() {
     curvaAB.forEach(function(p) { p.statusEst = statusEst(p); });
 
     return {
+      ok: true,
       resumo: {
         total:        produtos.length,
         totalA:       curvaA.length,
@@ -1081,6 +1082,7 @@ function getEstoque() {
         criticos:     criticos.length,
         threshold:    LIMITE,
       },
+      todos:      produtos,
       curvaAB:    curvaAB,
       semEstoque: semEstoque,
       estBaixo:   estBaixo,
