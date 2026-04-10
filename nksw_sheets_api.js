@@ -1081,7 +1081,7 @@ function getEstoque() {
         estoque: estoque,
         totalVendas: Math.round(tvend),
         vendas6m:    Math.round(v6m),
-        vm:          vm,
+        _vm:         vm,   // temporário — só usado para montar rankData, não vai para todos
       });
     });
 
@@ -1122,15 +1122,14 @@ function getEstoque() {
           tecido:  p.tecido,
           colecao: p.colecao,
           curva:   p.curva,
-          vm:      p.vm.slice(),
+          vm:      p._vm.slice(),
         };
       } else {
         var e = rankMap[key];
-        // Melhor curva entre as variantes
         if ((curvaOrder[p.curva] || 0) > (curvaOrder[e.curva] || 0)) e.curva = p.curva;
-        // Soma vendas mensais de todas as variantes
-        p.vm.forEach(function(v, i) { e.vm[i] = (e.vm[i] || 0) + v; });
+        p._vm.forEach(function(v, i) { e.vm[i] = (e.vm[i] || 0) + v; });
       }
+      delete p._vm; // remove campo temporário do objeto todos
     });
     var rankData = Object.keys(rankMap).map(function(k) { return rankMap[k]; });
 
