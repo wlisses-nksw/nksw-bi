@@ -3641,20 +3641,31 @@ function _renderSelloutRankings() {
   var period   = _selloutActivePeriod();
   var startKey = period[0], endKey = period[1];
 
-  // Índices das colunas mensais no período (só quando rankData disponível)
+  // Índices das colunas mensais no período
   var activeIdx = [];
   _estoqueMesesKeys.forEach(function(k, i) { if (k && k >= startKey && k <= endKey) activeIdx.push(i); });
 
-  var subEl = document.getElementById('selloutPeriodSub');
-  if (subEl) {
-    subEl.textContent = hasRankData && activeIdx.length
-      ? 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey)
-      : hasRankData && _estoqueMesesKeys.length
-        ? 'Sem dados para o período selecionado'
-        : hasRankData
-          ? 'Reimplante o Apps Script para filtro por período'
-          : 'Últimos 6 meses · reimplante o Apps Script para filtro por período';
+  // Se período selecionado não tem dados mas há mesesKeys disponíveis,
+  // usa o último mês disponível como fallback para não mostrar tela vazia
+  var fallbackKey = '';
+  if (hasRankData && _estoqueMesesKeys.length && !activeIdx.length) {
+    for (var fi = _estoqueMesesKeys.length - 1; fi >= 0; fi--) {
+      if (_estoqueMesesKeys[fi]) { fallbackKey = _estoqueMesesKeys[fi]; activeIdx = [fi]; break; }
+    }
   }
+
+  var subLabel = '';
+  if (hasRankData && activeIdx.length && !fallbackKey) {
+    subLabel = 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey);
+  } else if (hasRankData && activeIdx.length && fallbackKey) {
+    subLabel = 'Unidades vendidas · ' + fallbackKey + ' (último mês disponível)';
+  } else if (hasRankData) {
+    subLabel = 'Reimplante o Apps Script para filtro por período';
+  } else {
+    subLabel = 'Últimos 6 meses · reimplante o Apps Script para filtro por período';
+  }
+  var subEl = document.getElementById('selloutPeriodSub');
+  if (subEl) subEl.textContent = subLabel;
 
   var byProduto = {}, byColecao = {}, byTecido = {}, byTipo = {};
 
@@ -3663,13 +3674,11 @@ function _renderSelloutRankings() {
     _estoqueRankData.forEach(function(p) {
       var qtd = 0;
       if (activeIdx.length) {
-        // Período filtrado: soma apenas os índices mensais correspondentes
         activeIdx.forEach(function(i) { qtd += (p.vm && p.vm[i]) ? p.vm[i] : 0; });
-      } else if (!_estoqueMesesKeys.length) {
-        // mesesKeys ainda não disponível (GAS não reimplantado): soma tudo como último recurso
+      } else {
+        // mesesKeys vazio (GAS não reimplantado): soma tudo como último recurso
         if (p.vm) p.vm.forEach(function(v) { qtd += v || 0; });
       }
-      // Se mesesKeys existe mas nenhum mês bate com o período → qtd=0 → "Sem dados"
       if (!qtd) return;
       var nome = p.nome || p.codigo || '?';
       byProduto[nome] = (byProduto[nome] || 0) + qtd;
