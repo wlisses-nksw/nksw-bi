@@ -3289,12 +3289,18 @@ async function fetchSheets(section, extraParams, dateOverride) {
     if (staticData && staticData.ok) return staticData;
   }
 
-  // 2. Cache localStorage
+  // 2. Cache localStorage — background refresh via JSON estático (evita Apps Script)
   var cached = getCache(cacheKey);
   if (cached) {
-    fetch(url + '?' + qs).then(function(r){ return r.json(); })
-      .then(function(fresh){ if (fresh && fresh.ok) saveCache(cacheKey, fresh); })
-      .catch(function(){});
+    if (!dateOverride && !extraParams && isCurrentMonth()) {
+      fetchStaticJSON(section).then(function(fresh) {
+        if (fresh && fresh.ok) saveCache(cacheKey, fresh);
+      });
+    } else {
+      fetch(url + '?' + qs).then(function(r){ return r.json(); })
+        .then(function(fresh){ if (fresh && fresh.ok) saveCache(cacheKey, fresh); })
+        .catch(function(){});
+    }
     return cached;
   }
 
