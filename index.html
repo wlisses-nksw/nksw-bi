@@ -1071,6 +1071,14 @@ tbody tr:hover{background:#fafafa}
         </table>
       </div>
 
+      <!-- Curva ABC -->
+      <div class="section-header" style="margin-top:8px">
+        <div><div class="section-title">Curva ABC de Clientes</div><div class="section-sub">Classificação por valor total gasto — A: 80% da receita · B: 15% · C: 5%</div></div>
+      </div>
+      <div id="abcGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+        <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:24px 20px">Carregando classificação ABC...</div>
+      </div>
+
       <!-- Cohort -->
       <div class="section-header">
         <div><div class="section-title">Análise de Cohort</div><div class="section-sub">Retenção por safra — % clientes que recompraram nos meses seguintes</div></div>
@@ -2842,15 +2850,26 @@ function renderClientes() {
 }
 
 /* ===== COHORT FILTERS ===== */
-var cohortMonths = 4;
-var cohortMetric = 'clientes';
-var _cohortData  = null;
+var cohortMonths    = 4;
+var cohortMetric    = 'clientes';
+var _cohortData     = null;
+var _cohortRawData  = null; // dados completos (24 meses) para re-slice client-side
 
 function onCohortFilterChange() {
   var mSel = document.getElementById('cohortMonthsSel');
   var tSel = document.getElementById('cohortMetricSel');
   cohortMonths = mSel ? (parseInt(mSel.value) || 4) : 4;
   cohortMetric = tSel ? (tSel.value || 'clientes') : 'clientes';
+
+  // Re-renderiza client-side se dados disponíveis — sem nova requisição
+  if (_cohortRawData) {
+    var sliced = _cohortRawData.map(function(c) {
+      return Object.assign({}, c, { m: c.m ? c.m.slice(0, cohortMonths) : [] });
+    });
+    renderCohortTable(sliced);
+    return;
+  }
+
   if (getSheetsUrl()) {
     loadClientesPage();
   } else if (_cohortData) {
@@ -2926,24 +2945,17 @@ async function loadClientesPage() {
   try {
     var d = null;
 
-    // 1. Cache estático GitHub Actions (~20ms) — gerado com cohortMonths=24
-    //    Fatia client-side para o número de colunas selecionado
+    // 1. Cache estático GitHub Actions (~20ms) — tem 24 meses completos
     if (isCurrentMonth()) {
       var staticData = await fetchStaticJSON('clientes');
       if (staticData && staticData.clientes) {
         d = JSON.parse(JSON.stringify(staticData.clientes));
-        if (d.cohort) {
-          d.cohort = d.cohort.map(function(c) {
-            return Object.assign({}, c, { m: c.m ? c.m.slice(0, cohortMonths) : [] });
-          });
-        }
       }
     }
 
-    // 2. Fallback: Apps Script direto (período histórico ou cache expirado)
+    // 2. Fallback: Apps Script sempre com 24 meses, fatia client-side
     if (!d) {
-      var followUp = cohortMonths - 1;
-      var data = await fetchSheets('clientes', 'cohortMonths=' + followUp);
+      var data = await fetchSheets('clientes', 'cohortMonths=23');
       if (data && data.clientes) d = data.clientes;
     }
 
@@ -2960,6 +2972,17 @@ async function loadClientesPage() {
         });
       });
     }
+
+    // Guarda cohort completo (24 meses + Meta) para re-slice client-side ao mudar filtro
+    _cohortRawData = d.cohort ? JSON.parse(JSON.stringify(d.cohort)) : null;
+
+    // Faz slice para exibição conforme filtro atual
+    if (d.cohort) {
+      d.cohort = d.cohort.map(function(c) {
+        return Object.assign({}, c, { m: c.m ? c.m.slice(0, cohortMonths) : [] });
+      });
+    }
+
     applyClientesData(d);
   } catch(e) {
     console.warn('loadClientesPage error:', e.message);
@@ -3737,6 +3760,44 @@ function applyClientesData(d) {
           '<td>' + fmtBRL(ticket) + '</td>' +
           '<td style="font-size:12px;color:#6b7280">' + (r.acao || '—') + '</td>' +
           '</tr>';
+      }).join('');
+    }
+  }
+
+  // ── Curva ABC ──
+  if (d.abc && d.abc.length) {
+    var abcGrid = document.getElementById('abcGrid');
+    if (abcGrid) {
+      var abcCfg = {
+        A: { icon: '💎', label: 'VIP',      border: '#f59e0b', bg: '#fffbeb', badgeColor: '#92400e' },
+        B: { icon: '🌟', label: 'Regular',  border: '#3b82f6', bg: '#eff6ff', badgeColor: '#1e40af' },
+        C: { icon: '👤', label: 'Ocasional',border: '#9ca3af', bg: '#f9fafb', badgeColor: '#374151' },
+      };
+      abcGrid.innerHTML = d.abc.map(function(cls) {
+        var cfg = abcCfg[cls.classe] || abcCfg['C'];
+        var vipLine = cls.classe === 'A'
+          ? '<div style="margin-top:10px;font-size:11px;display:flex;gap:12px">' +
+              '<span style="color:#16a34a;font-weight:600">● ' + cls.aAtivos + ' ativos</span>' +
+              '<span style="color:#dc2626;font-weight:600">⚠ ' + cls.aRisco + ' em risco</span>' +
+            '</div>'
+          : '';
+        return '<div class="kpi-card" style="border-left:4px solid ' + cfg.border + ';background:' + cfg.bg + '">' +
+          '<div class="kpi-header">' +
+            '<span class="kpi-icon">' + cfg.icon + '</span>' +
+            '<span class="kpi-label">Classe ' + cls.classe + ' — ' + cfg.label + '</span>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin:10px 0 6px">' +
+            '<div><div class="kpi-value" style="font-size:26px;line-height:1">' + fmtNum(cls.count) + '</div>' +
+            '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + cls.pctCount + '% dos clientes</div></div>' +
+            '<div style="text-align:right"><div style="font-size:17px;font-weight:700;color:#111">' + fmtBRL(cls.revenue) + '</div>' +
+            '<div style="font-size:11px;color:#6b7280">' + cls.pctRevenue + '% da receita</div></div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:#6b7280;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px">' +
+            'Ticket médio: <strong>' + fmtBRL(cls.ticketMedio) + '</strong>' +
+            ' &nbsp;·&nbsp; Range: ' + fmtBRL(cls.minTicket) + ' – ' + fmtBRL(cls.maxTicket) +
+          '</div>' +
+          vipLine +
+        '</div>';
       }).join('');
     }
   }

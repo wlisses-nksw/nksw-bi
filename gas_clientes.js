@@ -168,6 +168,45 @@ function getClientesData(params) {
       })
       .sort(function(a, b) { return b.receita - a.receita; });
 
+    // ── Curva ABC ─────────────────────────────────────────────────────────
+    var sortedByValue = clientList.slice().sort(function(a, b) { return b.totalSpent - a.totalSpent; });
+    var abcTotal = sortedByValue.reduce(function(s, c) { return s + c.totalSpent; }, 0);
+    var abcStats = {
+      A: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
+      B: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
+      C: { count: 0, revenue: 0, minTicket: Infinity, maxTicket: 0 },
+    };
+    var cumRev = 0;
+    sortedByValue.forEach(function(c) {
+      cumRev += c.totalSpent;
+      var cumPct = abcTotal > 0 ? cumRev / abcTotal : 1;
+      c.abcClass = cumPct <= 0.80 ? 'A' : cumPct <= 0.95 ? 'B' : 'C';
+      var st = abcStats[c.abcClass];
+      st.count++;
+      st.revenue += c.totalSpent;
+      if (c.totalSpent > 0) {
+        st.minTicket = Math.min(st.minTicket, c.totalSpent);
+        st.maxTicket = Math.max(st.maxTicket, c.totalSpent);
+      }
+    });
+    var aAtivos = sortedByValue.filter(function(c) { return c.abcClass === 'A' && c.recency <= 180; }).length;
+    var aRisco  = sortedByValue.filter(function(c) { return c.abcClass === 'A' && c.recency > 180; }).length;
+    var abc = ['A', 'B', 'C'].map(function(cls) {
+      var st = abcStats[cls];
+      return {
+        classe:     cls,
+        count:      st.count,
+        revenue:    Math.round(st.revenue),
+        pctCount:   total > 0 ? Math.round(st.count / total * 100) : 0,
+        pctRevenue: abcTotal > 0 ? Math.round(st.revenue / abcTotal * 100) : 0,
+        ticketMedio: st.count > 0 ? Math.round(st.revenue / st.count) : 0,
+        minTicket:  st.minTicket === Infinity ? 0 : Math.round(st.minTicket),
+        maxTicket:  Math.round(st.maxTicket),
+        aAtivos:    cls === 'A' ? aAtivos : null,
+        aRisco:     cls === 'A' ? aRisco  : null,
+      };
+    });
+
     // ── Cohort Analysis ───────────────────────────────────────────────────
     var MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     var cohortMap = {};
@@ -227,6 +266,7 @@ function getClientesData(params) {
         },
         rfm:    rfm,
         cohort: cohort,
+        abc:    abc,
       },
     };
 
