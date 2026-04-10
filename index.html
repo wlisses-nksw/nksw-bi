@@ -1531,7 +1531,7 @@ function goTo(page, el) {
   updateTopbar(page);
   if (page === 'metas')    renderGoals();
   if (page === 'admin')    loadUsersTable();
-  if (page === 'produtos' && !_estoqueLoaded) loadEstoquePage();
+  if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
 }
 
 function updateTopbar(page) {
