@@ -2851,17 +2851,21 @@ function onCohortFilterChange() {
   var tSel = document.getElementById('cohortMetricSel');
   cohortMonths = mSel ? (parseInt(mSel.value) || 4) : 4;
   cohortMetric = tSel ? (tSel.value || 'clientes') : 'clientes';
-  if (_cohortData) renderCohortTable(_cohortData);
+  if (getSheetsUrl()) {
+    loadClientesPage();
+  } else if (_cohortData) {
+    renderCohortTable(_cohortData);
+  }
 }
 
 function renderCohortTable(cohortArr) {
   _cohortData = cohortArr;
-  var n = cohortMonths; // total month cols including Mês 0
+  var n = cohortMonths;
 
   // Update thead
   var thead = document.getElementById('cohortThead');
   if (thead) {
-    var ths = '<th>Safra</th><th>Clientes</th><th>Receita</th>';
+    var ths = '<th>Safra</th><th>CAC</th><th>Clientes</th><th>Receita</th><th>Gasto</th>';
     for (var i = 0; i < n; i++) ths += '<th>Mês ' + i + '</th>';
     thead.innerHTML = '<tr>' + ths + '</tr>';
   }
@@ -2878,13 +2882,88 @@ function renderCohortTable(cohortArr) {
         mCells += '<td><span class="cohort-cell" style="' + cohortStyle(v) + '">' + v + '%</span></td>';
       }
     }
+    var cacTxt   = (c.cac  > 0) ? fmtBRL(c.cac)  : '—';
+    var gastoTxt = (c.gasto > 0) ? fmtBRL(c.gasto) : '—';
     return '<tr>' +
       '<td><strong>' + c.safra + '</strong></td>' +
+      '<td style="color:#6b7280">' + cacTxt + '</td>' +
       '<td>' + fmtNum(c.clientes) + '</td>' +
       '<td>' + fmtBRL(c.receita) + '</td>' +
+      '<td style="color:#6b7280">' + gastoTxt + '</td>' +
       mCells +
       '</tr>';
   }).join('');
+}
+
+/* ===== CLIENTES PAGE LOADER ===== */
+async function fetchMetaMonthlySpend() {
+  try {
+    var today  = new Date();
+    var since  = new Date(today.getFullYear(), today.getMonth() - 13, 1);
+    var pad    = function(n){ return String(n).padStart(2,'0'); };
+    var sinceS = since.getFullYear() + '-' + pad(since.getMonth()+1) + '-01';
+    var untilS = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+    var path   = '/' + META_ACCOUNT + '/insights?fields=spend&time_increment=1'
+               + '&time_range={"since":"' + sinceS + '","until":"' + untilS + '"}';
+    var data   = await metaFetch(path);
+    var MESES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    var map = {};
+    if (data && data.data) {
+      data.data.forEach(function(d) {
+        var dt  = new Date(d.date_start + 'T00:00:00');
+        var key = MESES_PT[dt.getMonth()] + '. ' + dt.getFullYear();
+        map[key] = (map[key] || 0) + parseFloat(d.spend || 0);
+      });
+    }
+    return map;
+  } catch(e) {
+    return {};
+  }
+}
+
+async function loadClientesPage() {
+  if (!getSheetsUrl()) return;
+  try {
+    var d = null;
+
+    // 1. Cache estático GitHub Actions (~20ms) — gerado com cohortMonths=24
+    //    Fatia client-side para o número de colunas selecionado
+    if (isCurrentMonth()) {
+      var staticData = await fetchStaticJSON('clientes');
+      if (staticData && staticData.clientes) {
+        d = JSON.parse(JSON.stringify(staticData.clientes));
+        if (d.cohort) {
+          d.cohort = d.cohort.map(function(c) {
+            return Object.assign({}, c, { m: c.m ? c.m.slice(0, cohortMonths) : [] });
+          });
+        }
+      }
+    }
+
+    // 2. Fallback: Apps Script direto (período histórico ou cache expirado)
+    if (!d) {
+      var followUp = cohortMonths - 1;
+      var data = await fetchSheets('clientes', 'cohortMonths=' + followUp);
+      if (data && data.clientes) d = data.clientes;
+    }
+
+    if (!d) return;
+
+    // Cruza gasto Meta Ads nas safras
+    var monthlySpend = await fetchMetaMonthlySpend();
+    if (d.cohort && Object.keys(monthlySpend).length) {
+      d.cohort = d.cohort.map(function(c) {
+        var spend = monthlySpend[c.safra] || 0;
+        return Object.assign({}, c, {
+          gasto: Math.round(spend * 100) / 100,
+          cac:   (c.clientes > 0 && spend > 0) ? Math.round(spend / c.clientes * 100) / 100 : 0,
+        });
+      });
+    }
+    applyClientesData(d);
+  } catch(e) {
+    console.warn('loadClientesPage error:', e.message);
+  }
 }
 
 function cohortStyle(v) {
@@ -3276,7 +3355,7 @@ async function loadAllSheetsData() {
   var otherSections = [
     { key: 'produtos',  apply: function(d){ if(d.produtos)  applyProdutosData(d.produtos);   } },
     { key: 'pedidos',   apply: function(d){ if(d.pedidos)   applyPedidosData(d.pedidos);     } },
-    { key: 'clientes',  apply: function(d){ if(d.clientes)  applyClientesData(d.clientes);   } },
+    // clientes carregado separado via loadClientesPage() com param cohortMonths + Meta spend
     { key: 'logistica', apply: function(d){ if(d.logistica) applyLogisticaData(d.logistica); } },
   ];
   for (var i = 0; i < otherSections.length; i++) {
@@ -3290,7 +3369,8 @@ async function loadAllSheetsData() {
   }
   setSheetsStatus(anyOk, anyOk ? 'Planilhas ✓' : null);
 
-  // Carrega evolução mensal do ano completo (independente do período selecionado)
+  // Carrega clientes (com cohortMonths + Meta Ads spend) e evolução anual
+  loadClientesPage();
   loadVendasEvolution();
 }
 
