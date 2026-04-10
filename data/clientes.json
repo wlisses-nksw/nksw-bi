@@ -15,6 +15,7 @@
         "base": 4587,
         "pedidos": 12737,
         "receita": 9218580,
+        "racional": "Alto valor e alta fidelidade — potencial de Champions com o estímulo certo",
         "acao": "Tratamento exclusivo & upsell premium"
       },
       {
@@ -22,6 +23,7 @@
         "base": 15986,
         "pedidos": 18920,
         "receita": 6565901,
+        "racional": "Muito tempo sem comprar e baixo engajamento — avaliar custo x benefício de reativar",
         "acao": "Win-back agressivo ou limpeza da base"
       },
       {
@@ -29,6 +31,7 @@
         "base": 1022,
         "pedidos": 3294,
         "receita": 712634,
+        "racional": "Foram bons clientes mas estão sumindo — janela de reativação fechando",
         "acao": "Campanha de reativação urgente"
       },
       {
@@ -36,6 +39,7 @@
         "base": 829,
         "pedidos": 905,
         "receita": 517168,
+        "racional": "Compraram algumas vezes e pararam — difíceis de reativar sem estímulo forte",
         "acao": "Desconto exclusivo de reativação"
       },
       {
@@ -43,6 +47,7 @@
         "base": 87,
         "pedidos": 650,
         "receita": 343192,
+        "racional": "Compram muito, frequentemente e de forma recente — núcleo do negócio",
         "acao": "Programa fidelidade & embaixadores"
       },
       {
@@ -50,6 +55,7 @@
         "base": 408,
         "pedidos": 408,
         "receita": 217230,
+        "racional": "Primeira compra recente — vão decidir se viram fiéis ou somem",
         "acao": "Boas-vindas & onboarding por email"
       },
       {
@@ -57,6 +63,7 @@
         "base": 103,
         "pedidos": 206,
         "receita": 78172,
+        "racional": "Fizeram 2ª compra recentemente — janela de oportunidade para fidelizar",
         "acao": "Incentivar 2ª compra com oferta especial"
       },
       {
@@ -64,6 +71,7 @@
         "base": 27,
         "pedidos": 85,
         "receita": 23288,
+        "racional": "Compram com regularidade — base sólida de receita recorrente",
         "acao": "Programa de pontos & recompensa"
       }
     ],
@@ -514,39 +522,54 @@
     "abc": [
       {
         "classe": "A",
-        "count": 10968,
-        "revenue": 14140540,
-        "pctCount": 48,
-        "pctRevenue": 80,
-        "ticketMedio": 1289,
-        "minTicket": 516,
+        "count": 13,
+        "revenue": 206781,
+        "pctCount": 0,
+        "pctRevenue": 1,
+        "ticketMedio": 741,
+        "avgDaysBetween": 93,
+        "minTicket": 10669,
         "maxTicket": 32775,
-        "aAtivos": 2257,
-        "aRisco": 8711
+        "vipAtivos": {
+          "count": 6,
+          "revenue": 79087,
+          "avgRecency": 67,
+          "ticketMedio": 688
+        },
+        "vipTrabalho": {
+          "count": 3,
+          "revenue": 43595,
+          "avgRecency": 286,
+          "ticketMedio": 632
+        },
+        "vipPerdidos": {
+          "count": 4,
+          "revenue": 84099,
+          "avgRecency": 1201,
+          "ticketMedio": 885
+        }
       },
       {
         "classe": "B",
-        "count": 7066,
-        "revenue": 2651600,
-        "pctCount": 31,
-        "pctRevenue": 15,
-        "ticketMedio": 375,
-        "minTicket": 248,
-        "maxTicket": 516,
-        "aAtivos": null,
-        "aRisco": null
+        "count": 115,
+        "revenue": 785020,
+        "pctCount": 0,
+        "pctRevenue": 4,
+        "ticketMedio": 815,
+        "avgDaysBetween": 149,
+        "minTicket": 5008,
+        "maxTicket": 17908
       },
       {
         "classe": "C",
-        "count": 5015,
-        "revenue": 884025,
-        "pctCount": 22,
-        "pctRevenue": 5,
-        "ticketMedio": 176,
+        "count": 22921,
+        "revenue": 16684364,
+        "pctCount": 99,
+        "pctRevenue": 94,
+        "ticketMedio": 464,
+        "avgDaysBetween": 274,
         "minTicket": 1,
-        "maxTicket": 248,
-        "aAtivos": null,
-        "aRisco": null
+        "maxTicket": 13007
       }
     ]
   },
@@ -555,7 +578,7 @@
     "fim": "2026-04-10",
     "label": "custom"
   },
-  "generated_at": "2026-04-10T14:33:29Z",
+  "generated_at": "2026-04-10T17:36:49Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-10"
