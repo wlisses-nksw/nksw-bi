@@ -3289,6 +3289,18 @@ function getCache(key) {
   } catch(e) { return null; }
 }
 
+// Verifica se o JSON estático cobre todo o período solicitado pelo usuário
+function coversRequestedPeriod(staticData) {
+  try {
+    if (!staticData || !staticData.period) return false;
+    var sStart   = new Date(staticData.period.start + 'T00:00:00Z');
+    var sEnd     = new Date(staticData.period.end   + 'T23:59:59Z');
+    var reqStart = new Date((customStart || '') + 'T00:00:00Z');
+    var reqEnd   = new Date((customEnd || new Date().toISOString().slice(0,10)) + 'T23:59:59Z');
+    return sStart <= reqStart && sEnd >= reqEnd;
+  } catch(e) { return false; }
+}
+
 async function fetchSheets(section, extraParams, dateOverride) {
   var url = getSheetsUrl();
   if (!url) throw new Error('URL não configurada');
@@ -3302,7 +3314,7 @@ async function fetchSheets(section, extraParams, dateOverride) {
   if (!dateOverride && !extraParams) {
     var _mk = isCurrentMonth() ? null : getSelectedMonthKey();
     var staticData = await fetchStaticJSON(section, _mk);
-    if (staticData && staticData.ok) return staticData;
+    if (staticData && staticData.ok && coversRequestedPeriod(staticData)) return staticData;
   }
 
   // 2. Cache localStorage — background refresh via JSON estático (evita Apps Script)
@@ -3311,7 +3323,7 @@ async function fetchSheets(section, extraParams, dateOverride) {
     if (!dateOverride && !extraParams) {
       var _mk2 = isCurrentMonth() ? null : getSelectedMonthKey();
       fetchStaticJSON(section, _mk2).then(function(fresh) {
-        if (fresh && fresh.ok) saveCache(cacheKey, fresh);
+        if (fresh && fresh.ok && coversRequestedPeriod(fresh)) saveCache(cacheKey, fresh);
       });
     } else {
       fetch(url + '?' + qs).then(function(r){ return r.json(); })
