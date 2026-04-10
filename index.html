@@ -2931,16 +2931,17 @@ async function fetchMetaMonthlySpend() {
     var pad    = function(n){ return String(n).padStart(2,'0'); };
     var sinceS = since.getFullYear() + '-' + pad(since.getMonth()+1) + '-01';
     var untilS = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
-    var path   = '/' + META_ACCOUNT + '/insights?fields=spend&time_increment=1'
-               + '&time_range={"since":"' + sinceS + '","until":"' + untilS + '"}';
-    var data   = await metaFetch(path);
+    // time_increment=monthly → 1 registro por mês, sem paginação (vs diário que pagina em 25)
+    var path = '/' + META_ACCOUNT + '/insights?fields=spend&time_increment=monthly'
+             + '&time_range={"since":"' + sinceS + '","until":"' + untilS + '"}&limit=24';
+    var data = await metaFetch(path);
     var MESES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     var map = {};
     if (data && data.data) {
       data.data.forEach(function(d) {
         var dt  = new Date(d.date_start + 'T00:00:00');
         var key = MESES_PT[dt.getMonth()] + '. ' + dt.getFullYear();
-        map[key] = (map[key] || 0) + parseFloat(d.spend || 0);
+        map[key] = parseFloat(d.spend || 0);
       });
     }
     return map;
