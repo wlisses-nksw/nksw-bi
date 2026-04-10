@@ -1490,8 +1490,9 @@ function goTo(page, el) {
   if (pg) pg.classList.add('active');
   if (el) el.classList.add('active');
   updateTopbar(page);
-  if (page === 'metas') renderGoals();
-  if (page === 'admin') loadUsersTable();
+  if (page === 'metas')    renderGoals();
+  if (page === 'admin')    loadUsersTable();
+  if (page === 'produtos' && !_estoqueLoaded) loadEstoquePage();
 }
 
 function updateTopbar(page) {
