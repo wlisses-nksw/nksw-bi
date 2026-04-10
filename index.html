@@ -1071,14 +1071,6 @@ tbody tr:hover{background:#fafafa}
         </table>
       </div>
 
-      <!-- Curva ABC -->
-      <div class="section-header" style="margin-top:8px">
-        <div><div class="section-title">Curva ABC de Clientes</div><div class="section-sub">Classificação por valor total gasto — A: 80% da receita · B: 15% · C: 5%</div></div>
-      </div>
-      <div id="abcGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
-        <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:24px 20px">Carregando classificação ABC...</div>
-      </div>
-
       <!-- Cohort -->
       <div class="section-header">
         <div><div class="section-title">Análise de Cohort</div><div class="section-sub">Retenção por safra — % clientes que recompraram nos meses seguintes</div></div>
@@ -1104,6 +1096,23 @@ tbody tr:hover{background:#fafafa}
           <thead id="cohortThead"><tr><th>Safra</th><th>CAC</th><th>Clientes</th><th>Receita</th><th>Gasto</th><th>Mês 0</th><th>Mês 1</th><th>Mês 2</th><th>Mês 3</th></tr></thead>
           <tbody id="cohortBody"></tbody>
         </table>
+      </div>
+
+      <!-- Curva ABC + Painel de Decisão VIP -->
+      <div class="section-header" style="margin-top:32px">
+        <div><div class="section-title">Curva ABC — Painel de Decisão</div><div class="section-sub">Distribuição de receita por classe · Ação recomendada para cada grupo VIP</div></div>
+      </div>
+
+      <!-- Resumo ABC (3 classes) -->
+      <div id="abcGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+        <div class="kpi-card" style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:24px 20px">Carregando classificação ABC...</div>
+      </div>
+
+      <!-- Painel VIP: 3 grupos de ação -->
+      <div id="vipActionPanel" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:#6b7280;letter-spacing:.08em;margin-bottom:12px;text-transform:uppercase">Classe A — Plano de Ação por Recência</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:8px" id="vipCards"></div>
+        <div style="font-size:11px;color:#9ca3af;margin-top:4px">Recência: VIP Ativos ≤ 180 dias · Trabalhar Agora 181–540 dias · VIP Perdidos > 540 dias</div>
       </div>
     </div>
 
@@ -3769,36 +3778,79 @@ function applyClientesData(d) {
     var abcGrid = document.getElementById('abcGrid');
     if (abcGrid) {
       var abcCfg = {
-        A: { icon: '💎', label: 'VIP',      border: '#f59e0b', bg: '#fffbeb', badgeColor: '#92400e' },
-        B: { icon: '🌟', label: 'Regular',  border: '#3b82f6', bg: '#eff6ff', badgeColor: '#1e40af' },
-        C: { icon: '👤', label: 'Ocasional',border: '#9ca3af', bg: '#f9fafb', badgeColor: '#374151' },
+        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb' },
+        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff' },
+        C: { icon: '👤', label: 'Ocasional', border: '#9ca3af', bg: '#f9fafb' },
       };
       abcGrid.innerHTML = d.abc.map(function(cls) {
         var cfg = abcCfg[cls.classe] || abcCfg['C'];
-        var vipLine = cls.classe === 'A'
-          ? '<div style="margin-top:10px;font-size:11px;display:flex;gap:12px">' +
-              '<span style="color:#16a34a;font-weight:600">● ' + cls.aAtivos + ' ativos</span>' +
-              '<span style="color:#dc2626;font-weight:600">⚠ ' + cls.aRisco + ' em risco</span>' +
-            '</div>'
-          : '';
+        // Barra de progresso visual para % de receita
+        var barW = cls.pctRevenue || 0;
         return '<div class="kpi-card" style="border-left:4px solid ' + cfg.border + ';background:' + cfg.bg + '">' +
-          '<div class="kpi-header">' +
-            '<span class="kpi-icon">' + cfg.icon + '</span>' +
-            '<span class="kpi-label">Classe ' + cls.classe + ' — ' + cfg.label + '</span>' +
-          '</div>' +
+          '<div class="kpi-header"><span class="kpi-icon">' + cfg.icon + '</span>' +
+            '<span class="kpi-label">Classe ' + cls.classe + ' — ' + cfg.label + '</span></div>' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin:10px 0 6px">' +
-            '<div><div class="kpi-value" style="font-size:26px;line-height:1">' + fmtNum(cls.count) + '</div>' +
-            '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + cls.pctCount + '% dos clientes</div></div>' +
-            '<div style="text-align:right"><div style="font-size:17px;font-weight:700;color:#111">' + fmtBRL(cls.revenue) + '</div>' +
-            '<div style="font-size:11px;color:#6b7280">' + cls.pctRevenue + '% da receita</div></div>' +
+            '<div><div class="kpi-value" style="font-size:24px;line-height:1">' + fmtNum(cls.count) + '</div>' +
+              '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + cls.pctCount + '% dos clientes</div></div>' +
+            '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:#111">' + fmtBRL(cls.revenue) + '</div>' +
+              '<div style="font-size:11px;color:#6b7280">' + cls.pctRevenue + '% da receita</div></div>' +
           '</div>' +
-          '<div style="font-size:11px;color:#6b7280;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px">' +
-            'Ticket médio: <strong>' + fmtBRL(cls.ticketMedio) + '</strong>' +
-            ' &nbsp;·&nbsp; Range: ' + fmtBRL(cls.minTicket) + ' – ' + fmtBRL(cls.maxTicket) +
+          '<div style="background:#e5e7eb;border-radius:4px;height:6px;margin:8px 0">' +
+            '<div style="background:' + cfg.border + ';width:' + barW + '%;height:6px;border-radius:4px"></div>' +
           '</div>' +
-          vipLine +
+          '<div style="font-size:11px;color:#6b7280">Ticket médio: <strong>' + fmtBRL(cls.ticketMedio) + '</strong>' +
+            ' · Range: ' + fmtBRL(cls.minTicket) + ' – ' + fmtBRL(cls.maxTicket) + '</div>' +
         '</div>';
       }).join('');
+    }
+
+    // Painel de ação VIP (subgrupos da Classe A)
+    var clsA = d.abc.find(function(c) { return c.classe === 'A'; });
+    var vipPanel = document.getElementById('vipActionPanel');
+    var vipCards = document.getElementById('vipCards');
+    if (clsA && clsA.vipAtivos && vipPanel && vipCards) {
+      var vipCfg = [
+        {
+          key: 'vipAtivos', icon: '💎', title: 'VIP Ativos',
+          color: '#16a34a', bg: '#f0fdf4', border: '#16a34a',
+          tag: '≤ 180 dias', tagColor: '#15803d',
+          acao: 'Manter relacionamento, upsell e programa VIP exclusivo.',
+          urgencia: 'MANTER',  urgBg: '#dcfce7', urgColor: '#15803d',
+        },
+        {
+          key: 'vipTrabalho', icon: '⚡', title: 'Trabalhar Agora',
+          color: '#d97706', bg: '#fffbeb', border: '#f59e0b',
+          tag: '181–540 dias', tagColor: '#92400e',
+          acao: 'Campanha personalizada: WhatsApp, gift, oferta exclusiva.',
+          urgencia: 'URGENTE',  urgBg: '#fef3c7', urgColor: '#92400e',
+        },
+        {
+          key: 'vipPerdidos', icon: '🔴', title: 'VIP Perdidos',
+          color: '#dc2626', bg: '#fff5f5', border: '#ef4444',
+          tag: '> 540 dias', tagColor: '#991b1b',
+          acao: 'Win-back agressivo ou limpeza da base.',
+          urgencia: 'AVALIAR',  urgBg: '#fee2e2', urgColor: '#991b1b',
+        },
+      ];
+      vipCards.innerHTML = vipCfg.map(function(cfg) {
+        var g = clsA[cfg.key] || { count: 0, revenue: 0, avgRecency: 0, ticketMedio: 0 };
+        var pctA = clsA.count > 0 ? Math.round(g.count / clsA.count * 100) : 0;
+        return '<div class="kpi-card" style="border:2px solid ' + cfg.border + ';background:' + cfg.bg + ';position:relative">' +
+          '<div style="position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:' + cfg.urgBg + ';color:' + cfg.urgColor + '">' + cfg.urgencia + '</div>' +
+          '<div style="font-size:20px;margin-bottom:6px">' + cfg.icon + '</div>' +
+          '<div style="font-weight:700;font-size:14px;color:#111;margin-bottom:2px">' + cfg.title + '</div>' +
+          '<div style="font-size:11px;font-weight:600;color:' + cfg.tagColor + ';margin-bottom:12px">' + cfg.tag + '</div>' +
+          '<div style="display:flex;justify-content:space-between;margin-bottom:10px">' +
+            '<div><div style="font-size:22px;font-weight:800;color:' + cfg.color + '">' + fmtNum(g.count) + '</div>' +
+              '<div style="font-size:11px;color:#6b7280">clientes (' + pctA + '% da Classe A)</div></div>' +
+            '<div style="text-align:right"><div style="font-size:15px;font-weight:700;color:#111">' + fmtBRL(g.revenue) + '</div>' +
+              '<div style="font-size:11px;color:#6b7280">receita histórica</div></div>' +
+          '</div>' +
+          '<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Ticket médio: <strong>' + fmtBRL(g.ticketMedio) + '</strong> · Recência média: ' + g.avgRecency + ' dias</div>' +
+          '<div style="font-size:11px;color:#374151;background:rgba(0,0,0,.04);border-radius:6px;padding:8px;border-left:3px solid ' + cfg.border + '">' + cfg.acao + '</div>' +
+        '</div>';
+      }).join('');
+      vipPanel.style.display = 'block';
     }
   }
 

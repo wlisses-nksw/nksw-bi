@@ -640,11 +640,19 @@ function getClientes(params) {
         st.maxTicket = Math.max(st.maxTicket, c.totalSpent);
       }
     });
-    var aAtivos = sortedByValue.filter(function(c) { return c.abcClass === 'A' && c.recency <= 180; }).length;
-    var aRisco  = sortedByValue.filter(function(c) { return c.abcClass === 'A' && c.recency > 180; }).length;
+    // Subgrupos de VIP (Classe A) por recência
+    var vipA = sortedByValue.filter(function(c) { return c.abcClass === 'A'; });
+    var vipAtivos   = vipA.filter(function(c) { return c.recency <= 180; });
+    var vipTrabalho = vipA.filter(function(c) { return c.recency > 180 && c.recency <= 540; });
+    var vipPerdidos = vipA.filter(function(c) { return c.recency > 540; });
+    function subGroup(list) {
+      var rev = list.reduce(function(s, c) { return s + c.totalSpent; }, 0);
+      var avgRec = list.length > 0 ? Math.round(list.reduce(function(s, c) { return s + c.recency; }, 0) / list.length) : 0;
+      return { count: list.length, revenue: Math.round(rev), avgRecency: avgRec, ticketMedio: list.length > 0 ? Math.round(rev / list.length) : 0 };
+    }
     var abc = ['A', 'B', 'C'].map(function(cls) {
       var st = abcStats[cls];
-      return {
+      var row = {
         classe:      cls,
         count:       st.count,
         revenue:     Math.round(st.revenue),
@@ -653,9 +661,13 @@ function getClientes(params) {
         ticketMedio: st.count > 0 ? Math.round(st.revenue / st.count) : 0,
         minTicket:   st.minTicket === Infinity ? 0 : Math.round(st.minTicket),
         maxTicket:   Math.round(st.maxTicket),
-        aAtivos:     cls === 'A' ? aAtivos : null,
-        aRisco:      cls === 'A' ? aRisco  : null,
       };
+      if (cls === 'A') {
+        row.vipAtivos   = subGroup(vipAtivos);
+        row.vipTrabalho = subGroup(vipTrabalho);
+        row.vipPerdidos = subGroup(vipPerdidos);
+      }
+      return row;
     });
 
     // ── Cohort Analysis ──
