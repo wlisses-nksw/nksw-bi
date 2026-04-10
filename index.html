@@ -915,45 +915,6 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
-      <!-- ══ Rankings de Sellout ══ -->
-      <div class="section-header" style="margin-top:4px">
-        <div><div class="section-title">Sellout por Dimensão</div><div class="section-sub" id="vendasRankSub">Unidades vendidas no período • Tipo/Tecido/Coleção: últimos 6 meses (catálogo)</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="vendasRankingsGrid">
-        <!-- Card Produtos -->
-        <div class="kpi-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
-            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🛍 TOP PRODUTOS</div>
-            <div style="font-size:10px;color:#9ca3af">período selecionado · unid. vendidas</div>
-          </div>
-          <div id="rankProdutos" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
-        </div>
-        <!-- Card Categoria/Coleção -->
-        <div class="kpi-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
-            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">📂 TOP COLEÇÃO</div>
-            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
-          </div>
-          <div id="rankColecao" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
-        </div>
-        <!-- Card Tecido -->
-        <div class="kpi-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
-            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🧵 TOP TECIDO</div>
-            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
-          </div>
-          <div id="rankTecido" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
-        </div>
-        <!-- Card Tipo -->
-        <div class="kpi-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 14px 8px;border-bottom:1px solid #f3f4f6">
-            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">👗 TOP TIPO</div>
-            <div style="font-size:10px;color:#9ca3af">últimos 6 meses · unid. vendidas</div>
-          </div>
-          <div id="rankTipo" style="padding:8px 14px 12px;max-height:280px;overflow-y:auto"></div>
-        </div>
-      </div>
-
       <!-- Evolução Mensal de Receita (com comparação ano anterior) -->
       <div class="section-header"><div><div class="section-title">Evolução Mensal de Receita</div><div class="section-sub">Ano atual vs ano anterior</div></div></div>
       <div class="chart-card"><div class="chart-wrap"><canvas id="salesChart" class="chart-canvas"></canvas></div></div>
@@ -991,6 +952,41 @@ tbody tr:hover{background:#fafafa}
     <!-- PAGE: PRODUTOS -->
     <!-- ============================================================ -->
     <div class="page" id="page-produtos">
+
+      <!-- ══ RANKING SELLOUT ══ -->
+      <div class="section-header" style="margin-bottom:10px">
+        <div><div class="section-title">Sellout por Dimensão</div><div class="section-sub" id="selloutPeriodSub">Carregando...</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px" id="vendasRankingsGrid">
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px 7px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🛍 TOP PRODUTOS</div>
+            <div style="font-size:10px;color:#9ca3af">col. D · agrupado por código</div>
+          </div>
+          <div id="rankProdutos" style="padding:8px 14px 12px;max-height:300px;overflow-y:auto"><div style="color:#9ca3af;font-size:12px;padding:8px 0">Carregando...</div></div>
+        </div>
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px 7px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">📂 TOP COLEÇÃO</div>
+            <div style="font-size:10px;color:#9ca3af">col. K · unidades vendidas</div>
+          </div>
+          <div id="rankColecao" style="padding:8px 14px 12px;max-height:300px;overflow-y:auto"><div style="color:#9ca3af;font-size:12px;padding:8px 0">Carregando...</div></div>
+        </div>
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px 7px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">🧵 TOP TECIDO</div>
+            <div style="font-size:10px;color:#9ca3af">col. N · unidades vendidas</div>
+          </div>
+          <div id="rankTecido" style="padding:8px 14px 12px;max-height:300px;overflow-y:auto"><div style="color:#9ca3af;font-size:12px;padding:8px 0">Carregando...</div></div>
+        </div>
+        <div class="kpi-card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px 7px;border-bottom:1px solid #f3f4f6">
+            <div style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:.05em">👗 TOP TIPO</div>
+            <div style="font-size:10px;color:#9ca3af">col. J · unidades vendidas</div>
+          </div>
+          <div id="rankTipo" style="padding:8px 14px 12px;max-height:300px;overflow-y:auto"><div style="color:#9ca3af;font-size:12px;padding:8px 0">Carregando...</div></div>
+        </div>
+      </div>
 
       <!-- ══ GESTÃO DE ESTOQUE ══ -->
 
@@ -1545,9 +1541,8 @@ function updateTopbar(page) {
   var isMetas    = page === 'metas';
   var isClientes = page === 'clientes';
   var isAdmin    = page === 'admin';
-  var isProdutos = page === 'produtos';
-  if (globalNav)  globalNav.style.display  = (isMetas || isClientes || isAdmin || isProdutos) ? 'none' : 'flex';
-  if (customRow)  customRow.style.display  = (isMetas || isClientes || isAdmin || isProdutos) ? 'none' : '';
+  if (globalNav)  globalNav.style.display  = (isMetas || isClientes || isAdmin) ? 'none' : 'flex';
+  if (customRow)  customRow.style.display  = (isMetas || isClientes || isAdmin) ? 'none' : '';
   if (metasNav)   metasNav.style.display   = isMetas ? 'flex' : 'none';
   var newUserBtn = document.getElementById('topbar-new-user-btn');
   if (newUserBtn) newUserBtn.style.display = isAdmin ? '' : 'none';
@@ -1621,6 +1616,9 @@ function changeNavMonth(delta) {
     hideIndLoading();
     renderIndicadores();
     renderVisaoGeral();
+    // Re-renderiza rankings de sellout se Produtos estiver ativo
+    var pgProd = document.getElementById('page-produtos');
+    if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
   });
 }
 
@@ -1644,6 +1642,8 @@ function applyCustomDate() {
   loadMarketing();
   loadGA4Data();
   if (getSheetsUrl()) loadAllSheetsData();
+  var pgProd = document.getElementById('page-produtos');
+  if (pgProd && pgProd.classList.contains('active')) _renderSelloutRankings();
 }
 
 function getMetaDateParam() {
@@ -3614,67 +3614,87 @@ function setYoYBadge(badgeId, cur, prev) {
   el.className = 'kpi-badge ' + cls;
 }
 
-/* ===== RANKING SELLOUT (Vendas × Estoque) ===== */
-function _renderVendasRankings(topProdutos) {
-  // ── Card Produtos (period-filtered, from getVendas) ──
-  var rankProdEl = document.getElementById('rankProdutos');
-  if (rankProdEl) {
-    if (topProdutos && topProdutos.length) {
-      var maxQtd = topProdutos[0].qtd || 1;
-      rankProdEl.innerHTML = topProdutos.slice(0, 15).map(function(p) {
-        var pct = Math.round(p.qtd / maxQtd * 100);
-        return '<div style="margin-bottom:6px">' +
-          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">' +
-            '<span style="font-size:11px;color:#111827;font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + p.produto + '">' + p.produto + '</span>' +
-            '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:6px;white-space:nowrap">' + fmtNum(p.qtd) + ' un.</span>' +
-          '</div>' +
-          '<div style="height:4px;background:#f3f4f6;border-radius:2px"><div style="height:4px;width:' + pct + '%;background:#c20000;border-radius:2px"></div></div>' +
-        '</div>';
-      }).join('');
+/* ===== RANKING SELLOUT (período filtrado via colunas mensais) ===== */
+var _estoqueRankData  = [];  // rankData do GAS: [{codigo, nome, tipo, tecido, colecao, curva, vm:[]}]
+var _estoqueMesesKeys = [];  // e.g. ['2025-01','2025-02',...] correspondendo a vm[]
+
+function _selloutActivePeriod() {
+  // Retorna [startKey, endKey] no formato 'YYYY-MM'
+  var pad = function(n){ return String(n).padStart(2, '0'); };
+  if (customStart && customEnd) {
+    return [customStart.slice(0, 7), customEnd.slice(0, 7)];
+  }
+  var key = navYear + '-' + pad(navMonth + 1);
+  return [key, key];
+}
+
+function _renderSelloutRankings() {
+  if (!_estoqueRankData || !_estoqueRankData.length) return;
+
+  var period    = _selloutActivePeriod();
+  var startKey  = period[0], endKey = period[1];
+  var keys      = _estoqueMesesKeys;
+
+  // Índices das colunas que caem no período
+  var activeIdx = [];
+  keys.forEach(function(k, i) { if (k && k >= startKey && k <= endKey) activeIdx.push(i); });
+
+  // Atualiza sub-label com o período
+  var subEl = document.getElementById('selloutPeriodSub');
+  if (subEl) {
+    if (activeIdx.length) {
+      subEl.textContent = 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey);
     } else {
-      rankProdEl.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Conecte o Apps Script para ver os dados</div>';
+      subEl.textContent = 'Período sem colunas mensais mapeadas — reimplante o Apps Script';
     }
   }
 
-  // ── Cards de dimensão (Coleção, Tecido, Tipo) a partir de _estoqueData ──
-  if (!_estoqueData || !_estoqueData.length) return;
+  // Acumuladores
+  var byProduto = {}, byColecao = {}, byTecido = {}, byTipo = {};
 
-  var byColecao = {}, byTecido = {}, byTipo = {};
-  _estoqueData.forEach(function(p) {
-    var v = p.vendas6m || 0;
-    if (!v) return;
-    var col = p.colecao || '—';
-    var tec = p.tecido  || '—';
-    var tip = p.tipo    || '—';
-    byColecao[col] = (byColecao[col] || 0) + v;
-    byTecido[tec]  = (byTecido[tec]  || 0) + v;
-    byTipo[tip]    = (byTipo[tip]    || 0) + v;
+  _estoqueRankData.forEach(function(p) {
+    var qtd = 0;
+    if (activeIdx.length) {
+      activeIdx.forEach(function(i) { qtd += (p.vm && p.vm[i]) ? p.vm[i] : 0; });
+    } else {
+      // Fallback: soma todas as colunas quando período não mapeado
+      if (p.vm) p.vm.forEach(function(v) { qtd += v || 0; });
+    }
+    if (!qtd) return;
+
+    var nome = p.nome || p.codigo || '?';
+    byProduto[nome] = (byProduto[nome] || 0) + qtd;
+
+    var col = p.colecao || ''; if (col) byColecao[col] = (byColecao[col] || 0) + qtd;
+    var tec = p.tecido  || ''; if (tec) byTecido[tec]  = (byTecido[tec]  || 0) + qtd;
+    var tip = p.tipo    || ''; if (tip) byTipo[tip]     = (byTipo[tip]    || 0) + qtd;
   });
 
-  function rankList(byObj, elId, color) {
+  function renderRankList(byObj, elId, color, maxItems) {
     var el = document.getElementById(elId);
     if (!el) return;
-    var items = Object.keys(byObj).filter(function(k){ return k !== '—' && byObj[k] > 0; })
+    var items = Object.keys(byObj)
       .map(function(k){ return { label: k, qtd: byObj[k] }; })
       .sort(function(a, b){ return b.qtd - a.qtd; })
-      .slice(0, 12);
-    if (!items.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Sem dados</div>'; return; }
-    var maxV = items[0].qtd;
+      .slice(0, maxItems || 15);
+    if (!items.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Sem dados no período</div>'; return; }
+    var maxV = items[0].qtd || 1;
     el.innerHTML = items.map(function(it) {
       var pct = Math.round(it.qtd / maxV * 100);
       return '<div style="margin-bottom:6px">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">' +
-          '<span style="font-size:11px;color:#111827;font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + it.label + '">' + it.label + '</span>' +
-          '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:6px;white-space:nowrap">' + fmtNum(it.qtd) + ' un.</span>' +
+          '<span style="font-size:11px;color:#111827;font-weight:500;max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + it.label + '">' + it.label + '</span>' +
+          '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:4px;white-space:nowrap">' + fmtNum(it.qtd) + '</span>' +
         '</div>' +
         '<div style="height:4px;background:#f3f4f6;border-radius:2px"><div style="height:4px;width:' + pct + '%;background:' + color + ';border-radius:2px"></div></div>' +
       '</div>';
     }).join('');
   }
 
-  rankList(byColecao, 'rankColecao', '#3b82f6');
-  rankList(byTecido,  'rankTecido',  '#8b5cf6');
-  rankList(byTipo,    'rankTipo',    '#10b981');
+  renderRankList(byProduto, 'rankProdutos', '#c20000', 15);
+  renderRankList(byColecao, 'rankColecao',  '#3b82f6', 12);
+  renderRankList(byTecido,  'rankTecido',   '#8b5cf6', 12);
+  renderRankList(byTipo,    'rankTipo',     '#10b981', 12);
 }
 
 /* ===== APPLY — VENDAS ===== */
@@ -3755,9 +3775,6 @@ function applyVendasData(d, prevD) {
   if (fd.porEstado && fd.porEstado.length) {
     initEstadoChart(fd.porEstado.slice(0, 10));
   }
-
-  // ── Rankings de Sellout ──
-  _renderVendasRankings(d.topProdutos || []);
 
   // ── Tabela de Cupons ──
   var cupomData = fd.porCupom || d.porCupom || [];
@@ -3855,8 +3872,6 @@ async function loadEstoquePage() {
 
     applyEstoqueData(d);
     _estoqueLoaded = true;
-    // Se a aba Vendas já tem dados carregados, re-renderiza rankings com catálogo novo
-    if (_lastVendasData) _renderVendasRankings(_lastVendasData.topProdutos || []);
   } catch(e) {
     console.warn('loadEstoquePage error:', e.message);
     if (kpisEl) kpisEl.innerHTML = '<div class="kpi-card" style="text-align:center;color:#dc2626;grid-column:1/-1;padding:20px">Erro ao carregar estoque.</div>';
@@ -3896,6 +3911,11 @@ function applyEstoqueData(d) {
   if (!d) return;
   var r = d.resumo || {};
   _estoqueThreshold = r.threshold || 5;
+
+  // Armazena dados de ranking para re-render ao mudar período
+  if (d.rankData  && d.rankData.length)  _estoqueRankData  = d.rankData;
+  if (d.mesesKeys && d.mesesKeys.length) _estoqueMesesKeys = d.mesesKeys;
+  _renderSelloutRankings();
 
   // Armazena todos os SKUs para filtro/sort client-side
   // Junta curvaAB + semEstoque + estBaixo + restante de forma deduplicada pelo campo chave
