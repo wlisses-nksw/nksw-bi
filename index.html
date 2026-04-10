@@ -3236,11 +3236,14 @@ function getSelectedMonthKey() {
   } catch(e) { return null; }
 }
 
-// Lê /data/{name}.json (mês atual, max 20 min) ou /data/{name}_{YYYY-MM}.json (histórico)
+// URL base dos dados estáticos — GitHub raw (não depende de rebuild do Netlify)
+var STATIC_DATA_URL = 'https://raw.githubusercontent.com/wlisses-nksw/nksw-bi/main/data/';
+
+// Lê {name}.json (mês atual, max 20 min) ou {name}_{YYYY-MM}.json (histórico) via GitHub raw
 async function fetchStaticJSON(name, monthKey) {
   try {
     var filename = monthKey ? (name + '_' + monthKey) : name;
-    var r = await fetch('/data/' + filename + '.json');
+    var r = await fetch(STATIC_DATA_URL + filename + '.json?_=' + Date.now());
     if (!r.ok) return null;
     var obj = await r.json();
     if (!obj || !obj.ok || !obj.generated_at) return null;
