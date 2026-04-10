@@ -3220,7 +3220,6 @@ function closeSheetsConfig() {
 }
 
 /* ===== JSON ESTÁTICO (CDN — ~20ms) ===== */
-// Verifica se o período selecionado é o mês atual
 function isCurrentMonth() {
   try {
     var now = new Date();
@@ -3229,15 +3228,27 @@ function isCurrentMonth() {
   } catch(e) { return false; }
 }
 
-// Lê um arquivo de /data/{name}.json — só aceita se gerado há menos de 20 min
-async function fetchStaticJSON(name) {
+// Retorna "YYYY-MM" do mês selecionado para buscar arquivo histórico
+function getSelectedMonthKey() {
   try {
-    var r = await fetch('/data/' + name + '.json');
+    var d = new Date(customStart);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  } catch(e) { return null; }
+}
+
+// Lê /data/{name}.json (mês atual, max 20 min) ou /data/{name}_{YYYY-MM}.json (histórico)
+async function fetchStaticJSON(name, monthKey) {
+  try {
+    var filename = monthKey ? (name + '_' + monthKey) : name;
+    var r = await fetch('/data/' + filename + '.json');
     if (!r.ok) return null;
     var obj = await r.json();
-    if (!obj || !obj.generated_at) return null;
-    var ageMin = (Date.now() - new Date(obj.generated_at).getTime()) / 60000;
-    if (ageMin > 20) return null; // arquivo desatualizado
+    if (!obj || !obj.ok || !obj.generated_at) return null;
+    if (!monthKey) {
+      // Mês atual: rejeita se arquivo tiver mais de 20 min
+      var ageMin = (Date.now() - new Date(obj.generated_at).getTime()) / 60000;
+      if (ageMin > 20) return null;
+    }
     return obj;
   } catch(e) { return null; }
 }
@@ -3246,11 +3257,12 @@ async function fetchStaticJSON(name) {
 var CACHE_VER = 'nksw_c1_';
 
 function cacheMaxAge() {
-  // Período histórico (não toca mais nos dados) → 60 min; mês atual → 5 min
   try {
     var today = new Date(); today.setHours(0,0,0,0);
-    var end = new Date(customEnd || new Date());
-    return end < today ? 60 : 5;
+    var end = new Date(customEnd || new Date()); end.setHours(0,0,0,0);
+    if (end >= today) return 5;                        // mês atual → 5 min
+    var daysAgo = (today - end) / 86400000;
+    return daysAgo > 45 ? 60 * 24 * 7 : 60 * 24;     // >45 dias → 7 dias; recente → 24h
   } catch(e) { return 5; }
 }
 
@@ -3283,17 +3295,19 @@ async function fetchSheets(section, extraParams, dateOverride) {
   if (extraParams) qs += '&' + extraParams;
   var cacheKey = 'sh_' + section + '_' + qs;
 
-  // 1. JSON estático no CDN (~20ms) — mês atual, sem parâmetros extras
-  if (!dateOverride && !extraParams && isCurrentMonth()) {
-    var staticData = await fetchStaticJSON(section);
+  // 1. JSON estático no CDN (~20ms) — sem parâmetros extras
+  if (!dateOverride && !extraParams) {
+    var _mk = isCurrentMonth() ? null : getSelectedMonthKey();
+    var staticData = await fetchStaticJSON(section, _mk);
     if (staticData && staticData.ok) return staticData;
   }
 
   // 2. Cache localStorage — background refresh via JSON estático (evita Apps Script)
   var cached = getCache(cacheKey);
   if (cached) {
-    if (!dateOverride && !extraParams && isCurrentMonth()) {
-      fetchStaticJSON(section).then(function(fresh) {
+    if (!dateOverride && !extraParams) {
+      var _mk2 = isCurrentMonth() ? null : getSelectedMonthKey();
+      fetchStaticJSON(section, _mk2).then(function(fresh) {
         if (fresh && fresh.ok) saveCache(cacheKey, fresh);
       });
     } else {

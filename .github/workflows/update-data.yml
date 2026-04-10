@@ -18,8 +18,8 @@ jobs:
 
       - name: Definir período atual
         run: |
-          echo "START=$(date -u +%Y-%m-01)"       >> $GITHUB_ENV
-          echo "END=$(date -u +%Y-%m-%d)"          >> $GITHUB_ENV
+          echo "START=$(date -u +%Y-%m-01)"        >> $GITHUB_ENV
+          echo "END=$(date -u +%Y-%m-%d)"           >> $GITHUB_ENV
           echo "TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
 
       # ── GA4 ────────────────────────────────────────────────────────────
@@ -95,12 +95,45 @@ jobs:
             echo "⚠️ Produtos inválido — mantendo arquivo existente"
           fi
 
+      # ── Arquivos históricos por mês (só gera se ainda não existir) ────
+      - name: Gerar dados históricos por mês
+        run: |
+          for i in 1 2 3 4 5 6; do
+            KEY=$(date -u -d "${i} months ago" +%Y-%m)
+            S=$(date -u -d "${i} months ago" +%Y-%m-01)
+            E=$(date -u -d "$(date -u -d "${i} months ago" +%Y-%m-01) +1 month -1 day" +%Y-%m-%d)
+
+            for section in vendas pedidos clientes; do
+              FILE="data/${section}_${KEY}.json"
+              # Pula se arquivo já existe e está OK
+              if [ -f "$FILE" ] && jq -e '.ok' "$FILE" > /dev/null 2>&1; then
+                echo "⏭️  ${section} ${KEY} já existe"
+                continue
+              fi
+
+              EXTRA=""
+              [ "$section" = "clientes" ] && EXTRA="&cohortMonths=24"
+
+              curl -sL "${{ secrets.SHEETS_URL }}?section=${section}&period=custom&startDate=${S}&endDate=${E}${EXTRA}" \
+                -o /tmp/${section}_${KEY}.json --max-time 60 || continue
+
+              if jq -e '.ok' /tmp/${section}_${KEY}.json > /dev/null 2>&1; then
+                jq --arg ts "$TS" --arg s "$S" --arg e "$E" \
+                  '. + {"generated_at":$ts,"period":{"start":$s,"end":$e}}' \
+                  /tmp/${section}_${KEY}.json > "$FILE"
+                echo "✅ ${section} ${KEY}"
+              else
+                echo "⚠️  ${section} ${KEY} falhou"
+              fi
+            done
+          done
+
       # ── Commit e push ──────────────────────────────────────────────────
       - name: Salvar alterações
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ || true
           git diff --staged --quiet \
             && echo "Sem alterações nos dados." \
             || (git commit -m "data: atualizar $(date -u +'%Y-%m-%d %H:%M') UTC" && git push)
