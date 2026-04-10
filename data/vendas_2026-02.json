@@ -1,0 +1,821 @@
+{
+  "ok": true,
+  "vendas": {
+    "kpis": {
+      "receita": 343974.04,
+      "pedidos": 430,
+      "ticket": 799.94,
+      "lucro": 343974.04,
+      "custo": 0,
+      "taxaCancel": 0,
+      "descontoTotal": 34993.25,
+      "pctCupom": 38.8,
+      "receitaSemFrete": 335731.25,
+      "valorFrete": 8242.79,
+      "pctFrete": 2.4,
+      "pedidosComFrete": 344,
+      "pedidosSemFrete": 86,
+      "pctComFrete": 80,
+      "pctSemFrete": 20
+    },
+    "diario": [
+      {
+        "dia": "2026-02-01",
+        "receita": 10073,
+        "pedidos": 13
+      },
+      {
+        "dia": "2026-02-02",
+        "receita": 17714.13,
+        "pedidos": 17
+      },
+      {
+        "dia": "2026-02-03",
+        "receita": 26847.28,
+        "pedidos": 19
+      },
+      {
+        "dia": "2026-02-04",
+        "receita": 10117.52,
+        "pedidos": 13
+      },
+      {
+        "dia": "2026-02-05",
+        "receita": 8988.92,
+        "pedidos": 13
+      },
+      {
+        "dia": "2026-02-06",
+        "receita": 10952.9,
+        "pedidos": 14
+      },
+      {
+        "dia": "2026-02-07",
+        "receita": 5659.36,
+        "pedidos": 5
+      },
+      {
+        "dia": "2026-02-08",
+        "receita": 12642.22,
+        "pedidos": 9
+      },
+      {
+        "dia": "2026-02-09",
+        "receita": 16455.38,
+        "pedidos": 14
+      },
+      {
+        "dia": "2026-02-10",
+        "receita": 9927.54,
+        "pedidos": 9
+      },
+      {
+        "dia": "2026-02-11",
+        "receita": 8994.31,
+        "pedidos": 9
+      },
+      {
+        "dia": "2026-02-12",
+        "receita": 7464.49,
+        "pedidos": 10
+      },
+      {
+        "dia": "2026-02-13",
+        "receita": 5106.38,
+        "pedidos": 8
+      },
+      {
+        "dia": "2026-02-14",
+        "receita": 3112.79,
+        "pedidos": 6
+      },
+      {
+        "dia": "2026-02-15",
+        "receita": 11230.12,
+        "pedidos": 12
+      },
+      {
+        "dia": "2026-02-16",
+        "receita": 11207.37,
+        "pedidos": 8
+      },
+      {
+        "dia": "2026-02-17",
+        "receita": 5160.22,
+        "pedidos": 5
+      },
+      {
+        "dia": "2026-02-18",
+        "receita": 2798.17,
+        "pedidos": 4
+      },
+      {
+        "dia": "2026-02-19",
+        "receita": 3044.58,
+        "pedidos": 5
+      },
+      {
+        "dia": "2026-02-20",
+        "receita": 8630.33,
+        "pedidos": 9
+      },
+      {
+        "dia": "2026-02-21",
+        "receita": 13886.34,
+        "pedidos": 13
+      },
+      {
+        "dia": "2026-02-22",
+        "receita": 22727.26,
+        "pedidos": 33
+      },
+      {
+        "dia": "2026-02-23",
+        "receita": 21344.53,
+        "pedidos": 33
+      },
+      {
+        "dia": "2026-02-24",
+        "receita": 26893.34,
+        "pedidos": 40
+      },
+      {
+        "dia": "2026-02-25",
+        "receita": 17002.19,
+        "pedidos": 31
+      },
+      {
+        "dia": "2026-02-26",
+        "receita": 11587.21,
+        "pedidos": 24
+      },
+      {
+        "dia": "2026-02-27",
+        "receita": 19675.31,
+        "pedidos": 32
+      },
+      {
+        "dia": "2026-02-28",
+        "receita": 14730.85,
+        "pedidos": 22
+      }
+    ],
+    "canais": [
+      {
+        "canal": "Mobile",
+        "receita": 226769.51,
+        "pedidos": 294
+      },
+      {
+        "canal": "Ponto de venda",
+        "receita": 93613.83,
+        "pedidos": 101
+      },
+      {
+        "canal": "Loja virtual",
+        "receita": 20709.97,
+        "pedidos": 32
+      },
+      {
+        "canal": "Pedidos manuais",
+        "receita": 2880.73,
+        "pedidos": 3
+      }
+    ],
+    "porMes": [
+      {
+        "mes": "2026-02",
+        "label": "Fev/26",
+        "receita": 343974.04,
+        "pedidos": 430
+      }
+    ],
+    "formaPag": [
+      {
+        "forma": "Nuvem Pago",
+        "receita": 322829.38,
+        "pedidos": 409
+      },
+      {
+        "forma": "Cartão de crédito",
+        "receita": 9001.41,
+        "pedidos": 10
+      },
+      {
+        "forma": "Pix",
+        "receita": 8905.92,
+        "pedidos": 8
+      },
+      {
+        "forma": "not-provided",
+        "receita": 2381,
+        "pedidos": 2
+      },
+      {
+        "forma": "Link #149 - Cartão de crédito mastercard 7246",
+        "receita": 856.33,
+        "pedidos": 1
+      }
+    ],
+    "porEstado": [
+      {
+        "estado": "São Paulo",
+        "receita": 109772.22,
+        "pedidos": 126
+      },
+      {
+        "estado": "Distrito Federal",
+        "receita": 50530.85,
+        "pedidos": 68
+      },
+      {
+        "estado": "Rio de Janeiro",
+        "receita": 40143.92,
+        "pedidos": 51
+      },
+      {
+        "estado": "Minas Gerais",
+        "receita": 31140.65,
+        "pedidos": 39
+      },
+      {
+        "estado": "Pernambuco",
+        "receita": 16438.78,
+        "pedidos": 13
+      },
+      {
+        "estado": "Paraná",
+        "receita": 15884.58,
+        "pedidos": 23
+      },
+      {
+        "estado": "Santa Catarina",
+        "receita": 13999.45,
+        "pedidos": 23
+      },
+      {
+        "estado": "Goiás",
+        "receita": 12289.1,
+        "pedidos": 17
+      },
+      {
+        "estado": "Espírito Santo",
+        "receita": 10257.84,
+        "pedidos": 12
+      },
+      {
+        "estado": "Pará",
+        "receita": 9043.58,
+        "pedidos": 8
+      },
+      {
+        "estado": "Bahia",
+        "receita": 6432.14,
+        "pedidos": 10
+      },
+      {
+        "estado": "Rio Grande do Sul",
+        "receita": 5428.8,
+        "pedidos": 7
+      },
+      {
+        "estado": "Paraíba",
+        "receita": 3812.04,
+        "pedidos": 5
+      },
+      {
+        "estado": "Alagoas",
+        "receita": 3454.68,
+        "pedidos": 4
+      },
+      {
+        "estado": "Mato Grosso",
+        "receita": 3172.49,
+        "pedidos": 6
+      }
+    ],
+    "porVendedor": [
+      {
+        "vendedor": "Site",
+        "receita": 192834.39,
+        "pedidos": 258
+      },
+      {
+        "vendedor": "Mari",
+        "receita": 54589.09,
+        "pedidos": 51
+      },
+      {
+        "vendedor": "Scooto (Atendimento)",
+        "receita": 44060.4,
+        "pedidos": 62
+      },
+      {
+        "vendedor": "SIte",
+        "receita": 37257.83,
+        "pedidos": 51
+      },
+      {
+        "vendedor": "Carol",
+        "receita": 5095.8,
+        "pedidos": 4
+      },
+      {
+        "vendedor": "site",
+        "receita": 1893.74,
+        "pedidos": 4
+      }
+    ],
+    "statusPagamento": [
+      {
+        "status": "Confirmado",
+        "receita": 343974.04,
+        "pedidos": 430,
+        "kpis": {
+          "receita": 343974.04,
+          "pedidos": 430,
+          "ticket": 799.94,
+          "lucro": 343974.04,
+          "custo": 0,
+          "taxaCancel": 0,
+          "descontoTotal": 34993.25,
+          "pctCupom": 38.8,
+          "receitaSemFrete": 335731.25,
+          "valorFrete": 8242.79,
+          "pctFrete": 2.4,
+          "pedidosComFrete": 344,
+          "pedidosSemFrete": 86,
+          "pctComFrete": 80,
+          "pctSemFrete": 20
+        },
+        "porMes": [
+          {
+            "mes": "2026-02",
+            "label": "Fev/26",
+            "receita": 343974.04,
+            "pedidos": 430
+          }
+        ],
+        "porVendedor": [
+          {
+            "vendedor": "Site",
+            "receita": 192834.39,
+            "pedidos": 258
+          },
+          {
+            "vendedor": "Mari",
+            "receita": 54589.09,
+            "pedidos": 51
+          },
+          {
+            "vendedor": "Scooto (Atendimento)",
+            "receita": 44060.4,
+            "pedidos": 62
+          },
+          {
+            "vendedor": "SIte",
+            "receita": 37257.83,
+            "pedidos": 51
+          },
+          {
+            "vendedor": "Carol",
+            "receita": 5095.8,
+            "pedidos": 4
+          },
+          {
+            "vendedor": "site",
+            "receita": 1893.74,
+            "pedidos": 4
+          }
+        ],
+        "porEstado": [
+          {
+            "estado": "São Paulo",
+            "receita": 109772.22,
+            "pedidos": 126
+          },
+          {
+            "estado": "Distrito Federal",
+            "receita": 50530.85,
+            "pedidos": 68
+          },
+          {
+            "estado": "Rio de Janeiro",
+            "receita": 40143.92,
+            "pedidos": 51
+          },
+          {
+            "estado": "Minas Gerais",
+            "receita": 31140.65,
+            "pedidos": 39
+          },
+          {
+            "estado": "Pernambuco",
+            "receita": 16438.78,
+            "pedidos": 13
+          },
+          {
+            "estado": "Paraná",
+            "receita": 15884.58,
+            "pedidos": 23
+          },
+          {
+            "estado": "Santa Catarina",
+            "receita": 13999.45,
+            "pedidos": 23
+          },
+          {
+            "estado": "Goiás",
+            "receita": 12289.1,
+            "pedidos": 17
+          },
+          {
+            "estado": "Espírito Santo",
+            "receita": 10257.84,
+            "pedidos": 12
+          },
+          {
+            "estado": "Pará",
+            "receita": 9043.58,
+            "pedidos": 8
+          }
+        ]
+      }
+    ],
+    "topProdutos": [
+      {
+        "produto": "7870",
+        "receita": 6607.96,
+        "qtd": 8
+      },
+      {
+        "produto": "'8984133462442",
+        "receita": 6273.73,
+        "qtd": 7
+      },
+      {
+        "produto": "141401100011",
+        "receita": 5824.13,
+        "qtd": 6
+      },
+      {
+        "produto": "141601100011",
+        "receita": 5383.57,
+        "qtd": 2
+      },
+      {
+        "produto": "'7891237038231",
+        "receita": 4184.67,
+        "qtd": 3
+      },
+      {
+        "produto": "'7891237038590",
+        "receita": 4101.38,
+        "qtd": 5
+      },
+      {
+        "produto": "140401100011",
+        "receita": 3991.9,
+        "qtd": 1
+      },
+      {
+        "produto": "4880100005",
+        "receita": 3949.92,
+        "qtd": 2
+      },
+      {
+        "produto": "162371",
+        "receita": 3746.08,
+        "qtd": 2
+      },
+      {
+        "produto": "'7891237011463",
+        "receita": 3608.69,
+        "qtd": 5
+      }
+    ],
+    "motivosCancel": [],
+    "porCupom": [
+      {
+        "cupom": "NKSW10",
+        "pedidos": 77,
+        "valor": 65546.53
+      },
+      {
+        "cupom": "VIP5",
+        "pedidos": 14,
+        "valor": 9690.52
+      },
+      {
+        "cupom": "FRETE GRÁTIS",
+        "pedidos": 5,
+        "valor": 5362.76
+      },
+      {
+        "cupom": "FRETEVIP",
+        "pedidos": 8,
+        "valor": 4656.53
+      },
+      {
+        "cupom": "ORIGIN10",
+        "pedidos": 1,
+        "valor": 4582.8
+      },
+      {
+        "cupom": "POS-ORDER-1770127628643",
+        "pedidos": 1,
+        "valor": 1776.6
+      },
+      {
+        "cupom": "POS-ORDER-1770927034453",
+        "pedidos": 1,
+        "valor": 1774.98
+      },
+      {
+        "cupom": "POS-ORDER-1772220634471",
+        "pedidos": 1,
+        "valor": 1600.38
+      },
+      {
+        "cupom": "NEWIN",
+        "pedidos": 2,
+        "valor": 1561.32
+      },
+      {
+        "cupom": "NKSW10 + VIP5",
+        "pedidos": 2,
+        "valor": 1516.06
+      },
+      {
+        "cupom": "BELLAFALCONI",
+        "pedidos": 2,
+        "valor": 1372.75
+      },
+      {
+        "cupom": "GETNKSW",
+        "pedidos": 2,
+        "valor": 1356.3
+      },
+      {
+        "cupom": "POS-ORDER-1771511190407",
+        "pedidos": 1,
+        "valor": 1349.1
+      },
+      {
+        "cupom": "FRETEGRÁTISS",
+        "pedidos": 1,
+        "valor": 1295.33
+      },
+      {
+        "cupom": "BIRTHDAY",
+        "pedidos": 2,
+        "valor": 1257.6
+      },
+      {
+        "cupom": "POS-ORDER-1771254510297",
+        "pedidos": 1,
+        "valor": 1208.83
+      },
+      {
+        "cupom": "POS-ORDER-1772039144802",
+        "pedidos": 1,
+        "valor": 1082.16
+      },
+      {
+        "cupom": "DRAFT-ORDER-699E18BFA4C838.331",
+        "pedidos": 1,
+        "valor": 1054.2
+      },
+      {
+        "cupom": "POS-ORDER-1772246811413",
+        "pedidos": 1,
+        "valor": 976.5
+      },
+      {
+        "cupom": "POS-ORDER-1770044016300",
+        "pedidos": 1,
+        "valor": 952.2
+      },
+      {
+        "cupom": "POS-ORDER-1770909483437",
+        "pedidos": 1,
+        "valor": 937.65
+      },
+      {
+        "cupom": "POS-ORDER-1770731861442",
+        "pedidos": 1,
+        "valor": 911.05
+      },
+      {
+        "cupom": "QUERO15",
+        "pedidos": 1,
+        "valor": 869.68
+      },
+      {
+        "cupom": "POS-ORDER-1772312637317",
+        "pedidos": 1,
+        "valor": 845.6
+      },
+      {
+        "cupom": "POS-ORDER-1771954471576",
+        "pedidos": 1,
+        "valor": 736.2
+      },
+      {
+        "cupom": "POS-ORDER-1772138973698",
+        "pedidos": 1,
+        "valor": 678.3
+      },
+      {
+        "cupom": "POS-ORDER-1770989437774",
+        "pedidos": 1,
+        "valor": 593.3
+      },
+      {
+        "cupom": "POS-ORDER-1772134936269",
+        "pedidos": 1,
+        "valor": 593.1
+      },
+      {
+        "cupom": "POS-ORDER-1771611210905",
+        "pedidos": 1,
+        "valor": 574.2
+      },
+      {
+        "cupom": "MAIS5",
+        "pedidos": 1,
+        "valor": 562.59
+      },
+      {
+        "cupom": "POS-ORDER-1772038581490",
+        "pedidos": 1,
+        "valor": 545.49
+      },
+      {
+        "cupom": "NKSW10+FRETEGRÁTIS",
+        "pedidos": 1,
+        "valor": 528.09
+      },
+      {
+        "cupom": "FRETEMARIANE",
+        "pedidos": 1,
+        "valor": 369.94
+      },
+      {
+        "cupom": "TROCA965",
+        "pedidos": 1,
+        "valor": 327.05
+      },
+      {
+        "cupom": "FRETELETÍCIA",
+        "pedidos": 1,
+        "valor": 325.34
+      },
+      {
+        "cupom": "POS-ORDER-1771619165286",
+        "pedidos": 1,
+        "valor": 314
+      },
+      {
+        "cupom": "TROCA1638",
+        "pedidos": 1,
+        "valor": 308.29
+      },
+      {
+        "cupom": "POS-ORDER-1771857087154",
+        "pedidos": 1,
+        "valor": 274.55
+      },
+      {
+        "cupom": "POS-ORDER-1772118430451",
+        "pedidos": 1,
+        "valor": 260.1
+      },
+      {
+        "cupom": "FRETEMARINA",
+        "pedidos": 1,
+        "valor": 229.52
+      },
+      {
+        "cupom": "FRETERENATA",
+        "pedidos": 1,
+        "valor": 209.69
+      },
+      {
+        "cupom": "TROCA2722",
+        "pedidos": 1,
+        "valor": 178.6
+      },
+      {
+        "cupom": "TROCA1781",
+        "pedidos": 1,
+        "valor": 152.2
+      },
+      {
+        "cupom": "TROCA2824",
+        "pedidos": 1,
+        "valor": 139
+      },
+      {
+        "cupom": "TROCA2140",
+        "pedidos": 1,
+        "valor": 125
+      },
+      {
+        "cupom": "TROCA744",
+        "pedidos": 1,
+        "valor": 122.5
+      },
+      {
+        "cupom": "TROCA1428",
+        "pedidos": 1,
+        "valor": 119.7
+      },
+      {
+        "cupom": "TROCA2613",
+        "pedidos": 1,
+        "valor": 113.7
+      },
+      {
+        "cupom": "TROCA2798",
+        "pedidos": 1,
+        "valor": 108.8
+      },
+      {
+        "cupom": "TROCA1325",
+        "pedidos": 1,
+        "valor": 45.8
+      },
+      {
+        "cupom": "TROCA1307",
+        "pedidos": 1,
+        "valor": 43.95
+      },
+      {
+        "cupom": "TROCA2403",
+        "pedidos": 1,
+        "valor": 39.8
+      },
+      {
+        "cupom": "TROCA809",
+        "pedidos": 1,
+        "valor": 26.5
+      },
+      {
+        "cupom": "TROCA2852",
+        "pedidos": 1,
+        "valor": 3.61
+      },
+      {
+        "cupom": "LUCIAAMORIM",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCA2211",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCA2340",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCA2575",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCA2604",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TF-8HMV4KV-5225421",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCA2764",
+        "pedidos": 1,
+        "valor": 0
+      },
+      {
+        "cupom": "TROCO2672",
+        "pedidos": 1,
+        "valor": 0
+      }
+    ]
+  },
+  "periodo": {
+    "inicio": "2026-02-01",
+    "fim": "2026-02-28",
+    "label": "custom"
+  },
+  "generated_at": "2026-04-10T00:29:33Z",
+  "period": {
+    "start": "2026-02-01",
+    "end": "2026-02-28"
+  }
+}
