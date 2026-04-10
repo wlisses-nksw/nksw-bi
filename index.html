@@ -3646,9 +3646,11 @@ function _renderSelloutRankings() {
   if (subEl) {
     subEl.textContent = hasRankData && activeIdx.length
       ? 'Unidades vendidas · ' + (startKey === endKey ? startKey : startKey + ' → ' + endKey)
-      : hasRankData
-        ? 'Reimplante o Apps Script para filtro por período'
-        : 'Últimos 6 meses (reimplante o Apps Script para filtro por período)';
+      : hasRankData && _estoqueMesesKeys.length
+        ? 'Sem dados para o período selecionado'
+        : hasRankData
+          ? 'Reimplante o Apps Script para filtro por período'
+          : 'Últimos 6 meses · reimplante o Apps Script para filtro por período';
   }
 
   var byProduto = {}, byColecao = {}, byTecido = {}, byTipo = {};
@@ -3658,10 +3660,13 @@ function _renderSelloutRankings() {
     _estoqueRankData.forEach(function(p) {
       var qtd = 0;
       if (activeIdx.length) {
+        // Período filtrado: soma apenas os índices mensais correspondentes
         activeIdx.forEach(function(i) { qtd += (p.vm && p.vm[i]) ? p.vm[i] : 0; });
-      } else {
+      } else if (!_estoqueMesesKeys.length) {
+        // mesesKeys ainda não disponível (GAS não reimplantado): soma tudo como último recurso
         if (p.vm) p.vm.forEach(function(v) { qtd += v || 0; });
       }
+      // Se mesesKeys existe mas nenhum mês bate com o período → qtd=0 → "Sem dados"
       if (!qtd) return;
       var nome = p.nome || p.codigo || '?';
       byProduto[nome] = (byProduto[nome] || 0) + qtd;
