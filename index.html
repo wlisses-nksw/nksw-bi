@@ -4535,7 +4535,7 @@ var AUTH_URL_KEY = 'nksw_auth_url';
 // ── URL padrão do serviço de autenticação ─────────────────────────────
 // Cole aqui a URL do seu Apps Script de auth (auth-script.gs) após implantar.
 // Usuários não precisam configurar nada — o sistema usa esta URL automaticamente.
-var DEFAULT_AUTH_URL = '';
+var DEFAULT_AUTH_URL = 'https://script.google.com/macros/s/AKfycbxMN8FUeTiwCVREZvO1GD4ruaYjsv8s2GwQRI1QV7tglZrj8Tb4-vjw7Vru7NlbYec1DA/exec';
 
 function getAuthState() {
   try { return JSON.parse(sessionStorage.getItem(AUTH_KEY) || 'null'); } catch(e) { return null; }
