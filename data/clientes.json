@@ -2,26 +2,26 @@
   "ok": true,
   "clientes": {
     "kpis": {
-      "total": 23047,
-      "recompras": 7379,
+      "total": 23049,
+      "recompras": 7381,
       "pctRecomp": 32,
-      "ltv": 766.84,
+      "ltv": 766.9,
       "avgDaysBetween": 272,
-      "totalReceita": 17673252.39
+      "totalReceita": 17676164.79
     },
     "rfm": [
       {
         "segmento": "💎 VIPs",
         "base": 4587,
-        "pedidos": 12736,
-        "receita": 9217440.6,
+        "pedidos": 12737,
+        "receita": 9218580,
         "acao": "Tratamento exclusivo & upsell premium"
       },
       {
         "segmento": "❌ Perdidos",
-        "base": 15987,
-        "pedidos": 18921,
-        "receita": 6566957.61,
+        "base": 15986,
+        "pedidos": 18920,
+        "receita": 6565900.51,
         "acao": "Win-back agressivo ou limpeza da base"
       },
       {
@@ -47,23 +47,23 @@
       },
       {
         "segmento": "✨ Novos",
-        "base": 406,
-        "pedidos": 406,
-        "receita": 215309.62,
+        "base": 408,
+        "pedidos": 408,
+        "receita": 217230.12,
         "acao": "Boas-vindas & onboarding por email"
       },
       {
         "segmento": "🌱 Potenciais",
         "base": 103,
         "pedidos": 206,
-        "receita": 77776.23,
+        "receita": 78172.37,
         "acao": "Incentivar 2ª compra com oferta especial"
       },
       {
         "segmento": "🔁 Fiéis",
-        "base": 26,
-        "pedidos": 82,
-        "receita": 22774.23,
+        "base": 27,
+        "pedidos": 85,
+        "receita": 23287.69,
         "acao": "Programa de pontos & recompensa"
       }
     ],
@@ -274,8 +274,8 @@
       },
       {
         "safra": "Out. 2025",
-        "clientes": 292,
-        "receita": 359514.53,
+        "clientes": 291,
+        "receita": 358457.43,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -411,13 +411,13 @@
       {
         "safra": "Fev. 2026",
         "clientes": 200,
-        "receita": 186351.3,
+        "receita": 186502.9,
         "cac": 0,
         "gasto": 0,
         "m": [
           100,
           13,
-          1,
+          2,
           null,
           null,
           null,
@@ -478,8 +478,8 @@
       },
       {
         "safra": "Abr. 2026",
-        "clientes": 60,
-        "receita": 57793.52,
+        "clientes": 63,
+        "receita": 60472.02,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -517,7 +517,7 @@
     "fim": "2026-04-10",
     "label": "custom"
   },
-  "generated_at": "2026-04-10T10:17:35Z",
+  "generated_at": "2026-04-10T12:52:15Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-10"
