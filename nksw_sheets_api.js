@@ -628,8 +628,8 @@ function getClientes(params) {
     };
     clientList.forEach(function(c) {
       var cls;
-      if      (c.numOrders > 3  && c.totalSpent >= 3000) cls = 'A';
-      else if (c.numOrders <= 2 && c.totalSpent >= 2000) cls = 'B';
+      if      (c.numOrders >= 10 && c.totalSpent >= 10000) cls = 'A';
+      else if (c.numOrders >= 5  && c.totalSpent >= 5000)  cls = 'B';
       else                                                cls = 'C';
       c.abcClass = cls;
       var st = abcStats[cls];

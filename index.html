@@ -3762,16 +3762,30 @@ function applyClientesData(d) {
   if (d.rfm && d.rfm.length) {
     var rfmBody = document.getElementById('rfmBody');
     if (rfmBody) {
+      // Racional definido client-side (funciona mesmo sem reimplantar Apps Script)
+      var RFM_RACIONAL = {
+        'Champions':  'Compram muito, com frequência e recentemente — são o núcleo do negócio e os maiores embaixadores da marca',
+        'VIPs':       'Alto valor de compra e alta fidelidade — têm potencial de virar Champions com o estímulo certo',
+        'Fiéis':      'Compram com regularidade e constância — formam a base sólida de receita recorrente',
+        'Potenciais': 'Fizeram a 2ª compra recentemente — estão na janela de oportunidade para virar fiéis',
+        'Novos':      'Primeira compra recente — vão decidir nos próximos 90 dias se ficam ou somem',
+        'Em Risco':   'Foram bons clientes mas estão sumindo — a janela de reativação está fechando',
+        'Dormentes':  'Compraram algumas vezes e pararam — precisam de estímulo forte para voltar',
+        'Perdidos':   'Muito tempo sem comprar e baixo engajamento — avaliar se o custo de reativação compensa',
+      };
       rfmBody.innerHTML = d.rfm.map(function(r) {
         var ticket = r.pedidos > 0 ? r.receita / r.pedidos : 0;
+        // Extrai o nome do segmento removendo o emoji
+        var segNome = r.segmento ? r.segmento.replace(/^\S+\s/, '') : '';
+        var racional = r.racional || RFM_RACIONAL[segNome] || '—';
         return '<tr>' +
           '<td><strong>' + r.segmento + '</strong></td>' +
           '<td>' + fmtNum(r.base) + '</td>' +
-          '<td>' + fmtNum(r.pedidos) + '</td>' +
+          '<td>' + fmtNum(r.pedidos || r.Pedidos || 0) + '</td>' +
           '<td><strong>' + fmtBRL(r.receita) + '</strong></td>' +
           '<td>' + fmtBRL(ticket) + '</td>' +
-          '<td style="font-size:12px;color:#374151">' + (r.racional || '—') + '</td>' +
-          '<td style="font-size:12px;color:#6b7280">' + (r.acao || '—') + '</td>' +
+          '<td style="font-size:11px;color:#374151;max-width:220px">' + racional + '</td>' +
+          '<td style="font-size:11px;color:#6b7280">' + (r.acao || '—') + '</td>' +
           '</tr>';
       }).join('');
     }
@@ -3782,8 +3796,8 @@ function applyClientesData(d) {
     var abcGrid = document.getElementById('abcGrid');
     if (abcGrid) {
       var abcCfg = {
-        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb', criterio: '> 3 compras · ≥ R$3.000' },
-        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff', criterio: '≤ 2 compras · ≥ R$2.000' },
+        A: { icon: '💎', label: 'VIP',       border: '#f59e0b', bg: '#fffbeb', criterio: '≥ 10 compras · ≥ R$10.000' },
+        B: { icon: '🌟', label: 'Regular',   border: '#3b82f6', bg: '#eff6ff', criterio: '≥ 5 compras · ≥ R$5.000' },
         C: { icon: '👤', label: 'Ocasional', border: '#9ca3af', bg: '#f9fafb', criterio: 'Demais clientes' },
       };
       abcGrid.innerHTML = d.abc.map(function(cls) {
