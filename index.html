@@ -3666,31 +3666,40 @@ function _renderSelloutRankings() {
     var tip = p.tipo    || ''; if (tip) byTipo[tip]     = (byTipo[tip]    || 0) + qtd;
   });
 
-  function renderRankList(byObj, elId, color, maxItems) {
+  function renderRankList(byObj, elId, color) {
     var el = document.getElementById(elId);
     if (!el) return;
     var items = Object.keys(byObj)
       .map(function(k){ return { label: k, qtd: byObj[k] }; })
       .sort(function(a, b){ return b.qtd - a.qtd; })
-      .slice(0, maxItems || 15);
-    if (!items.length) { el.innerHTML = '<div style="color:#9ca3af;font-size:12px;padding:8px 0">Sem dados no período</div>'; return; }
+      .slice(0, 10);
+    if (!items.length) {
+      el.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 0;color:#9ca3af">' +
+        '<span style="font-size:22px;margin-bottom:6px">📭</span>' +
+        '<span style="font-size:12px;font-weight:500">Sem dados no período</span>' +
+      '</div>';
+      return;
+    }
     var maxV = items[0].qtd || 1;
-    el.innerHTML = items.map(function(it) {
+    el.innerHTML = items.map(function(it, idx) {
       var pct = Math.round(it.qtd / maxV * 100);
-      return '<div style="margin-bottom:6px">' +
+      return '<div style="margin-bottom:7px">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px">' +
-          '<span style="font-size:11px;color:#111827;font-weight:500;max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + it.label + '">' + it.label + '</span>' +
-          '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:4px;white-space:nowrap">' + fmtNum(it.qtd) + '</span>' +
+          '<div style="display:flex;align-items:center;gap:5px;min-width:0">' +
+            '<span style="font-size:10px;font-weight:700;color:#9ca3af;min-width:14px">' + (idx+1) + '</span>' +
+            '<span style="font-size:11px;color:#111827;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + it.label + '">' + it.label + '</span>' +
+          '</div>' +
+          '<span style="font-size:11px;font-weight:700;color:#374151;margin-left:6px;white-space:nowrap">' + fmtNum(it.qtd) + '</span>' +
         '</div>' +
-        '<div style="height:4px;background:#f3f4f6;border-radius:2px"><div style="height:4px;width:' + pct + '%;background:' + color + ';border-radius:2px"></div></div>' +
+        '<div style="height:3px;background:#f3f4f6;border-radius:2px"><div style="height:3px;width:' + pct + '%;background:' + color + ';border-radius:2px"></div></div>' +
       '</div>';
     }).join('');
   }
 
-  renderRankList(byProduto, 'rankProdutos', '#c20000', 15);
-  renderRankList(byColecao, 'rankColecao',  '#3b82f6', 12);
-  renderRankList(byTecido,  'rankTecido',   '#8b5cf6', 12);
-  renderRankList(byTipo,    'rankTipo',     '#10b981', 12);
+  renderRankList(byProduto, 'rankProdutos', '#c20000');
+  renderRankList(byColecao, 'rankColecao',  '#3b82f6');
+  renderRankList(byTecido,  'rankTecido',   '#8b5cf6');
+  renderRankList(byTipo,    'rankTipo',     '#10b981');
 }
 
 /* ===== APPLY — VENDAS ===== */
