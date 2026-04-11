@@ -3432,8 +3432,8 @@ function getSelectedMonthKey() {
   } catch(e) { return null; }
 }
 
-// URL base dos dados estáticos — GitHub raw (não depende de rebuild do Netlify)
-var STATIC_DATA_URL = 'https://raw.githubusercontent.com/wlisses-nksw/nksw-bi/main/data/';
+// URL base dos dados estáticos — caminho relativo (funciona em GitHub Pages e local)
+var STATIC_DATA_URL = 'data/';
 
 // Lê {name}.json (mês atual, max 20 min) ou {name}_{YYYY-MM}.json (histórico) via GitHub raw
 async function fetchStaticJSON(name, monthKey) {
