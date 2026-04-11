@@ -2162,24 +2162,28 @@ async function loadMarketing() {
   _setSub('campSubtitle',  'Performance por campanha · ' + periodLabel);
   _setSub('adsSubtitle',   'ROAS · Invest. · Compras · Criativos · ' + periodLabel);
   try {
-    var fields = 'spend,purchase_roas,actions,cost_per_action_type,impressions,clicks,ctr,cpc';
+    var fields = 'spend,purchase_roas,actions,cost_per_action_type,impressions,clicks,ctr,cpc,reach,frequency';
     var dp = getMetaDateParam();
     var data = await metaFetch('/' + META_ACCOUNT + '/insights?fields=' + fields + '&' + dp);
     if (data.data && data.data.length > 0) {
       var d = data.data[0];
-      var spend = parseFloat(d.spend || 0);
-      var impr = parseInt(d.impressions || 0);
-      var clicks = parseInt(d.clicks || 0);
-      var ctr = parseFloat(d.ctr || 0);
-      var cpc = parseFloat(d.cpc || 0);
-      var purchases = 0, roas = 0;
+      var spend     = parseFloat(d.spend || 0);
+      var impr      = parseInt(d.impressions || 0);
+      var clicks    = parseInt(d.clicks || 0);
+      var ctr       = parseFloat(d.ctr || 0);
+      var cpc       = parseFloat(d.cpc || 0);
+      var reach     = parseInt(d.reach || 0);
+      var frequency = parseFloat(d.frequency || 0);
+      var purchases = 0, roas = 0, atc = 0, checkout = 0;
       if (d.actions) {
-        var pa = d.actions.find(function(a){ return a.action_type === 'purchase'; });
-        if (pa) purchases = parseInt(pa.value);
+        var _act = function(type) { var a = d.actions.find(function(x){ return x.action_type===type; }); return a ? parseInt(a.value) : 0; };
+        purchases = _act('purchase');
+        atc       = _act('add_to_cart');
+        checkout  = _act('initiate_checkout');
       }
       if (d.purchase_roas && d.purchase_roas.length > 0) roas = parseFloat(d.purchase_roas[0].value);
       var cpp = purchases > 0 ? spend / purchases : 0;
-      updateMetaOverview({spend:spend, roas:roas, purchases:purchases, cpp:cpp, impressions:impr, clicks:clicks, ctr:ctr, cpc:cpc});
+      updateMetaOverview({spend:spend, roas:roas, purchases:purchases, cpp:cpp, impressions:impr, clicks:clicks, ctr:ctr, cpc:cpc, reach:reach, frequency:frequency, atc:atc, checkout:checkout});
       document.getElementById('metaApiStatus').textContent = 'Dados reais Meta Ads · ' + periodLabel;
       setStatus('ok', 'Meta Ads conectado');
     } else { throw new Error('Sem dados'); }
@@ -2208,10 +2212,10 @@ function updateMetaOverview(d) {
   el = document.getElementById('m8-clicks'); if(el) el.textContent = fmtNum(d.clicks);
   el = document.getElementById('m8-ctr'); if(el) el.textContent = parseFloat(d.ctr).toFixed(2) + '%';
   el = document.getElementById('m8-cpc'); if(el) el.textContent = fmtBRL(d.cpc);
-  el = document.getElementById('m8-reach'); if(el) el.textContent = fmtNum(d.reach || MOCK.metaAds.reach);
-  el = document.getElementById('m8-freq'); if(el) el.textContent = parseFloat(d.frequency || MOCK.metaAds.frequency).toFixed(2) + 'x';
-  el = document.getElementById('m8-atc'); if(el) el.textContent = fmtNum(d.atc || MOCK.metaAds.atc);
-  el = document.getElementById('m8-checkout-meta'); if(el) el.textContent = fmtNum(d.checkout || MOCK.metaAds.checkout);
+  el = document.getElementById('m8-reach'); if(el) el.textContent = fmtNum(d.reach || 0);
+  el = document.getElementById('m8-freq'); if(el) el.textContent = parseFloat(d.frequency || 0).toFixed(2) + 'x';
+  el = document.getElementById('m8-atc'); if(el) el.textContent = fmtNum(d.atc || 0);
+  el = document.getElementById('m8-checkout-meta'); if(el) el.textContent = fmtNum(d.checkout || 0);
 
   // Armazena dados de marketing para aba Indicadores e re-renderiza
   _indMktSpend = parseFloat(d.spend || 0);
