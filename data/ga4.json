@@ -7,16 +7,16 @@
     "startDate": "2026-04-01",
     "endDate": "2026-04-11"
   },
-  "generatedAt": "2026-04-11T15:50:18.190Z",
+  "generatedAt": "2026-04-11T15:59:35.031Z",
   "propertyId": "374872616",
   "overview": {
     "sessions": 15450,
-    "users": 10316,
-    "newUsers": 9022,
-    "newUserRate": 0.5839482200647249,
+    "users": 10318,
+    "newUsers": 9024,
+    "newUserRate": 0.5840776699029127,
     "bounceRate": 0.5566343042071198,
-    "avgSessionDuration": 112.934952147055,
-    "pagesPerSession": 2.7867313915857603,
+    "avgSessionDuration": 112.93527140925565,
+    "pagesPerSession": 2.786860841423948,
     "transactions": 98,
     "purchaseRevenue": 72229.04997400001,
     "sessionConversionRate": 0.005825242718446602,
@@ -51,7 +51,7 @@
       "transactions": 25,
       "revenue": 22857.449989,
       "bounceRate": 0.4814031376696633,
-      "avgDuration": 108.26286906099067,
+      "avgDuration": 108.26373854821082,
       "convRate": 0.004406839414771726
     },
     {
@@ -60,7 +60,7 @@
       "transactions": 23,
       "revenue": 23044.699996,
       "bounceRate": 0.394524959742351,
-      "avgDuration": 202.26002802495975,
+      "avgDuration": 202.26002802495972,
       "convRate": 0.01932367149758454
     },
     {
@@ -194,7 +194,7 @@
     {
       "date": "10/04/2026",
       "dateRaw": "20260410",
-      "sessions": 1271,
+      "sessions": 1272,
       "transactions": 9,
       "revenue": 2310.399994000001,
       "addToCarts": 104
@@ -202,7 +202,7 @@
     {
       "date": "11/04/2026",
       "dateRaw": "20260411",
-      "sessions": 27,
+      "sessions": 28,
       "transactions": 0,
       "revenue": 0,
       "addToCarts": 3
@@ -216,17 +216,17 @@
       "transactions": 17,
       "revenue": 16304.399992,
       "bounceRate": 0.31391054575297495,
-      "avgDuration": 127.50907408945424,
+      "avgDuration": 127.50907408945427,
       "convRate": 0.006975789905621666
     },
     {
       "page": "/colecoes/wave",
       "channel": "Organic Social",
-      "sessions": 947,
+      "sessions": 948,
       "transactions": 0,
       "revenue": 0,
-      "bounceRate": 0.5533262935586061,
-      "avgDuration": 59.97551591763464,
+      "bounceRate": 0.5537974683544303,
+      "avgDuration": 59.912250605485234,
       "convRate": 0
     },
     {
@@ -236,7 +236,7 @@
       "transactions": 5,
       "revenue": 3659.1800030000004,
       "bounceRate": 0.5424292845257903,
-      "avgDuration": 97.80090377537438,
+      "avgDuration": 97.8009037753744,
       "convRate": 0.008319467554076539
     },
     {
@@ -266,7 +266,7 @@
       "transactions": 3,
       "revenue": 1246.000002,
       "bounceRate": 0.5,
-      "avgDuration": 83.59166477916668,
+      "avgDuration": 83.59166477916666,
       "convRate": 0.00625
     },
     {
@@ -336,7 +336,7 @@
       "transactions": 3,
       "revenue": 2510.649997,
       "bounceRate": 0.3805309734513274,
-      "avgDuration": 219.24801731858406,
+      "avgDuration": 219.2480173185841,
       "convRate": 0.01327433628318584
     },
     {
@@ -356,7 +356,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.589041095890411,
-      "avgDuration": 77.14539843835617,
+      "avgDuration": 77.14539843835615,
       "convRate": 0
     },
     {
@@ -366,7 +366,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.7777777777777778,
-      "avgDuration": 64.65615608148148,
+      "avgDuration": 64.65615608148147,
       "convRate": 0
     },
     {
@@ -386,7 +386,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.8409090909090909,
-      "avgDuration": 15.455469795454547,
+      "avgDuration": 15.455469795454546,
       "convRate": 0
     },
     {
@@ -613,18 +613,247 @@
     }
   ],
   "funnel": {
-    "itemsViewed": 20101,
+    "itemsViewed": 20102,
     "addToCarts": 1530,
     "checkouts": 361,
     "purchases": 93,
-    "revenue": 72229.049974,
+    "revenue": 72229.04997400001,
     "itemsPurchased": 234,
     "rates": {
-      "viewToCart": 0.07611561613850057,
+      "viewToCart": 0.07611182966868968,
       "cartToCheckout": 0.23594771241830065,
       "checkoutToPay": 0.25761772853185594,
-      "overall": 0.0046266354907716035
+      "overall": 0.0046264053328027065
     }
   },
-  "generated_at": "2026-04-11T15:50:17Z"
+  "device": [
+    {
+      "device": "mobile",
+      "sessions": 14740,
+      "users": 9870,
+      "transactions": 82,
+      "revenue": 64404.77998100002,
+      "bounceRate": 0.569742198100407
+    },
+    {
+      "device": "desktop",
+      "sessions": 772,
+      "users": 433,
+      "transactions": 16,
+      "revenue": 7824.269993,
+      "bounceRate": 0.39248704663212436
+    },
+    {
+      "device": "tablet",
+      "sessions": 29,
+      "users": 26,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.3448275862068966
+    }
+  ],
+  "geo": {
+    "states": [
+      {
+        "state": "State of Sao Paulo",
+        "sessions": 5106,
+        "users": 3639,
+        "transactions": 24,
+        "revenue": 18677.000003999998
+      },
+      {
+        "state": "State of Minas Gerais",
+        "sessions": 1884,
+        "users": 1285,
+        "transactions": 11,
+        "revenue": 9240.619998
+      },
+      {
+        "state": "State of Rio de Janeiro",
+        "sessions": 1627,
+        "users": 1086,
+        "transactions": 19,
+        "revenue": 17296.749992
+      },
+      {
+        "state": "Federal District",
+        "sessions": 1043,
+        "users": 627,
+        "transactions": 3,
+        "revenue": 1284.699998
+      },
+      {
+        "state": "State of Parana",
+        "sessions": 850,
+        "users": 607,
+        "transactions": 8,
+        "revenue": 8408.999996999999
+      },
+      {
+        "state": "State of Goias",
+        "sessions": 829,
+        "users": 548,
+        "transactions": 7,
+        "revenue": 6917.430001
+      },
+      {
+        "state": "State of Santa Catarina",
+        "sessions": 696,
+        "users": 512,
+        "transactions": 3,
+        "revenue": 72.7999990000003
+      },
+      {
+        "state": "State of Bahia",
+        "sessions": 642,
+        "users": 466,
+        "transactions": 6,
+        "revenue": 3881.0999939999992
+      },
+      {
+        "state": "State of Rio Grande do Sul",
+        "sessions": 565,
+        "users": 428,
+        "transactions": 5,
+        "revenue": 5616.500003000001
+      },
+      {
+        "state": "State of Espirito Santo",
+        "sessions": 402,
+        "users": 294,
+        "transactions": 1,
+        "revenue": 521.549998
+      }
+    ],
+    "cities": [
+      {
+        "city": "Sao Paulo",
+        "sessions": 3042,
+        "users": 2158,
+        "transactions": 13,
+        "revenue": 12005.500011999999
+      },
+      {
+        "city": "Rio de Janeiro",
+        "sessions": 1289,
+        "users": 874,
+        "transactions": 15,
+        "revenue": 12086.899991
+      },
+      {
+        "city": "Brasilia",
+        "sessions": 1030,
+        "users": 618,
+        "transactions": 3,
+        "revenue": 1284.699998
+      },
+      {
+        "city": "Belo Horizonte",
+        "sessions": 857,
+        "users": 586,
+        "transactions": 6,
+        "revenue": 4799.240000000001
+      },
+      {
+        "city": "Goiania",
+        "sessions": 498,
+        "users": 329,
+        "transactions": 7,
+        "revenue": 6917.430001
+      },
+      {
+        "city": "Curitiba",
+        "sessions": 445,
+        "users": 335,
+        "transactions": 2,
+        "revenue": 1737.999999
+      },
+      {
+        "city": "(not set)",
+        "sessions": 412,
+        "users": 304,
+        "transactions": 5,
+        "revenue": -3198.7300060000002
+      },
+      {
+        "city": "Salvador",
+        "sessions": 392,
+        "users": 293,
+        "transactions": 2,
+        "revenue": 393.9999959999999
+      },
+      {
+        "city": "Campinas",
+        "sessions": 294,
+        "users": 228,
+        "transactions": 2,
+        "revenue": 1758.6000010000002
+      },
+      {
+        "city": "Porto Alegre",
+        "sessions": 265,
+        "users": 216,
+        "transactions": 4,
+        "revenue": 5249.700001
+      }
+    ]
+  },
+  "demographics": {
+    "age": [
+      {
+        "bracket": "unknown",
+        "users": 9980,
+        "sessions": 14915
+      },
+      {
+        "bracket": "25-34",
+        "users": 145,
+        "sessions": 235
+      },
+      {
+        "bracket": "18-24",
+        "users": 82,
+        "sessions": 135
+      },
+      {
+        "bracket": "35-44",
+        "users": 57,
+        "sessions": 90
+      },
+      {
+        "bracket": "45-54",
+        "users": 27,
+        "sessions": 55
+      },
+      {
+        "bracket": "55-64",
+        "users": 16,
+        "sessions": 22
+      },
+      {
+        "bracket": "65+",
+        "users": 13,
+        "sessions": 19
+      }
+    ],
+    "gender": [
+      {
+        "gender": "unknown",
+        "users": 9938,
+        "sessions": 14842
+      },
+      {
+        "gender": "female",
+        "users": 241,
+        "sessions": 385
+      },
+      {
+        "gender": "male",
+        "users": 127,
+        "sessions": 220
+      }
+    ]
+  },
+  "productFunnel": [],
+  "generated_at": "2026-04-11T15:59:31Z"
 }
