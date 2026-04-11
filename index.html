@@ -876,27 +876,27 @@ tbody tr:hover{background:#fafafa}
         <div class="kpi-card" style="border:none;box-shadow:none;background:#f9fafb">
           <div class="kpi-header"><span class="kpi-icon">🧑</span><span class="kpi-label">Usuários</span></div>
           <div class="kpi-value" id="ga4-users">46.973</div>
-          <div class="kpi-badge down">▼ 14,59%</div>
+          <div class="kpi-badge neutral" id="ga4-users-badge">— vs ano anterior</div>
         </div>
         <div class="kpi-card" style="border:none;box-shadow:none;background:#f9fafb">
           <div class="kpi-header"><span class="kpi-icon">📄</span><span class="kpi-label">Pageviews</span></div>
           <div class="kpi-value" id="ga4-pageviews">73.789</div>
-          <div class="kpi-badge up">▲ 5,2%</div>
+          <div class="kpi-badge neutral" id="ga4-pageviews-badge">— vs ano anterior</div>
         </div>
         <div class="kpi-card" style="border:none;box-shadow:none;background:#f9fafb">
           <div class="kpi-header"><span class="kpi-icon">⏱️</span><span class="kpi-label">Duração Sessão</span></div>
           <div class="kpi-value" id="ga4-duration">1m51s</div>
-          <div class="kpi-badge up">▲ 36,64%</div>
+          <div class="kpi-badge neutral" id="ga4-duration-badge">— vs ano anterior</div>
         </div>
         <div class="kpi-card" style="border:none;box-shadow:none;background:#f9fafb">
           <div class="kpi-header"><span class="kpi-icon">↩️</span><span class="kpi-label">Taxa de Rejeição</span></div>
           <div class="kpi-value" id="ga4-bounce">58,12%</div>
-          <div class="kpi-badge down">▼ 14,84%</div>
+          <div class="kpi-badge neutral" id="ga4-bounce-badge">— vs ano anterior</div>
         </div>
         <div class="kpi-card" style="border:none;box-shadow:none;background:#f9fafb">
           <div class="kpi-header"><span class="kpi-icon">🎯</span><span class="kpi-label">Conv. E-comm</span></div>
           <div class="kpi-value" id="ga4-convrate">2,90%</div>
-          <div class="kpi-badge up">▲ 0,3pp</div>
+          <div class="kpi-badge neutral" id="ga4-convrate-badge">— vs ano anterior</div>
         </div>
       </div>
 
@@ -2849,12 +2849,16 @@ async function loadGA4Data() {
     // 2. Cache localStorage (histórico ou fallback)
     if (!data) data = getCache(ga4CacheKey);
 
-    // 3. Apps Script (última opção)
+    // 3. Apps Script — busca período atual e ano anterior em paralelo
     if (!data) {
-      var r = await fetch(url + '?' + getGA4DateParam());
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      data = await r.json();
+      var pyGa4Params = getPreviousYearParams();
+      var fetches = [fetch(url + '?' + getGA4DateParam()).then(function(r){ return r.json(); })];
+      if (pyGa4Params) fetches.push(fetch(url + '?' + pyGa4Params).then(function(r){ return r.json(); }).catch(function(){ return null; }));
+      var results = await Promise.all(fetches);
+      data = results[0];
       if (data && data.overview) saveCache(ga4CacheKey, data);
+      var dataPY = results[1] || null;
+      if (dataPY) saveCache(ga4CacheKey + '_py', dataPY);
     } else {
       // Atualiza cache em segundo plano sem bloquear a tela
       fetch(url + '?' + getGA4DateParam())
@@ -2867,6 +2871,24 @@ async function loadGA4Data() {
     var ov = data.overview || data;
     if (!ov || !ov.sessions) throw new Error('Sem dados de sessão');
 
+    /* Ano anterior — tenta cache se não veio na chamada paralela */
+    var dataPY = dataPY || getCache(ga4CacheKey + '_py') || null;
+    var ovPY   = dataPY ? (dataPY.overview || dataPY) : null;
+
+    /* Helper: atualiza badge com variação YoY real.
+       lowerIsBetter=true para bounce rate (queda = verde) */
+    function _ga4Badge(elId, cur, prev, lowerIsBetter, isSuffix) {
+      var el2 = document.getElementById(elId);
+      if (!el2) return;
+      if (!prev || prev === 0) { el2.textContent = '— vs 2025'; el2.className = 'kpi-badge neutral'; return; }
+      var pct   = ((cur - prev) / Math.abs(prev)) * 100;
+      var up    = lowerIsBetter ? pct < 0 : pct > 0;
+      var arrow = pct > 0 ? '▲' : '▼';
+      var pyYear = customStart ? parseInt(customStart.slice(0,4)) - 1 : new Date().getFullYear() - 1;
+      el2.textContent = arrow + ' ' + Math.abs(pct).toFixed(1) + (isSuffix || '%') + ' vs ' + pyYear;
+      el2.className   = 'kpi-badge ' + (up ? 'up' : 'down');
+    }
+
     var el;
     _indGA4Sessions = parseInt(ov.sessions) || 0;
     el = document.getElementById('ga4-sessions');  if(el) el.textContent = fmtNum(ov.sessions);
@@ -2874,13 +2896,29 @@ async function loadGA4Data() {
     var dur = parseInt(ov.avgSessionDuration || ov.duration || 111);
     el = document.getElementById('ga4-duration');  if(el) el.textContent = Math.floor(dur/60) + 'm' + (dur%60) + 's';
     var bounce = parseFloat(ov.bounceRate || 0);
-    el = document.getElementById('ga4-bounce');    if(el) el.textContent = (bounce > 1 ? bounce : bounce * 100).toFixed(2) + '%';
+    bounce = bounce > 1 ? bounce : bounce * 100;
+    el = document.getElementById('ga4-bounce');    if(el) el.textContent = bounce.toFixed(2) + '%';
     /* GAS retorna pagesPerSession (não o total). Calcula total = sessions × pagesPerSession */
     var pvTotal = ov.screenPageViews || ov.pageviews ||
                   (ov.pagesPerSession && ov.sessions ? Math.round(parseFloat(ov.pagesPerSession) * parseInt(ov.sessions)) : 0);
     el = document.getElementById('ga4-pageviews'); if(el) el.textContent = fmtNum(pvTotal || 0);
-    var conv = parseFloat(ov.sessionConversionRate || MOCK.ga4.convRate);
-    el = document.getElementById('ga4-convrate');  if(el) el.textContent = (conv > 1 ? conv : conv * 100).toFixed(2) + '%';
+    var conv = parseFloat(ov.sessionConversionRate || 0);
+    conv = conv > 1 ? conv : conv * 100;
+    el = document.getElementById('ga4-convrate');  if(el) el.textContent = conv.toFixed(2) + '%';
+
+    /* Badges YoY — compara com mesmo período do ano anterior */
+    if (ovPY) {
+      var pvPY = ovPY.screenPageViews || ovPY.pageviews ||
+                 (ovPY.pagesPerSession && ovPY.sessions ? Math.round(parseFloat(ovPY.pagesPerSession) * parseInt(ovPY.sessions)) : 0);
+      var bouncePY = parseFloat(ovPY.bounceRate || 0); bouncePY = bouncePY > 1 ? bouncePY : bouncePY * 100;
+      var convPY   = parseFloat(ovPY.sessionConversionRate || 0); convPY = convPY > 1 ? convPY : convPY * 100;
+      _ga4Badge('ga4-sessions-badge',  parseInt(ov.sessions), parseInt(ovPY.sessions||0), false);
+      _ga4Badge('ga4-users-badge',     parseInt(ov.users||ov.activeUsers||0), parseInt(ovPY.users||ovPY.activeUsers||0), false);
+      _ga4Badge('ga4-pageviews-badge', pvTotal, pvPY, false);
+      _ga4Badge('ga4-duration-badge',  dur, parseInt(ovPY.avgSessionDuration||ovPY.duration||0), false, 's');
+      _ga4Badge('ga4-bounce-badge',    bounce, bouncePY, true, 'pp');
+      _ga4Badge('ga4-convrate-badge',  conv, convPY, false, 'pp');
+    }
 
     var st = document.getElementById('ga4Status');
     if (st) st.textContent = 'Dados reais GA4 · ' + getPeriodLabel();
