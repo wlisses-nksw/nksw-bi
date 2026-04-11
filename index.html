@@ -4060,6 +4060,22 @@ function _estCell(est, thr) {
   return '<span style="color:#16a34a;font-weight:600">' + est + '</span>';
 }
 
+/* Corrige bug de fuso UTC no GAS: getMonth() lê a data em UTC,
+   fazendo jan/BRT aparecer como dez/UTC → mesesKeys ficam 1 mês atrasados.
+   Detecção: se o primeiro key terminar em '-12' (dezembro), avança tudo +1 mês.
+   Quando o GAS for corrigido, keys[0] = '2025-01' e a função vira no-op. */
+function _fixMesesKeysTZShift(keys) {
+  if (!keys || !keys.length || !keys[0]) return keys;
+  if (!keys[0].endsWith('-12')) return keys; // não está shifteado
+  return keys.map(function(k) {
+    if (!k) return k;
+    var yr = parseInt(k.slice(0, 4));
+    var mo = parseInt(k.slice(5, 7)) + 1;
+    if (mo > 12) { mo = 1; yr += 1; }
+    return yr + '-' + ('0' + mo).slice(-2);
+  });
+}
+
 /* ── apply principal ── */
 function applyEstoqueData(d) {
   if (!d) return;
@@ -4079,7 +4095,7 @@ function applyEstoqueData(d) {
 
   // Ranking de mais vendidos (novo formato com rankData + mesesKeys)
   if (d.rankData  && d.rankData.length)  _estoqueRankData  = d.rankData;
-  if (d.mesesKeys && d.mesesKeys.length) _estoqueMesesKeys = d.mesesKeys;
+  if (d.mesesKeys && d.mesesKeys.length) _estoqueMesesKeys = _fixMesesKeysTZShift(d.mesesKeys);
   _renderSelloutRankings();
 
   // ── KPI cards ──
