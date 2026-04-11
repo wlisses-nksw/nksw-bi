@@ -604,6 +604,7 @@ tbody tr:hover{background:#fafafa}
       </div>
     </div>
     <button id="topbar-new-user-btn" onclick="openUserModal()" style="display:none;padding:8px 18px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">+ Novo Usuário</button>
+    <button id="topbar-change-pwd-btn" onclick="openChangePwdModal()" style="display:none;padding:7px 14px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🔑 Alterar Senha</button>
     <div class="tb-status">
       <span class="s-dot ok" id="statusDotTop"></span>
       <span id="statusTextTop">Conectado</span>
@@ -4376,7 +4377,7 @@ async function loadAllSheetsData() {
     var prevD = vendasResults[1] || null;
     if (curD && curD.vendas) {
       _lastVendasData     = curD.vendas;  // cache para filtro client-side
-      _lastPrevVendasData = (prevD && prevD.ok && prevD.vendas) ? prevD.vendas : null; // cache YoY
+      _lastPrevVendasData = (prevD && prevD.vendas) ? prevD.vendas : null; // cache YoY
       applyVendasData(curD.vendas, _lastPrevVendasData);
       anyOk = true;
     }
@@ -4398,6 +4399,14 @@ async function loadAllSheetsData() {
   }));
   if (otherResults.some(Boolean)) anyOk = true;
   setSheetsStatus(anyOk, anyOk ? 'Planilhas ✓' : null);
+
+  // Garante que dados do ano anterior estejam em cache para YoY na Visão Geral
+  // (changeNavMonth já faz isso, mas aqui cobrimos changePeriod + applyCustomDate)
+  if (getSheetsUrl()) {
+    fetchMonthData(navMonth, navYear - 1).catch(function(){}).then(function() {
+      renderVisaoGeral(); // re-renderiza VG com dados YoY disponíveis
+    });
+  }
 
   // Carrega clientes (com cohortMonths + Meta Ads spend) e evolução anual
   loadClientesPage();
@@ -6288,6 +6297,10 @@ function applyPermissions(auth) {
   if (adminEl)  adminEl.style.display  = isAdmin ? '' : 'none';
   if (adminSec) adminSec.style.display = isAdmin ? '' : 'none';
 
+  // Botão "Alterar Senha" — visível apenas para visualizadores (não admin)
+  var changePwdBtn = document.getElementById('topbar-change-pwd-btn');
+  if (changePwdBtn) changePwdBtn.style.display = isAdmin ? 'none' : '';
+
   // Botão "Editar metas" — visível apenas para admin
   var metasEditBtn = document.getElementById('metas-view-btns');
   if (metasEditBtn) metasEditBtn.style.display = isAdmin ? 'flex' : 'none';
@@ -6473,6 +6486,69 @@ async function saveUser() {
   btn.textContent = 'Salvar';
 }
 
+// ── Alterar senha (self-service para visualizador) ────────────────────
+function openChangePwdModal() {
+  document.getElementById('cpwd-atual').value = '';
+  document.getElementById('cpwd-nova').value = '';
+  document.getElementById('cpwd-confirm').value = '';
+  var msg = document.getElementById('cpwd-msg');
+  if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+  var btn = document.getElementById('cpwd-btn');
+  if (btn) btn.textContent = 'Salvar';
+  document.getElementById('change-pwd-modal').style.display = 'flex';
+}
+
+function closeChangePwdModal() {
+  document.getElementById('change-pwd-modal').style.display = 'none';
+}
+
+function _showCpwdMsg(text, isError) {
+  var msg = document.getElementById('cpwd-msg');
+  if (!msg) return;
+  msg.textContent = text;
+  msg.style.display = 'block';
+  msg.style.background = isError ? '#fef2f2' : '#f0fdf4';
+  msg.style.color = isError ? '#b91c1c' : '#15803d';
+  msg.style.border = '1px solid ' + (isError ? '#fecaca' : '#bbf7d0');
+}
+
+async function submitChangePwd() {
+  var atual   = document.getElementById('cpwd-atual').value.trim();
+  var nova    = document.getElementById('cpwd-nova').value.trim();
+  var confirm = document.getElementById('cpwd-confirm').value.trim();
+  var btn     = document.getElementById('cpwd-btn');
+
+  if (!atual || !nova || !confirm) { _showCpwdMsg('Preencha todos os campos.', true); return; }
+  if (nova.length < 6) { _showCpwdMsg('A nova senha deve ter no mínimo 6 caracteres.', true); return; }
+  if (nova !== confirm) { _showCpwdMsg('A nova senha e a confirmação não conferem.', true); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try {
+    var auth = getAuthState();
+    if (!auth) throw new Error('Sessão expirada. Faça login novamente.');
+
+    // Verificar senha atual fazendo login novamente
+    var hashAtual = await sha256Client(atual);
+    var checkData = await authCall({ action: 'login', email: auth.email, senhaHash: hashAtual });
+    if (!checkData.ok) throw new Error('Senha atual incorreta.');
+
+    // Aplicar nova senha
+    var hashNova = await sha256Client(nova);
+    var resetData = await authCall({ action: 'resetPassword', token: auth.token, id: auth.id, senhaHash: hashNova });
+    if (!resetData.ok) throw new Error(resetData.msg || 'Erro ao alterar senha.');
+
+    _showCpwdMsg('Senha alterada com sucesso!', false);
+    btn.textContent = 'Salvo!';
+    setTimeout(closeChangePwdModal, 1800);
+  } catch(e) {
+    _showCpwdMsg(e.message || 'Erro ao alterar senha.', true);
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
+  }
+}
+
 async function promptResetPassword(id, nome) {
   var nova = prompt('Nova senha para ' + nome + ' (mínimo 6 caracteres):');
   if (nova === null) return;
@@ -6487,6 +6563,30 @@ async function promptResetPassword(id, nome) {
 window.addEventListener('DOMContentLoaded', authInit);
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
 </script>
+
+<!-- ===== MODAL ALTERAR SENHA (viewer self-service) ===== -->
+<div id="change-pwd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:20px">🔑 Alterar Senha</div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Senha Atual</label>
+      <input id="cpwd-atual" type="password" placeholder="Sua senha atual" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Nova Senha</label>
+      <input id="cpwd-nova" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Confirmar Nova Senha</label>
+      <input id="cpwd-confirm" type="password" placeholder="Repita a nova senha" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div id="cpwd-msg" style="display:none;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeChangePwdModal()" style="padding:9px 18px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#374151">Cancelar</button>
+      <button id="cpwd-btn" onclick="submitChangePwd()" style="padding:9px 18px;border:none;border-radius:8px;background:#c20000;color:#fff;font-size:13px;font-weight:700;cursor:pointer">Salvar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== USER MODAL ===== -->
 <div id="user-modal">
