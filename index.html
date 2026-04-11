@@ -557,6 +557,7 @@ tbody tr:hover{background:#fafafa}
   </div>
   <div class="sb-footer">
     <div id="user-info">
+      <button id="topbar-change-pwd-btn" onclick="openChangePwdModal()" style="display:none;width:100%;padding:6px;background:#fff;color:#374151;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;margin-bottom:6px;text-align:left">🔑 Alterar Senha</button>
       <div id="user-nome-display">Usuário</div>
       <div id="user-email-display">email</div>
       <button id="logout-btn" onclick="doLogout()">Sair do sistema</button>
@@ -604,7 +605,6 @@ tbody tr:hover{background:#fafafa}
       </div>
     </div>
     <button id="topbar-new-user-btn" onclick="openUserModal()" style="display:none;padding:8px 18px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">+ Novo Usuário</button>
-    <button id="topbar-change-pwd-btn" onclick="openChangePwdModal()" style="display:none;padding:7px 14px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">🔑 Alterar Senha</button>
     <div class="tb-status">
       <span class="s-dot ok" id="statusDotTop"></span>
       <span id="statusTextTop">Conectado</span>
