@@ -120,6 +120,19 @@ function doGet(e) {
     if (section === 'logistica' || section === 'all') result.logistica = getLogistica(dates);
     if (section === 'estoque')                        result.estoque   = getEstoque();
 
+    if (section === 'metas') {
+      var props = PropertiesService.getScriptProperties().getProperties();
+      var metasOut = {};
+      Object.keys(props).forEach(function(k) { if (k.indexOf('nksw_goals_') === 0) metasOut[k] = props[k]; });
+      return jsonOut({ ok: true, metas: metasOut });
+    }
+    if (section === 'saveMetas') {
+      var mKey = p.month || '';
+      var mRaw = p.data  || '';
+      if (mKey && mRaw) PropertiesService.getScriptProperties().setProperty(mKey, decodeURIComponent(mRaw));
+      return jsonOut({ ok: true });
+    }
+
     result.periodo = {
       inicio: fmtDate(dates.start),
       fim:    fmtDate(dates.end),

@@ -4772,6 +4772,7 @@ function changeGoalMonth(delta) {
 }
 
 function setMetasMode(mode) {
+  if (mode === 'edit' && !isAdmin()) return; // somente admin pode editar metas
   _metasMode = mode;
   var viewPanel = document.getElementById('metas-view-panel');
   var editPanel = document.getElementById('metas-edit-panel');
@@ -4893,12 +4894,12 @@ function renderGoalsEditRows() {
           + '<option value="ponderado"' + (md.tipo==='ponderado'?' selected':'') + '>Ponderado</option>'
           + '</select>';
     html += '<button id="daybtn-' + k + '" onclick="toggleDayGrid(\'' + k + '\')" '
-          + 'style="padding:6px 10px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-weight:600;color:#6b7280;cursor:pointer;white-space:nowrap">Dias ›</button>';
+          + 'style="padding:6px 10px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-weight:600;color:#6b7280;cursor:pointer;white-space:nowrap">Dias ‹</button>';
     html += '</div>';
     html += '<div style="margin-top:8px"><div style="background:#f3f4f6;border-radius:99px;height:5px;overflow:hidden" id="goal-bar-' + k + '">'
           + '<div style="width:' + Math.min(pct,100).toFixed(1) + '%;height:100%;border-radius:99px;background:' + color + '"></div></div>'
           + '<div style="font-size:11px;color:#9ca3af;margin-top:3px" id="goal-pct-' + k + '">Realizado: ' + def.fmt(realized) + ' · ' + pct.toFixed(1) + '%</div></div>';
-    html += '<div id="day-grid-' + k + '" style="display:none"><div class="day-grid-wrap">';
+    html += '<div id="day-grid-' + k + '" style="display:block"><div class="day-grid-wrap">';
     for (var d = 1; d <= daysInMonth; d++) {
       var dt = getDailyTarget(md, k, d, goalMonth, goalYear);
       var isCustom = md.diasCustom && md.diasCustom[d];
@@ -4928,10 +4929,42 @@ function saveGoals() {
   saveMonthGoals(cfg);
   if (cfg.receita) { localStorage.setItem('meta_receita', cfg.receita.meta); }
   if (cfg.roas)    { localStorage.setItem('meta_roas',    cfg.roas.meta);    }
+  saveGoalsToGAS(cfg); // persiste para todos os usuários via GAS
   var btn = document.querySelector('.goal-save-btn');
   if (btn) { var orig = btn.textContent; btn.textContent = '✓ Salvo!'; setTimeout(function(){btn.textContent=orig;},2000); }
   setMetasMode('view');
   renderIndicadores();
+}
+
+/* Salva metas no GAS para compartilhar com todos os usuários */
+function saveGoalsToGAS(cfg) {
+  var url = getSheetsUrl();
+  if (!url) return;
+  // Formato compacto (sem diasCustom extenso) para caber na URL
+  var compact = { activeMetrics: cfg.activeMetrics || [] };
+  Object.keys(GOAL_DEFS).forEach(function(k) {
+    if (cfg[k]) compact[k] = { meta: cfg[k].meta || 0, tipo: cfg[k].tipo || 'linear', diasCustom: cfg[k].diasCustom || {} };
+  });
+  var monthKey = getGoalKey(goalMonth, goalYear);
+  try {
+    var encoded = encodeURIComponent(JSON.stringify(compact));
+    fetch(url + '?section=saveMetas&month=' + monthKey + '&data=' + encoded, { mode: 'no-cors' }).catch(function(){});
+  } catch(e) {}
+}
+
+/* Carrega metas do GAS e sincroniza no localStorage de todos os usuários */
+async function loadMetasFromGAS() {
+  var url = getSheetsUrl();
+  if (!url) return;
+  try {
+    var r = await fetch(url + '?section=metas');
+    var d = await r.json();
+    if (d && d.ok && d.metas) {
+      Object.keys(d.metas).forEach(function(k) {
+        if (k.indexOf('nksw_goals_') === 0) localStorage.setItem(k, d.metas[k]);
+      });
+    }
+  } catch(e) { /* sem GAS configurado ou offline — usa localStorage local */ }
 }
 
 /* Retorna o valor realizado de uma métrica para um dia específico.
@@ -4985,7 +5018,9 @@ function renderGoalsResume() {
   var cfg = loadMonthGoals();
   var active = cfg.activeMetrics || ['receita','roas'];
   if (!active.length) {
-    container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px">Nenhuma meta configurada.<br><button onclick="setMetasMode(\'edit\')" style="margin-top:12px;padding:9px 20px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Configurar metas</button></div>';
+    container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:40px;font-size:13px">Nenhuma meta configurada.'
+      + (isAdmin() ? '<br><button onclick="setMetasMode(\'edit\')" style="margin-top:12px;padding:9px 20px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">+ Configurar metas</button>' : '')
+      + '</div>';
     return;
   }
   var today = new Date();
@@ -5332,6 +5367,7 @@ function getAuthState() {
 }
 function setAuthState(s) { sessionStorage.setItem(AUTH_KEY, JSON.stringify(s)); }
 function clearAuthState() { sessionStorage.removeItem(AUTH_KEY); }
+function isAdmin() { var a = getAuthState(); return a && a.role === 'admin'; }
 function getAuthUrl() { return DEFAULT_AUTH_URL || localStorage.getItem(AUTH_URL_KEY) || ''; }
 
 // ── SHA-256 client-side (Web Crypto API) ─────────────────────────────
@@ -5448,6 +5484,13 @@ function applyPermissions(auth) {
   var isAdmin  = auth.role === 'admin';
   if (adminEl)  adminEl.style.display  = isAdmin ? '' : 'none';
   if (adminSec) adminSec.style.display = isAdmin ? '' : 'none';
+
+  // Botão "Editar metas" — visível apenas para admin
+  var metasEditBtn = document.getElementById('metas-view-btns');
+  if (metasEditBtn) metasEditBtn.style.display = isAdmin ? 'flex' : 'none';
+
+  // Carrega metas do GAS para sincronizar todos os usuários
+  loadMetasFromGAS();
 
   // Info do usuário na sidebar
   var uiEl = document.getElementById('user-info');
