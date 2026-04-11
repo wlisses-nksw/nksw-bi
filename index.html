@@ -4579,7 +4579,13 @@ function getMonthRealized(key, m, y) {
     // Métricas acumuladas (soma):
     var sumMetrics = {receita:1, pedidos:1, custoMkt:1, sessoes:1, novosClientes:1};
     if (sumMetrics[key]) {
-      return days.reduce(function(s, e){ return s + (e[key] || 0); }, 0);
+      var soma = days.reduce(function(s, e){ return s + (e[key] || 0); }, 0);
+      // novosClientes: se o diário não tiver esse dado (soma=0), prefere o cohort
+      if (key === 'novosClientes' && soma === 0) {
+        var cv = _getCohortClientes(m, y);
+        if (cv !== null) return cv;
+      }
+      return soma;
     }
     // Métricas médias:
     var valid = days.filter(function(e){ return e[key] != null && e[key] > 0; });
@@ -4587,11 +4593,35 @@ function getMonthRealized(key, m, y) {
     return valid.reduce(function(s, e){ return s + e[key]; }, 0) / valid.length;
   }
 
+  // Sem cache diário: novos clientes vem do cohort (qualquer mês disponível)
+  if (key === 'novosClientes') {
+    var cohortVal = _getCohortClientes(m, y);
+    if (cohortVal !== null) return cohortVal;
+  }
+
   // Sem cache: para o mês atual usa os valores globais já carregados
   var todayObj = new Date();
   if (m === todayObj.getMonth() && y === todayObj.getFullYear()) {
     var def = GOAL_DEFS[key];
     return def ? def.realized() : null;
+  }
+  return null;
+}
+
+/* Retorna novos clientes do mês/ano lendo _cohortRawData (análise de cohort da aba Clientes) */
+function _getCohortClientes(m, y) {
+  var data = (_cohortRawData && _cohortRawData.length) ? _cohortRawData : (MOCK.cohort || []);
+  if (!data.length) return null;
+  var PT_ABR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var ab = PT_ABR[m];
+  if (!ab) return null;
+  var yStr = String(y);
+  for (var i = 0; i < data.length; i++) {
+    var safra = (data[i].safra || '').trim();
+    // Aceita "Set. 2025" ou "Set 2025" (com ou sem ponto)
+    if (safra.slice(0, 3).toLowerCase() === ab.toLowerCase() && safra.indexOf(yStr) >= 0) {
+      return data[i].clientes != null ? data[i].clientes : null;
+    }
   }
   return null;
 }
@@ -4605,7 +4635,9 @@ var GOAL_DEFS = {
   custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return MOCK.custoMarketing;},                              fmt:function(v){return fmtBRL(v);}},
   sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.sessions:50296;},                  fmt:function(v){return fmtNum(v);}},
   taxaConv:     {icon:'🎯',name:'Taxa de Conversão',   desc:'% de visitantes que compram',    prefix:'',  suffix:'%', required:false, step:0.1,  lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.convRate:2.9;},                   fmt:function(v){return v.toFixed(2)+'%';}},
-  novosClientes:{icon:'👤',name:'Novos Clientes',       desc:'Clientes novos no período',      prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return MOCK.novosClientes;},                               fmt:function(v){return fmtNum(v);}},
+  novosClientes:{icon:'👤',name:'Novos Clientes',       desc:'Clientes novos no período',      prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false,
+    realized:function(){ var c = _getCohortClientes(goalMonth, goalYear); return c !== null ? c : MOCK.novosClientes; },
+    fmt:function(v){return fmtNum(v);}},
 };
 
 function getGoalKey(m, y) {
