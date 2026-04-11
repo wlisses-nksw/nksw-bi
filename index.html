@@ -335,18 +335,104 @@ tbody tr:hover{background:#fafafa}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#9ca3af}
 
-/* ===== RESPONSIVE ===== */
+/* ===== HAMBURGER ===== */
+#hamburger-btn{display:none;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;border-radius:8px;flex-shrink:0;padding:0}
+#hamburger-btn:hover{background:#f3f4f6}
+.hbg{display:flex;flex-direction:column;gap:5px}
+.hbg-line{display:block;width:22px;height:2px;background:#374151;border-radius:2px;transition:transform .25s,opacity .25s}
+#hamburger-btn.open .hbg-line:nth-child(1){transform:translateY(7px) rotate(45deg)}
+#hamburger-btn.open .hbg-line:nth-child(2){opacity:0}
+#hamburger-btn.open .hbg-line:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ===== SIDEBAR OVERLAY ===== */
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;backdrop-filter:blur(1px)}
+#sidebar-overlay.open{display:block}
+
+/* ===== RESPONSIVE — TABLET 960px ===== */
 @media(max-width:960px){
   .meta-grid{grid-template-columns:1fr}
   .meta-8grid{grid-template-columns:repeat(2,1fr)}
   .four-col{grid-template-columns:repeat(2,1fr)}
   .two-col{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr 1fr}
+  .vg-grid{grid-template-columns:repeat(2,1fr)}
+  .goals-layout{grid-template-columns:1fr}
 }
-@media(max-width:600px){
-  #sidebar{display:none}
-  .meta-8grid{grid-template-columns:1fr 1fr}
-  .four-col{grid-template-columns:1fr 1fr}
-  .kpi-grid{grid-template-columns:1fr 1fr!important}
+
+/* ===== RESPONSIVE — MOBILE 768px ===== */
+@media(max-width:768px){
+  #hamburger-btn{display:flex}
+  #sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    width:260px;z-index:300;
+    transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.4,0,.2,1);
+    box-shadow:4px 0 24px rgba(0,0,0,.18)
+  }
+  #sidebar.open{transform:translateX(0)}
+  #topbar{padding:8px 12px;gap:8px;min-height:50px}
+  .tb-title{font-size:15px}
+  .tb-sub{font-size:10px}
+  #content{padding:14px 12px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)!important}
+  .three-col{grid-template-columns:1fr}
+  .four-col{grid-template-columns:repeat(2,1fr)}
+  .vg-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-wrap{height:220px}
+  .chart-wrap-sm{height:180px}
+  .doughnut-wrap{height:200px}
+  .connect-banner{flex-direction:column;gap:12px}
+  .cb-action input{width:100%}
+  .cb-action{flex-direction:column;width:100%}
+  .cb-action button{width:100%}
+  .meta-8grid{grid-template-columns:repeat(2,1fr)}
+  #nav-period-label{min-width:90px;font-size:12px}
+}
+
+/* ===== RESPONSIVE — MOBILE SMALL 480px ===== */
+@media(max-width:480px){
+  #topbar{padding:6px 10px;gap:6px}
+  .tb-title{font-size:14px}
+  .tb-sub{display:none}
+  .tb-status span:last-child{display:none}
+  #content{padding:10px 8px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)!important}
+  .kpi-value{font-size:20px}
+  .vg-grid{grid-template-columns:repeat(2,1fr)}
+  .vg-value{font-size:18px}
+  .four-col{grid-template-columns:repeat(2,1fr)}
+  .meta-8grid{grid-template-columns:repeat(2,1fr)}
+  .m8-val{font-size:18px}
+  .two-col{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr}
+  .chart-wrap{height:200px}
+  .chart-wrap-sm{height:160px}
+  .section-title{font-size:14px}
+  .card{padding:14px}
+  .chart-card{padding:14px}
+  .kpi-card{padding:12px 14px}
+  table{font-size:12px}
+  thead th{padding:8px 10px;font-size:10px}
+  tbody td{padding:8px 10px}
+  .goals-layout{grid-template-columns:1fr}
+  .goal-row{grid-template-columns:24px 1fr 140px;gap:8px}
+  .goal-row>:nth-child(4),.goal-row>:nth-child(5){display:none}
+  .goals-config-panel{padding:14px}
+  .mpc-header{flex-wrap:wrap}
+  .mpc-status{font-size:9px;padding:2px 7px}
+  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap;padding:3px}
+  .tab-btn{padding:6px 14px;font-size:12px;white-space:nowrap}
+  .sc-num{font-size:26px}
+  .fv-label{width:110px;font-size:11px}
+}
+
+/* ===== RESPONSIVE — EXTRA SMALL 360px ===== */
+@media(max-width:360px){
+  .kpi-grid{grid-template-columns:1fr!important}
+  .vg-grid{grid-template-columns:1fr}
+  .meta-8grid{grid-template-columns:1fr}
+  .four-col{grid-template-columns:1fr}
+  .m8-val{font-size:16px}
 }
 
 /* ===== AUTH — LOGIN ===== */
@@ -441,6 +527,9 @@ tbody tr:hover{background:#fafafa}
   </div>
 </div>
 
+<!-- ===== SIDEBAR OVERLAY ===== -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 <!-- ===== SIDEBAR ===== -->
 <nav id="sidebar">
   <div class="sb-logo">
@@ -482,6 +571,9 @@ tbody tr:hover{background:#fafafa}
 
   <!-- TOPBAR -->
   <div id="topbar">
+    <button id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+      <div class="hbg"><span class="hbg-line"></span><span class="hbg-line"></span><span class="hbg-line"></span></div>
+    </button>
     <div class="tb-title-area">
       <div class="tb-title" id="tbTitle">📊 Indicadores</div>
       <div class="tb-sub" id="tbSub">Visão 360° da operação</div>
@@ -1513,8 +1605,29 @@ var _indGA4Sessions      = null;  // sessões reais GA4
 var _indGA4FunilData    = null;  // dados reais do funil GA4
 var _indGA4CanaisData   = null;  // dados reais de canais GA4
 
+/* ===== SIDEBAR MOBILE ===== */
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  var btn = document.getElementById('hamburger-btn');
+  var isOpen = sb.classList.contains('open');
+  if (isOpen) {
+    sb.classList.remove('open'); ov.classList.remove('open'); btn.classList.remove('open');
+  } else {
+    sb.classList.add('open'); ov.classList.add('open'); btn.classList.add('open');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  var btn = document.getElementById('hamburger-btn');
+  if (btn) btn.classList.remove('open');
+}
+
 /* ===== NAVIGATION ===== */
 function goTo(page, el) {
+  // Fecha sidebar no mobile ao navegar
+  closeSidebar();
   // Verifica permissão (exceto admin que tem acesso próprio)
   var auth = getAuthState();
   if (auth && page !== 'admin') {
@@ -5439,6 +5552,7 @@ async function promptResetPassword(id, nome) {
 }
 
 window.addEventListener('DOMContentLoaded', authInit);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
 </script>
 
 <!-- ===== USER MODAL ===== -->
