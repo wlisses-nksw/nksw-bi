@@ -4101,18 +4101,25 @@ function applyEstoqueData(d) {
   // ── KPI cards ──
   var kpisEl = document.getElementById('estoqueKpis');
   if (kpisEl) {
+    // Valor de estoque: usa resumo do GAS ou calcula dos itens se campo ainda não existir
+    var valorEst = r.valorEstoque != null
+      ? r.valorEstoque
+      : _estoqueData.reduce(function(s, p) { return s + (p.custo || 0) * (p.estoque || 0); }, 0);
+
     var kpiCfg = [
-      { icon: '💎', label: 'SKUs Curva A',  val: r.totalA     || 0, border: '#f59e0b', bg: '#fffbeb', valColor: '#92400e' },
-      { icon: '🌟', label: 'SKUs Curva B',  val: r.totalB     || 0, border: '#3b82f6', bg: '#eff6ff', valColor: '#1e40af' },
-      { icon: '🚨', label: 'Sem Estoque',   val: r.semEstoque || 0, border: '#dc2626', bg: '#fff5f5', valColor: '#dc2626' },
-      { icon: '⚠️', label: 'Estoque Baixo', val: r.estBaixo   || 0, border: '#f59e0b', bg: '#fffbeb', valColor: '#d97706' },
+      { icon: '💎', label: 'SKUs Curva A',    val: r.totalA     || 0, fmt: fmtNum,   border: '#f59e0b', bg: '#fffbeb', valColor: '#92400e', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
+      { icon: '🌟', label: 'SKUs Curva B',    val: r.totalB     || 0, fmt: fmtNum,   border: '#3b82f6', bg: '#eff6ff', valColor: '#1e40af', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
+      { icon: '🚨', label: 'Sem Estoque',     val: r.semEstoque || 0, fmt: fmtNum,   border: '#dc2626', bg: '#fff5f5', valColor: '#dc2626', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
+      { icon: '⚠️', label: 'Estoque Baixo',   val: r.estBaixo   || 0, fmt: fmtNum,   border: '#f59e0b', bg: '#fffbeb', valColor: '#d97706', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
+      { icon: '💰', label: 'Valor de Estoque',val: valorEst,          fmt: fmtBRL,   border: '#16a34a', bg: '#f0fdf4', valColor: '#15803d', sub: 'custo × quantidade em estoque' },
     ];
+    kpisEl.style.gridTemplateColumns = 'repeat(5,1fr)';
     kpisEl.innerHTML = kpiCfg.map(function(c) {
       return '<div class="kpi-card" style="border-left:4px solid ' + c.border + ';background:' + c.bg + '">' +
         '<div class="kpi-header"><span class="kpi-icon">' + c.icon + '</span>' +
           '<span class="kpi-label">' + c.label + '</span></div>' +
-        '<div class="kpi-value" style="color:' + c.valColor + '">' + fmtNum(c.val) + '</div>' +
-        '<div style="font-size:11px;color:#9ca3af;margin-top:2px">de ' + fmtNum(r.total || 0) + ' SKUs totais</div>' +
+        '<div class="kpi-value" style="color:' + c.valColor + ';font-size:20px">' + c.fmt(c.val) + '</div>' +
+        '<div style="font-size:11px;color:#9ca3af;margin-top:2px">' + c.sub + '</div>' +
       '</div>';
     }).join('');
   }
