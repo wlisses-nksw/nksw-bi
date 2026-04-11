@@ -4002,10 +4002,13 @@ async function loadEstoquePage() {
     }
 
     // 2. JSON estático do GitHub Actions
-    // data/estoque.json é o próprio objeto { ok, resumo, todos, curvaAB, semEstoque, estBaixo }
+    // Estrutura: { ok, estoque: { resumo, todos, rankData, mesesKeys, ... }, periodo, generated_at }
     // Usa TTL de 2h pois estoque não é period-dependent
     var staticData = await fetchStaticJSONEstoque();
-    var d = (staticData && staticData.ok && staticData.resumo) ? staticData : null;
+    // Extrai o payload interno (formato GitHub Actions: staticData.estoque)
+    var d = (staticData && staticData.ok && staticData.estoque && staticData.estoque.resumo)
+              ? staticData.estoque
+              : null;
 
     // 3. Fallback: Apps Script direto (doGet devolve { ok, estoque: {...} })
     if (!d) {
