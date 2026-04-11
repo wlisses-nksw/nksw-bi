@@ -4026,9 +4026,8 @@ function applyLogisticaData(data) {
   var csvBtn = document.getElementById('logistica-csv-btn');
   if (csvBtn) csvBtn.style.display = all.length ? 'inline-flex' : 'none';
 
-  // ── render tabela com filtro atual ──
-  _logisticaActiveFilter = '__all__';
-  renderLogisticaTable();
+  // ── render tabela mantendo filtro ativo (não reseta ao '__all__' se já havia filtro) ──
+  filterLogisticaTable(_logisticaActiveFilter, null);
 }
 
 function filterLogisticaTable(status, btn) {
@@ -4329,22 +4328,19 @@ async function loadAllSheetsData() {
     console.warn('Sheets API error (vendas):', e.message);
   }
 
-  // Demais seções
+  // Demais seções — carregadas em paralelo (não sequencialmente)
   var otherSections = [
     { key: 'produtos',  apply: function(d){ if(d.produtos)  applyProdutosData(d.produtos);   } },
     { key: 'pedidos',   apply: function(d){ if(d.pedidos)   applyPedidosData(d.pedidos);     } },
     // clientes carregado separado via loadClientesPage() com param cohortMonths + Meta spend
     { key: 'logistica', apply: function(d){ if(d.logistica) applyLogisticaData(d.logistica); } },
   ];
-  for (var i = 0; i < otherSections.length; i++) {
-    try {
-      var data = await fetchSheets(otherSections[i].key);
-      otherSections[i].apply(data);
-      anyOk = true;
-    } catch(e) {
-      console.warn('Sheets API error:', e.message);
-    }
-  }
+  var otherResults = await Promise.all(otherSections.map(function(s) {
+    return fetchSheets(s.key).then(function(d){ s.apply(d); return true; }).catch(function(e){
+      console.warn('Sheets API error (' + s.key + '):', e.message); return false;
+    });
+  }));
+  if (otherResults.some(Boolean)) anyOk = true;
   setSheetsStatus(anyOk, anyOk ? 'Planilhas ✓' : null);
 
   // Carrega clientes (com cohortMonths + Meta Ads spend) e evolução anual
