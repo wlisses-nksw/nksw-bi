@@ -3989,8 +3989,8 @@ function applyProdutosData(d) {
 var _estoqueLoaded       = false;
 var _estoqueData         = [];       // todos os SKUs brutos
 var _estoqueThreshold    = 5;
-var _estoqueFiltro       = 'todos';  // 'todos'|'A'|'B'|'C'
-var _estoqueStatusFiltro = 'todos';  // 'todos'|'sem'|'baixo'|'ok'
+var _estoqueFiltro       = new Set(); // vazio = todos; valores: 'A'|'B'|'C'
+var _estoqueStatusFiltro = new Set(); // vazio = todos; valores: 'sem'|'baixo'|'ok'
 var _estoqueBusca        = '';       // texto de busca por código ou nome
 var _estoqueSortBy       = 'curva';
 var _estoqueSortAsc      = true;
@@ -4186,11 +4186,11 @@ function _renderEstoqueTable() {
   var thr  = _estoqueThreshold;
   var busca = _estoqueBusca.toLowerCase();
   var data = _estoqueData.filter(function(p) {
-    var okCurva   = _estoqueFiltro       === 'todos' || p.curva === _estoqueFiltro;
-    var okStatus  = _estoqueStatusFiltro === 'todos' ||
-      (_estoqueStatusFiltro === 'sem'   && p.estoque === 0) ||
-      (_estoqueStatusFiltro === 'baixo' && p.estoque > 0 && p.estoque <= thr) ||
-      (_estoqueStatusFiltro === 'ok'    && p.estoque > thr);
+    var okCurva   = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
+    var okStatus  = _estoqueStatusFiltro.size === 0 ||
+      (_estoqueStatusFiltro.has('sem')   && p.estoque === 0) ||
+      (_estoqueStatusFiltro.has('baixo') && p.estoque > 0 && p.estoque <= thr) ||
+      (_estoqueStatusFiltro.has('ok')    && p.estoque > thr);
     var okBusca   = !busca ||
       (p.codigo && p.codigo.toLowerCase().includes(busca)) ||
       (p.nome   && p.nome.toLowerCase().includes(busca));
@@ -4231,21 +4231,33 @@ function _renderEstoqueTable() {
 
 /* ── filtros cliente ── */
 function filtrarEstoque(curva) {
-  _estoqueFiltro = curva;
-  ['Todos','A','B','C'].forEach(function(v) {
-    var id = 'ef' + (v === 'Todos' ? 'Todos' : v);
-    var btn = document.getElementById(id);
-    if (btn) btn.classList.toggle('active', v.toLowerCase() === curva || (curva==='todos' && v==='Todos'));
+  if (curva === 'todos') {
+    _estoqueFiltro.clear();
+  } else {
+    if (_estoqueFiltro.has(curva)) _estoqueFiltro.delete(curva);
+    else _estoqueFiltro.add(curva);
+  }
+  var btnTodos = document.getElementById('efTodos');
+  if (btnTodos) btnTodos.classList.toggle('active', _estoqueFiltro.size === 0);
+  ['A','B','C'].forEach(function(v) {
+    var btn = document.getElementById('ef' + v);
+    if (btn) btn.classList.toggle('active', _estoqueFiltro.has(v));
   });
   _renderEstoqueTable();
 }
 
 function filtrarEstoqueStatus(status) {
-  _estoqueStatusFiltro = status;
-  ['Todos','Sem','Baixo','Ok'].forEach(function(v) {
-    var id = 'efSt' + v;
-    var btn = document.getElementById(id);
-    if (btn) btn.classList.toggle('active', v.toLowerCase() === status);
+  if (status === 'todos') {
+    _estoqueStatusFiltro.clear();
+  } else {
+    if (_estoqueStatusFiltro.has(status)) _estoqueStatusFiltro.delete(status);
+    else _estoqueStatusFiltro.add(status);
+  }
+  var btnTodos = document.getElementById('efStTodos');
+  if (btnTodos) btnTodos.classList.toggle('active', _estoqueStatusFiltro.size === 0);
+  ['Sem','Baixo','Ok'].forEach(function(v) {
+    var btn = document.getElementById('efSt' + v);
+    if (btn) btn.classList.toggle('active', _estoqueStatusFiltro.has(v.toLowerCase()));
   });
   _renderEstoqueTable();
 }
@@ -4270,11 +4282,11 @@ function sortEstoque(campo) {
 function exportarEstoqueCSV() {
   var thr  = _estoqueThreshold;
   var data = _estoqueData.filter(function(p) {
-    var okCurva   = _estoqueFiltro       === 'todos' || p.curva === _estoqueFiltro;
-    var okStatus  = _estoqueStatusFiltro === 'todos' ||
-      (_estoqueStatusFiltro === 'sem'   && p.estoque === 0) ||
-      (_estoqueStatusFiltro === 'baixo' && p.estoque > 0 && p.estoque <= thr) ||
-      (_estoqueStatusFiltro === 'ok'    && p.estoque > thr);
+    var okCurva   = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
+    var okStatus  = _estoqueStatusFiltro.size === 0 ||
+      (_estoqueStatusFiltro.has('sem')   && p.estoque === 0) ||
+      (_estoqueStatusFiltro.has('baixo') && p.estoque > 0 && p.estoque <= thr) ||
+      (_estoqueStatusFiltro.has('ok')    && p.estoque > thr);
     return okCurva && okStatus;
   });
 
