@@ -1064,8 +1064,14 @@ function parseMonthKey(h, tz) {
   s = String(h).trim();
   if (!s) return null;
   if (/^\d{4}-\d{2}$/.test(s)) return s;
+  // DD/MM/YYYY ou DD/MM/YY (ex: 01/01/2025 ou 01/01/25 → 2025-01)
+  var m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if (m) {
+    var yr = m[3].length === 2 ? '20' + m[3] : m[3];
+    return yr + '-' + ('0' + m[2]).slice(-2);
+  }
   // MM/YYYY ou MM-YYYY (ano 4 dígitos)
-  var m = s.match(/^(\d{1,2})[\/\-](\d{4})$/);
+  m = s.match(/^(\d{1,2})[\/\-](\d{4})$/);
   if (m) return m[2] + '-' + ('0' + m[1]).slice(-2);
   // MM/YY ou MM-YY (ano 2 dígitos, ex: 01/25 → 2025-01)
   m = s.match(/^(\d{1,2})[\/\-](\d{2})$/);
