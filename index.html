@@ -1108,7 +1108,14 @@ tbody tr:hover{background:#fafafa}
           <button onclick="filtrarEstoqueStatus('baixo')" id="efStBaixo" class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#fef3c7;color:#d97706">Baixo</button>
           <button onclick="filtrarEstoqueStatus('ok')"    id="efStOk"    class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#dcfce7;color:#15803d">OK</button>
         </div>
-        <button onclick="exportarEstoqueCSV()" style="margin-left:auto;padding:6px 16px;background:#111;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">⬇ CSV</button>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <div style="position:relative">
+            <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:13px;pointer-events:none">🔍</span>
+            <input id="estoqueSearch" type="text" placeholder="Código ou nome..." oninput="filtrarEstoqueBusca(this.value)"
+              style="padding:5px 10px 5px 30px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;width:190px;font-family:'Montserrat',sans-serif;color:#111827;outline:none"/>
+          </div>
+          <button onclick="exportarEstoqueCSV()" style="padding:6px 16px;background:#111;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">⬇ CSV</button>
+        </div>
       </div>
 
       <!-- Tabela principal de SKUs -->
@@ -3984,6 +3991,7 @@ var _estoqueData         = [];       // todos os SKUs brutos
 var _estoqueThreshold    = 5;
 var _estoqueFiltro       = 'todos';  // 'todos'|'A'|'B'|'C'
 var _estoqueStatusFiltro = 'todos';  // 'todos'|'sem'|'baixo'|'ok'
+var _estoqueBusca        = '';       // texto de busca por código ou nome
 var _estoqueSortBy       = 'curva';
 var _estoqueSortAsc      = true;
 
@@ -4176,13 +4184,17 @@ function _renderEstoqueTable() {
   if (!tbody) return;
 
   var thr  = _estoqueThreshold;
+  var busca = _estoqueBusca.toLowerCase();
   var data = _estoqueData.filter(function(p) {
     var okCurva   = _estoqueFiltro       === 'todos' || p.curva === _estoqueFiltro;
     var okStatus  = _estoqueStatusFiltro === 'todos' ||
       (_estoqueStatusFiltro === 'sem'   && p.estoque === 0) ||
       (_estoqueStatusFiltro === 'baixo' && p.estoque > 0 && p.estoque <= thr) ||
       (_estoqueStatusFiltro === 'ok'    && p.estoque > thr);
-    return okCurva && okStatus;
+    var okBusca   = !busca ||
+      (p.codigo && p.codigo.toLowerCase().includes(busca)) ||
+      (p.nome   && p.nome.toLowerCase().includes(busca));
+    return okCurva && okStatus && okBusca;
   });
 
   // ordenação
@@ -4235,6 +4247,11 @@ function filtrarEstoqueStatus(status) {
     var btn = document.getElementById(id);
     if (btn) btn.classList.toggle('active', v.toLowerCase() === status);
   });
+  _renderEstoqueTable();
+}
+
+function filtrarEstoqueBusca(texto) {
+  _estoqueBusca = (texto || '').trim();
   _renderEstoqueTable();
 }
 
