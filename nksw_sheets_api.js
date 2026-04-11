@@ -1011,9 +1011,11 @@ function getRankData(ss) {
     var headerRow = sheet.getRange(1, 1, 1, NCOLS).getValues()[0];
 
     // Colunas H–V = índices 7–21 (0-based) → 15 meses
+    // Usa fuso da planilha para evitar bug UTC (datas armazenadas como Date object)
+    var tz = ss.getSpreadsheetTimeZone();
     var mesesKeys = [];
     for (var ci = 7; ci <= 21; ci++) {
-      mesesKeys.push(parseMonthKey(headerRow[ci]) || '');
+      mesesKeys.push(parseMonthKey(headerRow[ci], tz) || '');
     }
 
     var rows = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
@@ -1048,11 +1050,18 @@ function getRankData(ss) {
 }
 
 // Converte cabeçalho de coluna mensal para 'YYYY-MM'
-function parseMonthKey(h) {
+// tz: fuso da planilha (ex: 'America/Sao_Paulo') — evita bug UTC em objetos Date
+function parseMonthKey(h, tz) {
   if (!h) return null;
-  var s = (h instanceof Date)
-    ? (h.getFullYear() + '-' + ('0' + (h.getMonth() + 1)).slice(-2))
-    : String(h).trim();
+  var s;
+  if (h instanceof Date) {
+    // Usa Utilities.formatDate para respeitar o fuso da planilha
+    s = tz
+      ? Utilities.formatDate(h, tz, 'yyyy-MM')
+      : (h.getFullYear() + '-' + ('0' + (h.getMonth() + 1)).slice(-2));
+    return s;
+  }
+  s = String(h).trim();
   if (!s) return null;
   if (/^\d{4}-\d{2}$/.test(s)) return s;
   // MM/YYYY ou MM-YYYY (ano 4 dígitos)
