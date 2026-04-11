@@ -4364,13 +4364,11 @@ async function loadAllSheetsData() {
   // Vendas: busca período atual + ano anterior em paralelo
   try {
     var pyParams = getPreviousYearParams();
-    var sf = getStatusFilter();
-    var pyQs = 'section=vendas&' + (pyParams || getGA4DateParam());
-    if (sf) pyQs += '&statusFilter=' + encodeURIComponent(sf);
 
     var vendasPromises = [fetchSheets('vendas')];
+    // Usa fetchSheets para o ano anterior (aproveita cache localStorage + fallback GAS)
     if (pyParams) vendasPromises.push(
-      fetch(url + '?' + pyQs).then(function(r){ return r.json(); }).catch(function(){ return null; })
+      fetchSheets('vendas', null, pyParams).catch(function(){ return null; })
     );
     var vendasResults = await Promise.all(vendasPromises);
     var curD  = vendasResults[0];
@@ -5383,15 +5381,6 @@ async function fetchMonthData(m, y) {
     var ga4Resp    = results[2];
     var metaResp   = results[3];
 
-    var diario = (vendasResp && vendasResp.vendas && vendasResp.vendas.diario) ? vendasResp.vendas.diario : null;
-    if (!diario || !diario.length) {
-      _metasDiarioCache[cacheKey] = null;
-      return;
-    }
-
-    var totalPed = (vendasResp && vendasResp.vendas && vendasResp.vendas.kpis)
-                   ? (vendasResp.vendas.kpis.pedidos || 0) : 0;
-
     // Mapa sessões por dia (GA4: dateRaw "20260402" → "2026-04-02")
     var sessoesByDay = {};
     if (ga4Resp && ga4Resp.daily && ga4Resp.daily.length) {
@@ -5410,6 +5399,33 @@ async function fetchMonthData(m, y) {
         if (d.date_start) spendByDay[d.date_start] = parseFloat(d.spend || 0);
       });
     }
+
+    var diario = (vendasResp && vendasResp.vendas && vendasResp.vendas.diario) ? vendasResp.vendas.diario : null;
+    if (!diario || !diario.length) {
+      // Sem diario — cria entrada sintética a partir dos kpis (evita cache null para YoY)
+      var kpis0 = vendasResp && vendasResp.vendas && vendasResp.vendas.kpis;
+      var mktK0 = (mktResp && mktResp.marketing && mktResp.marketing.kpis) ? mktResp.marketing.kpis : null;
+      var synSpend = Object.keys(spendByDay).reduce(function(s, k){ return s + (spendByDay[k] || 0); }, 0);
+      if (!synSpend && mktK0) synSpend = mktK0.spend || 0;
+      if (kpis0 && (kpis0.receita > 0 || kpis0.pedidos > 0)) {
+        var r0 = kpis0.receita || 0, p0 = kpis0.pedidos || 0;
+        _metasDiarioCache[cacheKey] = [{
+          dia: y + '-' + pad2(m+1) + '-01',
+          receita:  r0, pedidos: p0,
+          ticket:   kpis0.ticket || (p0 > 0 ? r0 / p0 : 0),
+          custoMkt: synSpend,
+          roas:     synSpend > 0 ? r0 / synSpend : (kpis0.roas || 0),
+          cac:      synSpend > 0 && p0 > 0 ? synSpend / p0 : 0,
+          sessoes:  0
+        }];
+        return;
+      }
+      _metasDiarioCache[cacheKey] = null;
+      return;
+    }
+
+    var totalPed = (vendasResp && vendasResp.vendas && vendasResp.vendas.kpis)
+                   ? (vendasResp.vendas.kpis.pedidos || 0) : 0;
 
     // totalSpend: 1º soma exata do Meta diário; 2º Sheets marketing; 3º cache do mês atual (nunca usa mês diferente)
     var metaTotalSpend = Object.keys(spendByDay).reduce(function(s, k){ return s + (spendByDay[k] || 0); }, 0);
@@ -5932,6 +5948,12 @@ function renderGoals() {
 function varPctYoY(key) {
   var curr = (typeof getMonthRealized === 'function') ? getMonthRealized(key, navMonth, navYear) : null;
   var prev = (typeof getMonthRealized === 'function') ? getMonthRealized(key, navMonth, navYear - 1) : null;
+  // Fallback para receita/pedidos/ticket: usa dados de vendas já carregados
+  var _vendFallback = { receita: 1, pedidos: 1, ticket: 1 };
+  if (curr === null && _vendFallback[key] && _lastVendasData && _lastVendasData.kpis)
+    curr = _lastVendasData.kpis[key] || null;
+  if (prev === null && _vendFallback[key] && _lastPrevVendasData && _lastPrevVendasData.kpis)
+    prev = _lastPrevVendasData.kpis[key] || null;
   if (curr === null || prev === null || prev === 0) return null;
   return ((curr - prev) / Math.abs(prev)) * 100;
 }
