@@ -7,7 +7,7 @@
     "startDate": "2026-04-01",
     "endDate": "2026-04-11"
   },
-  "generatedAt": "2026-04-11T17:51:11.152Z",
+  "generatedAt": "2026-04-11T18:16:52.154Z",
   "propertyId": "374872616",
   "overview": {
     "sessions": 15487,
@@ -15,7 +15,7 @@
     "newUsers": 9043,
     "newUserRate": 0.583909085039065,
     "bounceRate": 0.5573061277200232,
-    "avgSessionDuration": 113.17226316136114,
+    "avgSessionDuration": 113.17226316136113,
     "pagesPerSession": 2.787240911732421,
     "transactions": 98,
     "purchaseRevenue": 72229.04997400001,
@@ -42,7 +42,7 @@
       "transactions": 17,
       "revenue": 10056.520002000001,
       "bounceRate": 0.697360248447205,
-      "avgDuration": 62.96938909363354,
+      "avgDuration": 62.969389093633545,
       "convRate": 0.002639751552795031
     },
     {
@@ -87,7 +87,7 @@
       "transactions": 3,
       "revenue": 5872.499999,
       "bounceRate": 0.34517766497461927,
-      "avgDuration": 181.44587419796952,
+      "avgDuration": 181.44587419796954,
       "convRate": 0.007614213197969543
     },
     {
@@ -132,7 +132,7 @@
       "dateRaw": "20260402",
       "sessions": 1896,
       "transactions": 10,
-      "revenue": 8794.749998000001,
+      "revenue": 8794.749998,
       "addToCarts": 146
     },
     {
@@ -140,7 +140,7 @@
       "dateRaw": "20260403",
       "sessions": 1785,
       "transactions": 15,
-      "revenue": 14950.880005,
+      "revenue": 14950.880004999999,
       "addToCarts": 185
     },
     {
@@ -180,7 +180,7 @@
       "dateRaw": "20260408",
       "sessions": 1247,
       "transactions": 10,
-      "revenue": 3156.099998,
+      "revenue": 3156.0999979999997,
       "addToCarts": 135
     },
     {
@@ -396,7 +396,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.6422764227642277,
-      "avgDuration": 45.45135149593496,
+      "avgDuration": 45.451351495934965,
       "convRate": 0
     },
     {
@@ -436,7 +436,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.7307692307692307,
-      "avgDuration": 77.04023635576924,
+      "avgDuration": 77.04023635576922,
       "convRate": 0
     },
     {
@@ -446,7 +446,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.7058823529411765,
-      "avgDuration": 52.30475680000001,
+      "avgDuration": 52.30475679999999,
       "convRate": 0
     },
     {
@@ -466,7 +466,7 @@
       "transactions": 1,
       "revenue": 578.999999,
       "bounceRate": 0.8048780487804879,
-      "avgDuration": 29.192983,
+      "avgDuration": 29.192982999999995,
       "convRate": 0.012195121951219513
     },
     {
@@ -496,7 +496,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.6301369863013698,
-      "avgDuration": 52.728124712328764,
+      "avgDuration": 52.72812471232877,
       "convRate": 0
     },
     {
@@ -536,7 +536,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.7692307692307693,
-      "avgDuration": 28.581747953846154,
+      "avgDuration": 28.581747953846158,
       "convRate": 0
     },
     {
@@ -566,7 +566,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.2222222222222222,
-      "avgDuration": 83.37865706349206,
+      "avgDuration": 83.37865706349207,
       "convRate": 0
     },
     {
@@ -576,7 +576,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.8548387096774194,
-      "avgDuration": 17.46717512903226,
+      "avgDuration": 17.467175129032256,
       "convRate": 0
     },
     {
@@ -596,7 +596,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.8771929824561403,
-      "avgDuration": 11.701573719298247,
+      "avgDuration": 11.701573719298246,
       "convRate": 0
     },
     {
@@ -706,7 +706,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.38,
-      "avgDuration": 308.87488034,
+      "avgDuration": 308.87488033999995,
       "convRate": 0
     }
   ],
@@ -973,7 +973,7 @@
         "sessions": 1632,
         "users": 1090,
         "transactions": 19,
-        "revenue": 17296.749991999997
+        "revenue": 17296.749992
       },
       {
         "state": "Federal District",
@@ -994,7 +994,7 @@
         "sessions": 830,
         "users": 548,
         "transactions": 7,
-        "revenue": 6917.430001
+        "revenue": 6917.430000999999
       },
       {
         "state": "State of Santa Catarina",
@@ -1015,7 +1015,7 @@
         "sessions": 565,
         "users": 428,
         "transactions": 5,
-        "revenue": 5616.500003000001
+        "revenue": 5616.500003
       },
       {
         "state": "State of Espirito Santo",
@@ -1099,60 +1099,9 @@
     ]
   },
   "demographics": {
-    "age": [
-      {
-        "bracket": "unknown",
-        "users": 9998,
-        "sessions": 14955
-      },
-      {
-        "bracket": "25-34",
-        "users": 145,
-        "sessions": 235
-      },
-      {
-        "bracket": "18-24",
-        "users": 82,
-        "sessions": 135
-      },
-      {
-        "bracket": "35-44",
-        "users": 57,
-        "sessions": 90
-      },
-      {
-        "bracket": "45-54",
-        "users": 27,
-        "sessions": 55
-      },
-      {
-        "bracket": "55-64",
-        "users": 16,
-        "sessions": 22
-      },
-      {
-        "bracket": "65+",
-        "users": 13,
-        "sessions": 19
-      }
-    ],
-    "gender": [
-      {
-        "gender": "unknown",
-        "users": 9956,
-        "sessions": 14881
-      },
-      {
-        "gender": "female",
-        "users": 241,
-        "sessions": 385
-      },
-      {
-        "gender": "male",
-        "users": 127,
-        "sessions": 220
-      }
-    ]
+    "error": "API call to analyticsdata.properties.runReport failed with error: Exhausted potentially thresholded requests quota. This quota will refresh in under an hour. To learn more, see https://developers.google.com/analytics/devguides/reporting/data/v1/quotas",
+    "age": [],
+    "gender": []
   },
   "productFunnel": [],
   "allSources": [
@@ -1188,7 +1137,7 @@
       "medium": "(none)",
       "sessions": 1245,
       "transactions": 23,
-      "revenue": 23044.699992999995,
+      "revenue": 23044.699993,
       "convRate": 0.01927710843373494,
       "bounceRate": 0.39437751004016064
     },
@@ -1224,7 +1173,7 @@
       "medium": "organic",
       "sessions": 436,
       "transactions": 9,
-      "revenue": 7506.879999000001,
+      "revenue": 7506.879998999999,
       "convRate": 0.020642201834862386,
       "bounceRate": 0.3073394495412844
     },
@@ -1247,5 +1196,5 @@
       "bounceRate": 0.3510204081632653
     }
   ],
-  "generated_at": "2026-04-11T17:51:10Z"
+  "generated_at": "2026-04-11T18:16:51Z"
 }
