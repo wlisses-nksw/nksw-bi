@@ -1109,7 +1109,7 @@ function getEstoque() {
     // J=9 tipo  | K=10 coleção | M=12 custo | N=13 tecido | P=15 curva
     // Q=16 estoque | AG=32 total vendas | AH=33 vendas 6m
     var I_CHAVE  = 0, I_COD = 2, I_NOME = 3, I_COR = 4, I_TAM = 5;
-    var I_TIPO   = 9, I_COL = 10, I_CUSTO = 12, I_TEC = 13;
+    var I_TIPO   = 9, I_COL = 10, I_PRECO = 12, I_TEC = 13;
     var I_CURVA  = 15, I_EST = 16;
     var I_TVEND  = 32, I_V6M = 33;
 
@@ -1123,7 +1123,7 @@ function getEstoque() {
 
       var curva   = trim(String(r[I_CURVA] || '')).toUpperCase();
       var estoque = parseInt(r[I_EST]) || 0;
-      var custo   = parseNum(r[I_CUSTO]);
+      var preco   = parseNum(r[I_PRECO]);
       var tvend   = parseNum(r[I_TVEND]);
       var v6m     = parseNum(r[I_V6M]);
 
@@ -1137,7 +1137,7 @@ function getEstoque() {
         colecao: trim(String(r[I_COL]  || '')),
         tecido:  trim(String(r[I_TEC]  || '')),
         curva:   curva,
-        custo:   custo,
+        preco:   preco,
         estoque: estoque,
         totalVendas: Math.round(tvend),
         vendas6m:    Math.round(v6m),
@@ -1167,7 +1167,7 @@ function getEstoque() {
     }
     curvaAB.forEach(function(p) { p.statusEst = statusEst(p); });
 
-    var valorEstoque = produtos.reduce(function(s, p) { return s + (p.custo || 0) * (p.estoque || 0); }, 0);
+    var valorEstoque = produtos.reduce(function(s, p) { return s + (p.preco || 0) * (p.estoque || 0); }, 0);
 
     return {
       ok: true,

@@ -4104,14 +4104,14 @@ function applyEstoqueData(d) {
     // Valor de estoque: usa resumo do GAS ou calcula dos itens se campo ainda não existir
     var valorEst = r.valorEstoque != null
       ? r.valorEstoque
-      : _estoqueData.reduce(function(s, p) { return s + (p.custo || 0) * (p.estoque || 0); }, 0);
+      : _estoqueData.reduce(function(s, p) { return s + (p.preco || 0) * (p.estoque || 0); }, 0);
 
     var kpiCfg = [
       { icon: '💎', label: 'SKUs Curva A',    val: r.totalA     || 0, fmt: fmtNum,   border: '#f59e0b', bg: '#fffbeb', valColor: '#92400e', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
       { icon: '🌟', label: 'SKUs Curva B',    val: r.totalB     || 0, fmt: fmtNum,   border: '#3b82f6', bg: '#eff6ff', valColor: '#1e40af', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
       { icon: '🚨', label: 'Sem Estoque',     val: r.semEstoque || 0, fmt: fmtNum,   border: '#dc2626', bg: '#fff5f5', valColor: '#dc2626', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
       { icon: '⚠️', label: 'Estoque Baixo',   val: r.estBaixo   || 0, fmt: fmtNum,   border: '#f59e0b', bg: '#fffbeb', valColor: '#d97706', sub: 'de ' + fmtNum(r.total || 0) + ' SKUs totais' },
-      { icon: '💰', label: 'Valor de Estoque',val: valorEst,          fmt: fmtBRL,   border: '#16a34a', bg: '#f0fdf4', valColor: '#15803d', sub: 'custo × quantidade em estoque' },
+      { icon: '💰', label: 'Valor de Estoque',val: valorEst,          fmt: fmtBRL,   border: '#16a34a', bg: '#f0fdf4', valColor: '#15803d', sub: 'preço de venda × quantidade em estoque' },
     ];
     kpisEl.style.gridTemplateColumns = 'repeat(5,1fr)';
     kpisEl.innerHTML = kpiCfg.map(function(c) {
