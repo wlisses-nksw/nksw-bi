@@ -3,12 +3,164 @@
   "pedidos": {
     "contadores": {
       "aprovados": 0,
-      "pendentes": 92,
+      "pendentes": 111,
       "em_transito": 0,
       "cancelados": 0,
       "entregues": 0
     },
     "lista": [
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1422.08,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 711.28,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 707.33,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 885.57,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 986.45,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 357.57,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 565.51,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 547.85,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 803.02,
+        "data": "11/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 592.23,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 528.53,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 600.7,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1210.87,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 552.62,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1608.67,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 265.65,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 648.33,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 383.33,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 582.81,
+        "data": "10/04/2026",
+        "cliente": ""
+      },
       {
         "id": "",
         "produto": "",
@@ -656,94 +808,6 @@
         "valor": 305.44,
         "data": "02/04/2026",
         "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 853.45,
-        "data": "02/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 675.81,
-        "data": "02/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 638.83,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 373.6,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 247.38,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1253.7,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1553.8,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 93.44,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 845.17,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 43.57,
-        "data": "01/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 644.5,
-        "data": "01/04/2026",
-        "cliente": ""
       }
     ]
   },
@@ -752,7 +816,7 @@
     "fim": "2026-04-12",
     "label": "custom"
   },
-  "generated_at": "2026-04-12T14:05:02Z",
+  "generated_at": "2026-04-12T15:57:29Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-12"
