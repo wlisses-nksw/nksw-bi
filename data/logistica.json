@@ -3,12 +3,12 @@
   "logistica": {
     "statusList": [
       {
-        "status": "Entregue",
-        "total": 56
+        "status": "No Prazo",
+        "total": 65
       },
       {
-        "status": "No Prazo",
-        "total": 42
+        "status": "Entregue",
+        "total": 56
       },
       {
         "status": "Próximo do Prazo",
@@ -20,6 +20,144 @@
       }
     ],
     "pedidos": [
+      {
+        "pedido": "4294",
+        "data": "12/04/2026",
+        "cliente": "Juliana Sobreiro",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4293",
+        "data": "12/04/2026",
+        "cliente": "Fernanda DANTÉS BEIRÃO",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4292",
+        "data": "12/04/2026",
+        "cliente": "Viviane Marcondes",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4291",
+        "data": "12/04/2026",
+        "cliente": "Laureane Ferreira",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4290",
+        "data": "12/04/2026",
+        "cliente": "Lislie Barros",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4289",
+        "data": "12/04/2026",
+        "cliente": "Fabiana Terres",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4288",
+        "data": "12/04/2026",
+        "cliente": "Isadora Donato",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4287",
+        "data": "12/04/2026",
+        "cliente": "Valentina boullosa",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4286",
+        "data": "12/04/2026",
+        "cliente": "Valentina boullosa",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4285",
+        "data": "12/04/2026",
+        "cliente": "Maria Eugênia Barbosa Goncalves",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4284",
+        "data": "12/04/2026",
+        "cliente": "Vitoria Vaz",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4283",
+        "data": "12/04/2026",
+        "cliente": "Thatiane Nogueira Alencar",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4282",
+        "data": "12/04/2026",
+        "cliente": "Rebeca Lago",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4281",
+        "data": "12/04/2026",
+        "cliente": "Ana Ribeiro",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4280",
+        "data": "12/04/2026",
+        "cliente": "Alexia caldas",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4279",
+        "data": "12/04/2026",
+        "cliente": "Manuela Schmidt",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4278",
+        "data": "12/04/2026",
+        "cliente": "Kenia MARTINS",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4277",
+        "data": "12/04/2026",
+        "cliente": "Glaucia Oki",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4276",
+        "data": "12/04/2026",
+        "cliente": "Ludimila Viana",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4275",
+        "data": "12/04/2026",
+        "cliente": "Rogeria Tanzi",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4274",
+        "data": "12/04/2026",
+        "cliente": "Jessica  faller",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4273",
+        "data": "12/04/2026",
+        "cliente": "Rayane ferreira",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4272",
+        "data": "11/04/2026",
+        "cliente": "Katia Mulinari",
+        "status": "No Prazo"
+      },
       {
         "pedido": "4271",
         "data": "11/04/2026",
@@ -687,14 +825,14 @@
         "status": "Fora do Prazo"
       }
     ],
-    "totalPedidos": 111
+    "totalPedidos": 134
   },
   "periodo": {
     "inicio": "2026-04-01",
     "fim": "2026-04-13",
     "label": "custom"
   },
-  "generated_at": "2026-04-13T07:27:14Z",
+  "generated_at": "2026-04-13T11:55:51Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-13"
