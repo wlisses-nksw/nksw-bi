@@ -2,19 +2,19 @@
   "ok": true,
   "clientes": {
     "kpis": {
-      "total": 23374,
-      "recompras": 7533,
+      "total": 23384,
+      "recompras": 7536,
       "pctRecomp": 32,
       "ltv": 781,
       "avgDaysBetween": 271,
-      "totalReceita": 18250399
+      "totalReceita": 18267323
     },
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
-        "base": 16089,
-        "pedidos": 21357,
-        "receita": 6766021,
+        "base": 16090,
+        "pedidos": 21364,
+        "receita": 6768301,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
@@ -28,17 +28,17 @@
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1121,
-        "pedidos": 2271,
-        "receita": 2305286,
+        "base": 1126,
+        "pedidos": 2281,
+        "receita": 2317116,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
       {
         "segmento": "❄️ Alto Valor Hibernado",
-        "base": 1084,
-        "pedidos": 3855,
-        "receita": 1980795,
+        "base": 1081,
+        "pedidos": 3845,
+        "receita": 1977555,
         "racional": "Ex-clientes de alto valor sem compra ha mais de 2 anos — avaliar custo x beneficio de reativacao.",
         "acao": "Campanha em data especial (aniversario), avaliar ROI antes de investir na reativacao"
       },
@@ -52,9 +52,9 @@
       },
       {
         "segmento": "✨ Novo/Eventual",
-        "base": 2126,
-        "pedidos": 2489,
-        "receita": 1345700,
+        "base": 2129,
+        "pedidos": 2493,
+        "receita": 1348801,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
@@ -76,9 +76,9 @@
       },
       {
         "segmento": "🌱 Emergente",
-        "base": 413,
-        "pedidos": 413,
-        "receita": 221071,
+        "base": 417,
+        "pedidos": 417,
+        "receita": 224024,
         "racional": "Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.",
         "acao": "Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato"
       },
@@ -93,7 +93,7 @@
       {
         "segmento": "🚀 Potencial Ativo",
         "base": 48,
-        "pedidos": 168,
+        "pedidos": 169,
         "receita": 42504,
         "racional": "Bom score RFM (12-13) comprando regularmente — caminho claro para Alto Valor se a frequencia aumentar.",
         "acao": "Cross-sell e upsell, apresentar linha premium, recomendacao personalizada"
@@ -493,7 +493,7 @@
       {
         "safra": "Mar. 2026",
         "clientes": 357,
-        "receita": 260305,
+        "receita": 260826,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -526,8 +526,8 @@
       },
       {
         "safra": "Abr. 2026",
-        "clientes": 92,
-        "receita": 89192,
+        "clientes": 102,
+        "receita": 102425,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -591,22 +591,22 @@
       },
       {
         "classe": "B",
-        "count": 4440,
-        "revenue": 8513753,
+        "count": 4442,
+        "revenue": 8522343,
         "pctCount": 19,
         "pctRevenue": 47,
-        "ticketMedio": 759,
+        "ticketMedio": 760,
         "avgDaysBetween": 276,
         "minTicket": 489,
         "maxTicket": 32775
       },
       {
         "classe": "C",
-        "count": 18628,
-        "revenue": 8332791,
+        "count": 18636,
+        "revenue": 8341126,
         "pctCount": 80,
         "pctRevenue": 46,
-        "ticketMedio": 343,
+        "ticketMedio": 344,
         "avgDaysBetween": 271,
         "minTicket": 1,
         "maxTicket": 1080
@@ -618,7 +618,7 @@
     "fim": "2026-04-14",
     "label": "custom"
   },
-  "generated_at": "2026-04-14T10:47:49Z",
+  "generated_at": "2026-04-14T15:52:25Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-14"
