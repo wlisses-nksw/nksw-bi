@@ -3,12 +3,100 @@
   "pedidos": {
     "contadores": {
       "aprovados": 0,
-      "pendentes": 162,
+      "pendentes": 173,
       "em_transito": 0,
       "cancelados": 0,
       "entregues": 0
     },
     "lista": [
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 856.48,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 872.91,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 31.45,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 567.86,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 915.62,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 835.89,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 24.94,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 706.59,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 757.21,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1169.01,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 248.46,
+        "data": "15/04/2026",
+        "cliente": ""
+      },
       {
         "id": "",
         "produto": "",
@@ -720,94 +808,6 @@
         "valor": 607.43,
         "data": "07/04/2026",
         "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1536,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1915,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 415.17,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 552.82,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 382.76,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1339.93,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1318,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 521.55,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 17.49,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 254.35,
-        "data": "07/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 110.43,
-        "data": "07/04/2026",
-        "cliente": ""
       }
     ]
   },
@@ -816,7 +816,7 @@
     "fim": "2026-04-16",
     "label": "custom"
   },
-  "generated_at": "2026-04-16T10:46:55Z",
+  "generated_at": "2026-04-16T16:11:15Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-16"

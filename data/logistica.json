@@ -3,23 +3,89 @@
   "logistica": {
     "statusList": [
       {
-        "status": "No Prazo",
-        "total": 73
+        "status": "Entregue",
+        "total": 102
       },
       {
-        "status": "Entregue",
-        "total": 70
+        "status": "No Prazo",
+        "total": 59
       },
       {
         "status": "Fora do Prazo",
-        "total": 12
+        "total": 6
       },
       {
         "status": "Próximo do Prazo",
-        "total": 7
+        "total": 6
       }
     ],
     "pedidos": [
+      {
+        "pedido": "4334",
+        "data": "15/04/2026",
+        "cliente": "Thais Rolim",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4333",
+        "data": "15/04/2026",
+        "cliente": "Anna Neide Pimenta Lavorato",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4332",
+        "data": "15/04/2026",
+        "cliente": "Thais Comarella Alves",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4331",
+        "data": "15/04/2026",
+        "cliente": "Rebeca Bandeira de Melo Cavalcante",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4330",
+        "data": "15/04/2026",
+        "cliente": "Rejane C M G Ferreira",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4329",
+        "data": "15/04/2026",
+        "cliente": "Carolina Custodio Cardoso Ventura",
+        "status": "Entregue"
+      },
+      {
+        "pedido": "4328",
+        "data": "15/04/2026",
+        "cliente": "Thaise Cesario",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4327",
+        "data": "15/04/2026",
+        "cliente": "Luana Milhomem de Carvalho Guedes",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4326",
+        "data": "15/04/2026",
+        "cliente": "Alice Azevedo",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4325",
+        "data": "15/04/2026",
+        "cliente": "André Luis Cruz Souza de Jesus",
+        "status": "No Prazo"
+      },
+      {
+        "pedido": "4324",
+        "data": "15/04/2026",
+        "cliente": "Gabriela Manssur",
+        "status": "No Prazo"
+      },
       {
         "pedido": "4323",
         "data": "14/04/2026",
@@ -66,7 +132,7 @@
         "pedido": "4316",
         "data": "14/04/2026",
         "cliente": "Priscila GOMIDE",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4315",
@@ -78,13 +144,13 @@
         "pedido": "4314",
         "data": "14/04/2026",
         "cliente": "Fernanda Castorina Canpos",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4313",
         "data": "14/04/2026",
         "cliente": "Daniela Alencar Soares",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4312",
@@ -102,7 +168,7 @@
         "pedido": "4310",
         "data": "13/04/2026",
         "cliente": "Erica Tavares Abib",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4309",
@@ -120,7 +186,7 @@
         "pedido": "4307",
         "data": "13/04/2026",
         "cliente": "Natália  Ozolio",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4306",
@@ -138,7 +204,7 @@
         "pedido": "4304",
         "data": "13/04/2026",
         "cliente": "Patricia Pereira Paulino",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4303",
@@ -198,19 +264,19 @@
         "pedido": "4293",
         "data": "12/04/2026",
         "cliente": "Fernanda DANTÉS BEIRÃO",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4292",
         "data": "12/04/2026",
         "cliente": "Viviane Marcondes",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4291",
         "data": "12/04/2026",
         "cliente": "Laureane Ferreira",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4290",
@@ -282,7 +348,7 @@
         "pedido": "4279",
         "data": "12/04/2026",
         "cliente": "Manuela Schmidt",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4278",
@@ -294,19 +360,19 @@
         "pedido": "4277",
         "data": "12/04/2026",
         "cliente": "Glaucia Oki",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4276",
         "data": "12/04/2026",
         "cliente": "Ludimila Viana",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4275",
         "data": "12/04/2026",
         "cliente": "Rogeria Tanzi",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4274",
@@ -330,7 +396,7 @@
         "pedido": "4271",
         "data": "11/04/2026",
         "cliente": "Jessica Batista Pimenta",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4270",
@@ -360,7 +426,7 @@
         "pedido": "4266",
         "data": "11/04/2026",
         "cliente": "Mayara J W Duarte",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4264",
@@ -384,7 +450,7 @@
         "pedido": "4261",
         "data": "10/04/2026",
         "cliente": "Daniela Siani",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4260",
@@ -420,31 +486,31 @@
         "pedido": "4255",
         "data": "10/04/2026",
         "cliente": "Juliana Amaral",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4254",
         "data": "10/04/2026",
         "cliente": "Leticia Forrer Sosa",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4253",
         "data": "10/04/2026",
         "cliente": "Ingrid Almada de Angelos Mata",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4252",
         "data": "10/04/2026",
         "cliente": "Lavinia Chaves",
-        "status": "No Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4251",
         "data": "09/04/2026",
         "cliente": "Juliana Santos",
-        "status": "No Prazo"
+        "status": "Próximo do Prazo"
       },
       {
         "pedido": "4250",
@@ -456,7 +522,7 @@
         "pedido": "4249",
         "data": "09/04/2026",
         "cliente": "Vivian Machado",
-        "status": "No Prazo"
+        "status": "Próximo do Prazo"
       },
       {
         "pedido": "4248",
@@ -468,13 +534,13 @@
         "pedido": "4246",
         "data": "09/04/2026",
         "cliente": "Bianca Caroline Alvim Tomaz",
-        "status": "No Prazo"
+        "status": "Próximo do Prazo"
       },
       {
         "pedido": "4245",
         "data": "09/04/2026",
         "cliente": "Mariane Reis",
-        "status": "No Prazo"
+        "status": "Próximo do Prazo"
       },
       {
         "pedido": "4244",
@@ -552,25 +618,25 @@
         "pedido": "4231",
         "data": "07/04/2026",
         "cliente": "Patrícia Rocha Azevedo Vogado",
-        "status": "Próximo do Prazo"
+        "status": "Fora do Prazo"
       },
       {
         "pedido": "4230",
         "data": "07/04/2026",
         "cliente": "Rivia Guimarães  dalle vedove",
-        "status": "Próximo do Prazo"
+        "status": "Fora do Prazo"
       },
       {
         "pedido": "4229",
         "data": "07/04/2026",
         "cliente": "Mônica Ciconelli Peixoto",
-        "status": "Próximo do Prazo"
+        "status": "Fora do Prazo"
       },
       {
         "pedido": "4228",
         "data": "07/04/2026",
         "cliente": "Francine Toaldo",
-        "status": "Próximo do Prazo"
+        "status": "Fora do Prazo"
       },
       {
         "pedido": "4227",
@@ -612,7 +678,7 @@
         "pedido": "4220",
         "data": "07/04/2026",
         "cliente": "Sueli do Nascimento Souza Araújo",
-        "status": "Próximo do Prazo"
+        "status": "Fora do Prazo"
       },
       {
         "pedido": "4219",
@@ -642,7 +708,7 @@
         "pedido": "4215",
         "data": "06/04/2026",
         "cliente": "Luisa Correa",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4214",
@@ -660,43 +726,43 @@
         "pedido": "4212",
         "data": "06/04/2026",
         "cliente": "Vanessa Sperandio",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4211",
         "data": "06/04/2026",
         "cliente": "Leilze Dos Reis Costa",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4210",
         "data": "06/04/2026",
         "cliente": "Gislene Madalena",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4209",
         "data": "06/04/2026",
         "cliente": "Myrtes Marques",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4208",
         "data": "06/04/2026",
         "cliente": "Driellen Zarpellon",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4207",
         "data": "05/04/2026",
         "cliente": "Amanda Yumi Cardinali",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4206",
         "data": "05/04/2026",
         "cliente": "Raphael Graça",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4205",
@@ -738,7 +804,7 @@
         "pedido": "4199",
         "data": "05/04/2026",
         "cliente": "Ana carolina Angelo correa",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4198",
@@ -918,7 +984,7 @@
         "pedido": "4167",
         "data": "02/04/2026",
         "cliente": "Gizely LEME",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4166",
@@ -960,7 +1026,7 @@
         "pedido": "4159",
         "data": "01/04/2026",
         "cliente": "Lara Guimaraes",
-        "status": "Fora do Prazo"
+        "status": "Entregue"
       },
       {
         "pedido": "4158",
@@ -993,14 +1059,14 @@
         "status": "Entregue"
       }
     ],
-    "totalPedidos": 162
+    "totalPedidos": 173
   },
   "periodo": {
     "inicio": "2026-04-01",
     "fim": "2026-04-16",
     "label": "custom"
   },
-  "generated_at": "2026-04-16T10:46:55Z",
+  "generated_at": "2026-04-16T16:11:15Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-16"
