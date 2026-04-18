@@ -12,73 +12,73 @@
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
-        "base": 16107,
-        "pedidos": 21391,
-        "receita": 6779026,
+        "base": 16109,
+        "pedidos": 21394,
+        "receita": 6780358,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
       {
         "segmento": "🚨 Alto Valor Em Risco",
-        "base": 1279,
-        "pedidos": 3188,
-        "receita": 2485285,
+        "base": 1281,
+        "pedidos": 3186,
+        "receita": 2487707,
         "racional": "Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.",
         "acao": "Campanha win-back agressiva, desconto significativo ou produto exclusivo"
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1119,
-        "pedidos": 2255,
-        "receita": 2296095,
+        "base": 1109,
+        "pedidos": 2238,
+        "receita": 2276372,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
       {
         "segmento": "❄️ Alto Valor Hibernado",
-        "base": 1079,
-        "pedidos": 3839,
-        "receita": 1975699,
+        "base": 1080,
+        "pedidos": 3844,
+        "receita": 1977117,
         "racional": "Ex-clientes de alto valor sem compra ha mais de 2 anos — avaliar custo x beneficio de reativacao.",
         "acao": "Campanha em data especial (aniversario), avaliar ROI antes de investir na reativacao"
       },
       {
         "segmento": "🌡️ Alto Valor Morno",
-        "base": 900,
-        "pedidos": 1663,
-        "receita": 1719946,
+        "base": 907,
+        "pedidos": 1677,
+        "receita": 1735830,
         "racional": "Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.",
         "acao": "Reativacao personalizada, oferta de produto complementar ao historico de compras"
       },
       {
         "segmento": "✨ Novo/Eventual",
         "base": 2125,
-        "pedidos": 2489,
-        "receita": 1347098,
+        "pedidos": 2488,
+        "receita": 1347178,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
       {
         "segmento": "💎 VIP Ativo",
-        "base": 205,
-        "pedidos": 1516,
-        "receita": 930059,
+        "base": 203,
+        "pedidos": 1501,
+        "receita": 920959,
         "racional": "Top clientes com score RFM maximo (14-15) comprando nos ultimos 6 meses — nucleo e embaixadores da marca.",
         "acao": "Programa VIP exclusivo, acesso antecipado a lancamentos, presentes personalizados"
       },
       {
         "segmento": "🔔 VIP Reaquecer",
-        "base": 74,
-        "pedidos": 600,
-        "receita": 341101,
+        "base": 76,
+        "pedidos": 615,
+        "receita": 350201,
         "racional": "Top clientes esfriando (6-12 meses sem compra) — janela de reconquista antes da perda definitiva.",
         "acao": "Contato personalizado pelo atendente, oferta exclusiva de reengajamento"
       },
       {
         "segmento": "🌱 Emergente",
-        "base": 417,
-        "pedidos": 417,
-        "receita": 225837,
+        "base": 415,
+        "pedidos": 415,
+        "receita": 224424,
         "racional": "Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.",
         "acao": "Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato"
       },
@@ -571,21 +571,21 @@
         "minTicket": 996,
         "maxTicket": 20114,
         "vipAtivos": {
-          "count": 205,
-          "revenue": 930059,
+          "count": 203,
+          "revenue": 920959,
           "avgRecency": 85,
-          "ticketMedio": 613
+          "ticketMedio": 614
         },
         "vipTrabalho": {
-          "count": 74,
-          "revenue": 341101,
-          "avgRecency": 259,
+          "count": 76,
+          "revenue": 350201,
+          "avgRecency": 258,
           "ticketMedio": 569
         },
         "vipPerdidos": {
           "count": 25,
           "revenue": 128838,
-          "avgRecency": 479,
+          "avgRecency": 480,
           "ticketMedio": 416
         }
       },
@@ -618,7 +618,7 @@
     "fim": "2026-04-18",
     "label": "custom"
   },
-  "generated_at": "2026-04-18T00:05:59Z",
+  "generated_at": "2026-04-18T05:54:21Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-18"
