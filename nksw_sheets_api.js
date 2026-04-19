@@ -523,6 +523,14 @@ function getClientes(params) {
   try {
     params = params || {};
     var cohortMonths = parseInt(params.cohortMonths) || 24;
+
+    // CacheService: RFM/cohort/ABC são pesados (6 passes + sorts) e mudam pouco.
+    // Cache de 15 minutos — serve a maioria dos requests sem recomputar.
+    var _gc = CacheService.getScriptCache();
+    var _gk = 'getClientes|' + cohortMonths;
+    var _gh = _gc.get(_gk);
+    if (_gh) { try { return JSON.parse(_gh); } catch(_){} }
+
     var rows = readSheet(CONFIG.ABA_VENDAS, CONFIG.ID_VENDAS);
     if (rows.length < 2) return { kpis: {}, rfm: [], cohort: [], abc: [] };
 
@@ -750,7 +758,7 @@ function getClientes(params) {
       return { safra: MONTHS_PT[g.mo] + '. ' + g.yr, clientes: cn, receita: Math.round(totalRec), cac: 0, gasto: 0, m: m };
     });
 
-    return {
+    var _clientesResult = {
       kpis: {
         total:          total,
         recompras:      recompras,
@@ -763,6 +771,9 @@ function getClientes(params) {
       cohort: cohort,
       abc:    abc,
     };
+    // Armazena no cache por 15 min (silencioso se o JSON exceder 100KB)
+    try { _gc.put(_gk, JSON.stringify(_clientesResult), 900); } catch(_) {}
+    return _clientesResult;
 
   } catch (err) {
     return { kpis: {}, rfm: [], cohort: [], abc: [], erro: 'Erro em getClientes: ' + err.message };
@@ -910,15 +921,24 @@ function debugMari(startStr, endStr) {
 
 /* ===== UTILITÁRIOS ===== */
 
+// Cache em memória por execução:
+// _sheetCache: evita ler a mesma aba várias vezes — Pedidos é lida UMA vez por request.
+// _ssCache: evita abrir o mesmo Spreadsheet várias vezes — openById é chamado UMA vez por ID.
+var _sheetCache = {};
+var _ssCache    = {};
+
 function readSheet(tabName, altId) {
   var id = (altId && altId.length > 5) ? altId : CONFIG.MASTER_ID;
   if (!id || id === 'COLE_O_ID_DA_PLANILHA_AQUI') {
     throw new Error('ID da planilha não configurado. Preencha CONFIG.MASTER_ID no script.');
   }
-  var ss    = SpreadsheetApp.openById(id);
-  var sheet = ss.getSheetByName(tabName);
+  var cacheKey = id + '|' + tabName;
+  if (_sheetCache[cacheKey]) return _sheetCache[cacheKey];
+  if (!_ssCache[id]) _ssCache[id] = SpreadsheetApp.openById(id);
+  var sheet = _ssCache[id].getSheetByName(tabName);
   if (!sheet) throw new Error('Aba "' + tabName + '" não encontrada em ' + id);
-  return sheet.getDataRange().getValues();
+  _sheetCache[cacheKey] = sheet.getDataRange().getValues();
+  return _sheetCache[cacheKey];
 }
 
 function findCol(headers, options) {
@@ -940,7 +960,13 @@ function parseNum(v) {
 
 function parseDate(v) {
   if (!v) return null;
-  if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+  if (v instanceof Date) {
+    if (isNaN(v.getTime())) return null;
+    // Reconstrói a partir dos componentes locais para evitar bug UTC:
+    // getFullYear/Month/Date retornam valores no fuso local do script (GAS),
+    // sem chamadas de API — seguro usar em loops de milhares de linhas.
+    return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  }
   var s = String(v).trim();
   var m;
   m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
@@ -1111,20 +1137,28 @@ function getEstoque() {
     if (!sheet) return { ok: false, error: 'Aba "' + CONFIG.ABA_ESTOQUE + '" nao encontrada' };
 
     var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
     if (lastRow < 2) return { ok: false, error: 'Sem dados na aba de estoque' };
 
-    // Lê até coluna AH (34 colunas)
-    var NCOLS = 34;
-    var rows  = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
+    // Lê cabeçalho (linha 1) para detecção dinâmica de colunas
+    var header = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    var rows   = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
 
-    // Índices 0-based conforme mapeamento:
-    // A=0 chave | C=2 código | D=3 nome | E=4 cor | F=5 tamanho
-    // J=9 tipo  | K=10 coleção | M=12 custo | N=13 tecido | P=15 curva
-    // Q=16 estoque | AG=32 total vendas | AH=33 vendas 6m
-    var I_CHAVE  = 0, I_COD = 2, I_NOME = 3, I_COR = 4, I_TAM = 5;
-    var I_TIPO   = 9, I_COL = 10, I_PRECO = 12, I_TEC = 13;
-    var I_CURVA  = 15, I_EST = 16;
-    var I_TVEND  = 32, I_V6M = 33;
+    // Detecção dinâmica por nome — robusto a mudanças de posição de coluna.
+    // Fallbacks (índices fixos) preservados caso o cabeçalho não exista.
+    var I_CHAVE = findCol(header, ['Chave','chave','ID','id','Key']) ;                                                         if (I_CHAVE  < 0) I_CHAVE  = 0;
+    var I_COD   = findCol(header, ['SKU','sku','Código','codigo','Cod','cod','Código do produto','Ref']);                       if (I_COD    < 0) I_COD    = 2;
+    var I_NOME  = findCol(header, ['Nome','nome','Produto','produto','Descrição','descricao','name','Product']);                if (I_NOME   < 0) I_NOME   = 3;
+    var I_COR   = findCol(header, ['Cor','cor','Color','color','Variante','variante','Variant']);                               if (I_COR    < 0) I_COR    = 4;
+    var I_TAM   = findCol(header, ['Tamanho','tamanho','Size','size','Tam','tam','Grade','grade']);                             if (I_TAM    < 0) I_TAM    = 5;
+    var I_TIPO  = findCol(header, ['Tipo','tipo','Categoria','categoria','Category','Type','type']);                            if (I_TIPO   < 0) I_TIPO   = 9;
+    var I_COL   = findCol(header, ['Coleção','colecao','Coleção','Collection','collection']);                                   if (I_COL    < 0) I_COL    = 10;
+    var I_PRECO = findCol(header, ['Preço de Venda','preco_venda','Preço','preco','Price','price','Valor','valor','Custo','custo']); if (I_PRECO < 0) I_PRECO  = 12;
+    var I_TEC   = findCol(header, ['Tecido','tecido','Material','material','Fabric','fabric']);                                 if (I_TEC    < 0) I_TEC    = 13;
+    var I_CURVA = findCol(header, ['Curva','curva','Classe','classe','ABC','abc','Classificação','classificacao']);              if (I_CURVA  < 0) I_CURVA  = 15;
+    var I_EST   = findCol(header, ['Estoque','estoque','Saldo','saldo','Quantidade','quantidade','Qtd','qtd','Stock','stock','Inventory']); if (I_EST < 0) I_EST = 16;
+    var I_TVEND = findCol(header, ['Total Vendas','total_vendas','Vendas Total','Qtd Vendida','vendas_total','TotalVendas']);   if (I_TVEND  < 0) I_TVEND  = 32;
+    var I_V6M   = findCol(header, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);   if (I_V6M    < 0) I_V6M    = 33;
 
     var LIMITE = CONFIG.ESTOQUE_BAIXO;
 
@@ -1205,4 +1239,452 @@ function getEstoque() {
   } catch (err) {
     return { ok: false, error: 'Erro em getEstoque: ' + err.message };
   }
+}
+
+/* ================================================================
+   SLACK — Relatório Diário de Logística (canal #expedição)
+   ================================================================
+   SETUP (fazer apenas uma vez):
+   1. Crie um Incoming Webhook em https://api.slack.com/apps
+      → "Create New App" → "Incoming Webhooks" → canal #expedição
+   2. Cole a URL abaixo em SLACK_CONFIG.WEBHOOK_URL
+   3. No editor GAS execute configurarTriggerSlack() uma vez
+      para agendar o envio diário às 10:30 automaticamente.
+   ================================================================ */
+
+var SLACK_CONFIG = {
+  WEBHOOK_URL: 'SUA_SLACK_WEBHOOK_URL', // cole aqui a URL do Incoming Webhook do Slack
+  HORA_ENVIO:  10,   // 10h
+  MIN_ENVIO:   30,   // :30
+  JANELA_DIAS: 30,   // últimos N dias contando hoje
+  MAX_LISTA:   0,    // 0 = envia todos sem limite
+};
+
+/* ── categorização de status de entrega ── */
+var _SLACK_FORA    = ['fora do prazo','fora de prazo','atrasado'];
+var _SLACK_PROXIMO = ['próximo do prazo','proximo do prazo','próximo'];
+var _SLACK_TRANSITO= ['em trânsito','em transito','enviado'];
+var _SLACK_ENTREGUE = ['entregue','confirmado'];
+var _SLACK_NO_PRAZO = ['no prazo'];
+var _SLACK_NEG     = ['cancelado','estornado','devolvido'];
+
+function _slackCatStatus(raw) {
+  if (!raw) return 'outros';
+  var s = String(raw).toLowerCase().trim();
+  if (_SLACK_FORA.indexOf(s)    >= 0) return 'fora';
+  if (_SLACK_PROXIMO.indexOf(s) >= 0) return 'proximo';
+  if (_SLACK_TRANSITO.indexOf(s) >= 0) return 'transito';
+  if (_SLACK_ENTREGUE.indexOf(s) >= 0) return 'entregue';
+  if (_SLACK_NO_PRAZO.indexOf(s) >= 0) return 'no_prazo';
+  if (_SLACK_NEG.indexOf(s)      >= 0) return 'negativo';
+  return 'outros';
+}
+
+/* ── leitura dos dados de logística para o Slack ── */
+function _slackLerLogistica() {
+  var rows = readSheet(CONFIG.ABA_VENDAS, CONFIG.ID_VENDAS);
+  if (rows.length < 2) throw new Error('Aba "' + CONFIG.ABA_VENDAS + '" sem dados.');
+
+  var h   = rows[0];
+  var iP  = findCol(h, ['Número do Pedido','N° Pedido','Numero do Pedido','pedido','ordem','Name','#']);
+  var iD  = findCol(h, ['data','date','Data','Data Pedido','Created at','Paid at','data_pedido']);
+  var iN  = findCol(h, ['Nome do comprador','nome do comprador','Nome','Cliente','Customer','nome_cliente']);
+  var iSE = findCol(h, ['Status de Entrega','status de entrega','Status Entrega','status_entrega','Entrega']);
+
+  if (iSE < 0) throw new Error('Coluna "Status de Entrega" não encontrada na aba ' + CONFIG.ABA_VENDAS + '.');
+
+  var hoje   = new Date(); hoje.setHours(23,59,59,999);
+  var inicio = new Date(); inicio.setDate(inicio.getDate() - SLACK_CONFIG.JANELA_DIAS); inicio.setHours(0,0,0,0);
+
+  var cnt = { fora:0, proximo:0, transito:0, entregue:0, no_prazo:0, negativo:0, outros:0, total:0 };
+  var listFora = [], listProx = [];
+
+  rows.slice(1).forEach(function(r) {
+    if (!r.some(function(c){ return c !== '' && c !== null && c !== undefined; })) return;
+
+    var d = iD >= 0 ? parseDate(r[iD]) : null;
+    if (d) { d.setHours(12,0,0,0); if (d < inicio || d > hoje) return; }
+
+    var statusRaw = iSE >= 0 ? trim(r[iSE]) : '';
+    if (!statusRaw) return;
+
+    var cat = _slackCatStatus(statusRaw);
+    cnt[cat]++;
+    cnt.total++;
+
+    var item = {
+      pedido:  iP >= 0 ? trim(r[iP]) : '—',
+      cliente: iN >= 0 ? trim(r[iN]) : '—',
+      data:    d ? fmtDateBR(d) : '—',
+      status:  statusRaw,
+    };
+    if (cat === 'fora')    listFora.push(item);
+    if (cat === 'proximo') listProx.push(item);
+  });
+
+  if (SLACK_CONFIG.MAX_LISTA > 0) {
+    listFora = listFora.slice(0, SLACK_CONFIG.MAX_LISTA);
+    listProx = listProx.slice(0, SLACK_CONFIG.MAX_LISTA);
+  }
+
+  return { cnt: cnt, listFora: listFora, listProx: listProx };
+}
+
+/* ── montagem da mensagem (Slack Block Kit) ── */
+function _slackMontarPayload(dados) {
+  var c          = dados.cnt;
+  var hoje       = new Date();
+  var pendentes  = c.no_prazo + c.fora + c.proximo;
+  var pctEnt     = c.total > 0 ? Math.round(c.entregue / c.total * 100) : 0;
+  var emoji      = c.fora > 0 ? '🔴' : (c.proximo > 0 || c.transito > 0 ? '🟡' : '🟢');
+  var tz         = Session.getScriptTimeZone();
+  var hora       = Utilities.formatDate(hoje, tz, "dd/MM/yyyy 'às' HH:mm");
+
+  var blocks = [];
+
+  blocks.push({
+    type: 'header',
+    text: { type: 'plain_text', text: emoji + '  Logística NKSW — ' + fmtDateBR(hoje), emoji: true }
+  });
+
+  blocks.push({ type: 'divider' });
+
+  blocks.push({
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*📦 Resumo — últimos ' + SLACK_CONFIG.JANELA_DIAS + ' dias*\n' +
+            '> *Total de pedidos:* ' + c.total + '\n' +
+            '> ✅ *Entregues:* ' + c.entregue + ' (' + pctEnt + '%)\n' +
+            '> 📬 *No prazo:* ' + c.no_prazo + '\n' +
+            '> ⏱️ *Próximo do prazo:* ' + c.proximo + '\n' +
+            '> ⚠️ *Fora do prazo:* ' + c.fora + '\n\n' +
+            '*🕐 Pedidos Pendentes para Envio: ' + pendentes + '*\n' +
+            '> 📬 No prazo: ' + c.no_prazo + '   ⏱️ Próximo do prazo: ' + c.proximo + '   ⚠️ Fora do prazo: ' + c.fora
+    }
+  });
+
+  blocks.push({ type: 'divider' });
+
+  // lista fora do prazo
+  if (dados.listFora.length > 0) {
+    var linhas = dados.listFora.map(function(p) {
+      return '• *' + p.pedido + '* | ' + p.cliente + ' | ' + p.data + ' | _' + p.status + '_';
+    }).join('\n');
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*⚠️ Pedidos FORA DO PRAZO (' + dados.listFora.length + ')*\n' + linhas }
+    });
+  } else {
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*⚠️ Fora do prazo:* nenhum ✅' }
+    });
+  }
+
+  blocks.push({ type: 'divider' });
+
+  // lista próximo do prazo
+  if (dados.listProx.length > 0) {
+    var linhasProx = dados.listProx.map(function(p) {
+      return '• *' + p.pedido + '* | ' + p.cliente + ' | ' + p.data + ' | _' + p.status + '_';
+    }).join('\n');
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*⏱️ Próximos do prazo (' + dados.listProx.length + ')*\n' + linhasProx }
+    });
+  } else {
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*⏱️ Próximos do prazo:* nenhum ✅' }
+    });
+  }
+
+  blocks.push({ type: 'divider' });
+  blocks.push({
+    type: 'context',
+    elements: [{ type: 'mrkdwn', text: '_Gerado automaticamente pelo NKSW BI · ' + hora + '_' }]
+  });
+
+  return { blocks: blocks };
+}
+
+/* ── função principal — chamada pelo trigger ── */
+function enviarRelatorioLogistica() {
+  try {
+    if (!SLACK_CONFIG.WEBHOOK_URL || SLACK_CONFIG.WEBHOOK_URL === 'COLE_AQUI_A_URL_DO_WEBHOOK') {
+      Logger.log('⚠️  Configure SLACK_CONFIG.WEBHOOK_URL antes de usar.');
+      return;
+    }
+    var dados   = _slackLerLogistica();
+    var payload = _slackMontarPayload(dados);
+    var resp = UrlFetchApp.fetch(SLACK_CONFIG.WEBHOOK_URL, {
+      method: 'post', contentType: 'application/json',
+      payload: JSON.stringify(payload), muteHttpExceptions: true
+    });
+    if (resp.getResponseCode() !== 200)
+      throw new Error('Slack retornou ' + resp.getResponseCode() + ': ' + resp.getContentText());
+    Logger.log('✅ Relatório enviado — ' + dados.cnt.total + ' pedidos analisados.');
+  } catch(e) {
+    Logger.log('❌ Erro: ' + e.message);
+    if (SLACK_CONFIG.WEBHOOK_URL && SLACK_CONFIG.WEBHOOK_URL !== 'COLE_AQUI_A_URL_DO_WEBHOOK') {
+      try {
+        UrlFetchApp.fetch(SLACK_CONFIG.WEBHOOK_URL, {
+          method: 'post', contentType: 'application/json',
+          payload: JSON.stringify({ text: '❌ *Erro no relatório de logística NKSW:* ' + e.message }),
+          muteHttpExceptions: true
+        });
+      } catch(_) {}
+    }
+  }
+}
+
+/* ── gerenciamento do trigger diário ── */
+
+// Execute APENAS UMA VEZ para criar o trigger automático às 10:30
+function configurarTriggerSlack() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'enviarRelatorioLogistica')
+      ScriptApp.deleteTrigger(triggers[i]);
+  }
+  ScriptApp.newTrigger('enviarRelatorioLogistica')
+    .timeBased()
+    .everyDays(1)
+    .atHour(SLACK_CONFIG.HORA_ENVIO)
+    .nearMinute(SLACK_CONFIG.MIN_ENVIO)
+    .create();
+  Logger.log('✅ Trigger criado: enviarRelatorioLogistica todos os dias às ' +
+             SLACK_CONFIG.HORA_ENVIO + ':' + pad(SLACK_CONFIG.MIN_ENVIO) + 'h');
+}
+
+function removerTriggerSlack() {
+  var triggers = ScriptApp.getProjectTriggers();
+  var n = 0;
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'enviarRelatorioLogistica') {
+      ScriptApp.deleteTrigger(triggers[i]); n++;
+    }
+  }
+  Logger.log('Removidos ' + n + ' trigger(s).');
+}
+
+function listarTriggersSlack() {
+  ScriptApp.getProjectTriggers().forEach(function(t) {
+    Logger.log(t.getHandlerFunction() + ' — ' + t.getEventType());
+  });
+}
+
+/* ================================================================
+   SLACK — Relatório Diário de Estoque (canal #estoque)
+   ================================================================
+   Envia diariamente às 09:00 um relatório com:
+   • Saúde do estoque: reposição curva A/B e risco de ruptura
+   • Listas de SKUs curva A/B sem estoque e estoque baixo
+   • Valor total em estoque
+   Execute configurarTriggerEstoque() UMA VEZ para agendar.
+   ================================================================ */
+
+var SLACK_EST = {
+  WEBHOOK_URL: 'SUA_SLACK_WEBHOOK_URL_ESTOQUE', // cole aqui a URL do Incoming Webhook do Slack
+  HORA_ENVIO:  9,
+  MIN_ENVIO:   0,
+};
+
+/* ── formata moeda BRL (sem toLocaleString — compatível com GAS V8) ── */
+function _fmtBRL(v) {
+  var n = Math.round((v || 0) * 100) / 100;
+  var parts = n.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return 'R$ ' + parts[0] + ',' + parts[1];
+}
+
+/* ── monta linha de SKU para a lista ── */
+function _linhaSkuEst(p) {
+  var est = p.estoque === 0 ? '❌ 0' : '⚠️ ' + p.estoque;
+  var v6m = p.vendas6m ? ' _(v6m: ' + p.vendas6m + ')_' : '';
+  return '• *' + p.codigo + '* | ' + p.nome + ' | ' + p.cor + ' ' + p.tamanho + ' | ' + est + v6m;
+}
+
+/* ── monta payload Slack Block Kit ── */
+function _slackMontarEstoque(est) {
+  var hoje   = new Date();
+  var r      = est.resumo;
+  var tz     = Session.getScriptTimeZone();
+  var hora   = Utilities.formatDate(hoje, tz, "dd/MM/yyyy 'às' HH:mm");
+
+  // filtros das listas — ordenados por código
+  function _byCodigo(a, b) {
+    var ca = String(a.codigo || '').toLowerCase();
+    var cb = String(b.codigo || '').toLowerCase();
+    return ca < cb ? -1 : ca > cb ? 1 : 0;
+  }
+  var aSemEst = est.curvaAB.filter(function(p){ return p.curva === 'A' && p.estoque === 0; }).sort(_byCodigo);
+  var bSemEst = est.curvaAB.filter(function(p){ return p.curva === 'B' && p.estoque === 0; }).sort(_byCodigo);
+  var baixo   = est.estBaixo;
+
+  // emoji de saúde geral
+  var emoji = r.criticos === 0 ? '🟢' : (aSemEst.length > 0 ? '🔴' : '🟡');
+
+  var blocks = [];
+
+  // ── CABEÇALHO ──────────────────────────────────────────────
+  blocks.push({
+    type: 'header',
+    text: { type: 'plain_text', text: emoji + '  Estoque NKSW — ' + fmtDateBR(hoje), emoji: true }
+  });
+
+  blocks.push({ type: 'divider' });
+
+  // ── SAÚDE DO ESTOQUE ───────────────────────────────────────
+  blocks.push({
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*🏥 Saúde do Estoque*\n' +
+            '> 🔴 *Reposição Curva A:* ' + aSemEst.length + ' SKUs sem estoque\n' +
+            '> 🟡 *Reposição Curva B:* ' + bSemEst.length + ' SKUs sem estoque\n' +
+            '> ⚠️ *Risco de Ruptura (estoque baixo ≤' + r.threshold + ' un):* ' + r.estBaixo + ' SKUs'
+    }
+  });
+
+  blocks.push({ type: 'divider' });
+
+  // ── CARDS ESTOQUE NKSW ─────────────────────────────────────
+  blocks.push({
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*📊 Estoque NKSW — Resumo*\n' +
+            '> 📦 *Total de SKUs:* ' + r.total + '\n' +
+            '> 🅰️ *Curva A:* ' + r.totalA + ' SKUs\n' +
+            '> 🅱️ *Curva B:* ' + r.totalB + ' SKUs\n' +
+            '> ❌ *Sem estoque:* ' + r.semEstoque + ' SKUs\n' +
+            '> ⚠️ *Estoque baixo:* ' + r.estBaixo + ' SKUs\n' +
+            '> 💰 *Valor em Estoque:* ' + _fmtBRL(r.valorEstoque)
+    }
+  });
+
+  blocks.push({ type: 'divider' });
+
+  // ── LISTA: CURVA A SEM ESTOQUE ─────────────────────────────
+  if (aSemEst.length > 0) {
+    var linhasA = aSemEst.map(_linhaSkuEst).join('\n');
+    // Slack limita seção a ~3000 chars — divide em blocos de 30 se necessário
+    var chunks = _chunkText(linhasA, 2800);
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*🔴 Curva A — Sem Estoque (' + aSemEst.length + ')*\n' + chunks[0] }
+    });
+    for (var i = 1; i < chunks.length; i++) {
+      blocks.push({ type: 'section', text: { type: 'mrkdwn', text: chunks[i] } });
+    }
+  } else {
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*🔴 Curva A — Sem Estoque:* nenhum ✅' }
+    });
+  }
+
+  blocks.push({ type: 'divider' });
+
+  // ── LISTA: CURVA B SEM ESTOQUE ─────────────────────────────
+  if (bSemEst.length > 0) {
+    var linhasB = bSemEst.map(_linhaSkuEst).join('\n');
+    var chunksB = _chunkText(linhasB, 2800);
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*🟡 Curva B — Sem Estoque (' + bSemEst.length + ')*\n' + chunksB[0] }
+    });
+    for (var j = 1; j < chunksB.length; j++) {
+      blocks.push({ type: 'section', text: { type: 'mrkdwn', text: chunksB[j] } });
+    }
+  } else {
+    blocks.push({
+      type: 'section',
+      text: { type: 'mrkdwn', text: '*🟡 Curva B — Sem Estoque:* nenhum ✅' }
+    });
+  }
+
+  blocks.push({ type: 'divider' });
+
+  // ── RODAPÉ ─────────────────────────────────────────────────
+  blocks.push({
+    type: 'context',
+    elements: [{ type: 'mrkdwn', text: '_Gerado automaticamente pelo NKSW BI · ' + hora + '_' }]
+  });
+
+  return { blocks: blocks };
+}
+
+/* ── divide texto longo em chunks sem quebrar linhas ── */
+function _chunkText(text, maxLen) {
+  if (text.length <= maxLen) return [text];
+  var lines  = text.split('\n');
+  var chunks = [], cur = '';
+  lines.forEach(function(l) {
+    if ((cur + '\n' + l).length > maxLen && cur) {
+      chunks.push(cur);
+      cur = l;
+    } else {
+      cur = cur ? cur + '\n' + l : l;
+    }
+  });
+  if (cur) chunks.push(cur);
+  return chunks;
+}
+
+/* ── função principal — chamada pelo trigger ── */
+function enviarRelatorioEstoque() {
+  try {
+    var est = getEstoque();
+    if (!est.ok) throw new Error(est.error || 'Erro ao ler estoque.');
+    var payload = _slackMontarEstoque(est);
+    var resp = UrlFetchApp.fetch(SLACK_EST.WEBHOOK_URL, {
+      method: 'post', contentType: 'application/json',
+      payload: JSON.stringify(payload), muteHttpExceptions: true
+    });
+    if (resp.getResponseCode() !== 200)
+      throw new Error('Slack retornou ' + resp.getResponseCode() + ': ' + resp.getContentText());
+    Logger.log('✅ Relatório de estoque enviado — ' + est.resumo.total + ' SKUs analisados.');
+  } catch(e) {
+    Logger.log('❌ Erro: ' + e.message);
+    try {
+      UrlFetchApp.fetch(SLACK_EST.WEBHOOK_URL, {
+        method: 'post', contentType: 'application/json',
+        payload: JSON.stringify({ text: '❌ *Erro no relatório de estoque NKSW:* ' + e.message }),
+        muteHttpExceptions: true
+      });
+    } catch(_) {}
+  }
+}
+
+/* ── gerenciamento do trigger ── */
+
+// Execute APENAS UMA VEZ para agendar o envio diário às 09:00
+function configurarTriggerEstoque() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'enviarRelatorioEstoque')
+      ScriptApp.deleteTrigger(triggers[i]);
+  }
+  ScriptApp.newTrigger('enviarRelatorioEstoque')
+    .timeBased()
+    .everyDays(1)
+    .atHour(SLACK_EST.HORA_ENVIO)
+    .nearMinute(SLACK_EST.MIN_ENVIO)
+    .create();
+  Logger.log('✅ Trigger criado: enviarRelatorioEstoque todos os dias às ' +
+             SLACK_EST.HORA_ENVIO + ':' + pad(SLACK_EST.MIN_ENVIO) + 'h');
+}
+
+function removerTriggerEstoque() {
+  var triggers = ScriptApp.getProjectTriggers();
+  var n = 0;
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'enviarRelatorioEstoque') {
+      ScriptApp.deleteTrigger(triggers[i]); n++;
+    }
+  }
+  Logger.log('Removidos ' + n + ' trigger(s).');
 }

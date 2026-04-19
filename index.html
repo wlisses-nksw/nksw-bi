@@ -1115,6 +1115,17 @@ tbody tr:hover{background:#fafafa}
 
       <div id="estoqueKpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
 
+      <!-- ══ SEÇÃO 3B: PRODUTOS POR GRADE ══ -->
+      <div class="section-header" style="margin-bottom:14px;margin-top:6px">
+        <div>
+          <div class="section-title">Produtos por Grade</div>
+          <div class="section-sub">Grade completa = todos os tamanhos com estoque disponível · agrupado por código + cor</div>
+        </div>
+      </div>
+      <div id="gradeCards" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px">
+        <div class="kpi-card" style="color:#9ca3af;text-align:center;padding:24px;grid-column:1/-1">Carregando análise de grade...</div>
+      </div>
+
       <!-- Barra de Filtros + CSV -->
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
         <div style="font-size:12px;font-weight:600;color:#6b7280">Curva:</div>
@@ -1130,6 +1141,12 @@ tbody tr:hover{background:#fafafa}
           <button onclick="filtrarEstoqueStatus('sem')"   id="efStSem"   class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#fee2e2;color:#dc2626">Sem estoque</button>
           <button onclick="filtrarEstoqueStatus('baixo')" id="efStBaixo" class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#fef3c7;color:#d97706">Baixo</button>
           <button onclick="filtrarEstoqueStatus('ok')"    id="efStOk"    class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#dcfce7;color:#15803d">OK</button>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#6b7280;margin-left:8px">Grade:</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="filtrarEstoqueGrade('todos')"    id="efGrTodos"    class="tab-btn active" style="padding:4px 14px;font-size:12px">Todos</button>
+          <button onclick="filtrarEstoqueGrade('completa')" id="efGrCompleta" class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#dcfce7;color:#15803d">✅ Completa</button>
+          <button onclick="filtrarEstoqueGrade('quebrada')" id="efGrQuebrada" class="tab-btn"        style="padding:4px 14px;font-size:12px;background:#fee2e2;color:#dc2626">⚠️ Quebrada</button>
         </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
           <div style="position:relative">
@@ -1154,12 +1171,13 @@ tbody tr:hover{background:#fafafa}
               <th style="cursor:pointer" onclick="sortEstoque('tipo')">Tipo ↕</th>
               <th style="text-align:center;cursor:pointer" onclick="sortEstoque('curva')">Curva ↕</th>
               <th style="text-align:center;cursor:pointer" onclick="sortEstoque('estoque')">Estoque ↕</th>
-              <th style="text-align:right;cursor:pointer" onclick="sortEstoque('vendas6m')">Vendas 6m ↕</th>
-              <th style="text-align:right;cursor:pointer" onclick="sortEstoque('totalVendas')">Total Vendas ↕</th>
+              <th style="text-align:center">Tamanhos OK</th>
+              <th style="text-align:center;color:#dc2626">Faltando</th>
+              <th style="text-align:center">Grade</th>
             </tr>
           </thead>
           <tbody id="estoqueMainBody">
-            <tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:24px">Carregando...</td></tr>
+            <tr><td colspan="11" style="text-align:center;color:#9ca3af;padding:24px">Carregando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -4790,6 +4808,7 @@ var _estoqueData         = [];       // todos os SKUs brutos
 var _estoqueThreshold    = 5;
 var _estoqueFiltro       = new Set(); // vazio = todos; valores: 'A'|'B'|'C'
 var _estoqueStatusFiltro = new Set(); // vazio = todos; valores: 'sem'|'baixo'|'ok'
+var _estoqueGradeFiltro  = '';        // '' = todos; 'completa' | 'quebrada'
 var _estoqueBusca        = '';       // texto de busca por código ou nome
 var _estoqueSortBy       = 'curva';
 var _estoqueSortAsc      = true;
@@ -4978,6 +4997,127 @@ function applyEstoqueData(d) {
 
   // Renderiza tabela com filtros padrão
   _renderEstoqueTable();
+
+  // Renderiza cards de grade
+  _renderGradeCards();
+}
+
+/* ── Análise de Grade por Curva ── */
+function _renderGradeCards() {
+  var el = document.getElementById('gradeCards');
+  if (!el) return;
+
+  if (!_estoqueData || !_estoqueData.length) {
+    el.innerHTML = '<div class="kpi-card" style="color:#9ca3af;text-align:center;padding:24px;grid-column:1/-1">Sem dados de estoque carregados</div>';
+    return;
+  }
+
+  // Agrupa por (codigo + cor) → uma grade = mesmo modelo + cor em todos os tamanhos
+  var grupos = {};
+  _estoqueData.forEach(function(p) {
+    var chave = (p.codigo || '?') + '||' + (p.cor || '');
+    if (!grupos[chave]) grupos[chave] = { curva: p.curva, itens: [] };
+    grupos[chave].itens.push(p);
+  });
+
+  var gGeral = { completa: 0, quebrada: 0, qtdCompleta: 0, qtdQuebrada: 0, skuQuebrada: 0 };
+  var gA     = { completa: 0, quebrada: 0, qtdCompleta: 0, qtdQuebrada: 0, skuQuebrada: 0 };
+  var gB     = { completa: 0, quebrada: 0, qtdCompleta: 0, qtdQuebrada: 0, skuQuebrada: 0 };
+
+  Object.keys(grupos).forEach(function(k) {
+    var g    = grupos[k];
+    var alvo = g.curva === 'A' ? gA : g.curva === 'B' ? gB : null;
+
+    var qtd   = g.itens.reduce(function(s, it) { return s + (it.estoque || 0); }, 0);
+    var zeros = g.itens.filter(function(it) { return (it.estoque || 0) === 0; }).length;
+
+    // Acumula no geral (todas as curvas)
+    if (zeros === 0) {
+      gGeral.completa++;
+      gGeral.qtdCompleta += qtd;
+    } else {
+      gGeral.quebrada++;
+      gGeral.skuQuebrada += zeros;
+      gGeral.qtdQuebrada += qtd;
+    }
+
+    // Acumula na curva específica (só A e B)
+    if (!alvo) return;
+    if (zeros === 0) {
+      alvo.completa++;
+      alvo.qtdCompleta += qtd;
+    } else {
+      alvo.quebrada++;
+      alvo.skuQuebrada += zeros;
+      alvo.qtdQuebrada += qtd;
+    }
+  });
+
+  function gradeCard(curva, data, accent, accentLight, bg, curvaColor) {
+    var total  = data.completa + data.quebrada;
+    var isGeral = curva === 'Geral';
+    if (!total) {
+      return '<div class="kpi-card" style="border-top:4px solid ' + accent + ';background:' + bg + ';padding:20px;color:#9ca3af;text-align:center">' +
+        'Sem SKUs' + (isGeral ? '' : ' Curva ' + curva) + ' no estoque</div>';
+    }
+    var pctC = Math.round(data.completa / total * 100);
+    var pctQ = 100 - pctC;
+    var tituloLabel = isGeral
+      ? '📊 Grade <span style="color:#c20000;font-weight:800">de Produto</span> — Geral'
+      : '📐 Grade <span style="color:#c20000;font-weight:800">de Produto</span> — Curva ' + curva;
+    var badgeLabel  = isGeral ? 'Todos' : 'Curva ' + curva;
+    var subtitulo   = isGeral ? total + ' grades (A + B + C)' : total + ' grades analisadas';
+
+    return '<div class="kpi-card" style="border-top:4px solid ' + accent + ';background:' + bg + ';padding:20px">' +
+
+      // Cabeçalho
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">' +
+        '<div>' +
+          '<div style="font-size:13px;font-weight:700;color:#1d1c1d">' + tituloLabel + '</div>' +
+          '<div style="font-size:11px;color:#6b7280;margin-top:2px">' + subtitulo + '</div>' +
+        '</div>' +
+        '<span style="font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;background:' + curvaColor.bg + ';color:' + curvaColor.text + '">' + badgeLabel + '</span>' +
+      '</div>' +
+
+      // Barra de progresso proporcional
+      '<div style="display:flex;height:8px;border-radius:6px;overflow:hidden;margin-bottom:16px;background:#e5e7eb">' +
+        '<div style="width:' + pctC + '%;background:#16a34a;transition:width .4s"></div>' +
+        '<div style="width:' + pctQ + '%;background:#dc2626;transition:width .4s"></div>' +
+      '</div>' +
+
+      // Card Grade Completa
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#dcfce7;border-radius:10px;margin-bottom:8px;border:1px solid #bbf7d0">' +
+        '<div>' +
+          '<div style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:.06em">✅ Grade Completa</div>' +
+          '<div style="font-size:11px;color:#16a34a;margin-top:3px">Todos os tamanhos em estoque</div>' +
+          '<div style="font-size:11px;color:#16a34a">' + fmtNum(data.qtdCompleta) + ' unidades em estoque</div>' +
+        '</div>' +
+        '<div style="text-align:right;min-width:64px">' +
+          '<div style="font-size:34px;font-weight:800;color:#15803d;line-height:1">' + data.completa + '</div>' +
+          '<div style="font-size:11px;color:#16a34a;font-weight:600">' + pctC + '% do total</div>' +
+        '</div>' +
+      '</div>' +
+
+      // Card Grade Quebrada
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fee2e2;border-radius:10px;border:1px solid #fecaca">' +
+        '<div>' +
+          '<div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.06em">⚠️ Grade Quebrada</div>' +
+          '<div style="font-size:11px;color:#ef4444;margin-top:3px">' + data.skuQuebrada + ' tamanho(s) sem estoque</div>' +
+          '<div style="font-size:11px;color:#ef4444">' + fmtNum(data.qtdQuebrada) + ' un. restantes nos tamanhos OK</div>' +
+        '</div>' +
+        '<div style="text-align:right;min-width:64px">' +
+          '<div style="font-size:34px;font-weight:800;color:#dc2626;line-height:1">' + data.quebrada + '</div>' +
+          '<div style="font-size:11px;color:#ef4444;font-weight:600">' + pctQ + '% do total</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  el.style.gridTemplateColumns = '1fr 1fr 1fr';
+  el.innerHTML =
+    gradeCard('Geral', gGeral, '#6b7280', '#f3f4f6', '#f9fafb', { bg: '#f3f4f6', text: '#374151' }) +
+    gradeCard('A',     gA,     '#f59e0b', '#fef3c7', '#fffbeb', { bg: '#fef3c7', text: '#92400e' }) +
+    gradeCard('B',     gB,     '#3b82f6', '#dbeafe', '#eff6ff', { bg: '#dbeafe', text: '#1e40af' });
 }
 
 /* ── renderiza tabela filtrada/ordenada ── */
@@ -4985,18 +5125,36 @@ function _renderEstoqueTable() {
   var tbody = document.getElementById('estoqueMainBody');
   if (!tbody) return;
 
-  var thr  = _estoqueThreshold;
+  var thr   = _estoqueThreshold;
   var busca = _estoqueBusca.toLowerCase();
+
+  // Pré-computa mapa de grades usando TODOS os SKUs (não só os filtrados)
+  var gradeMap = {};
+  _estoqueData.forEach(function(p) {
+    var chave = (p.codigo || '?') + '||' + (p.cor || '');
+    if (!gradeMap[chave]) gradeMap[chave] = { presentes: [], faltando: [] };
+    if ((p.estoque || 0) > 0) gradeMap[chave].presentes.push(p.tamanho || '?');
+    else                       gradeMap[chave].faltando.push(p.tamanho || '?');
+  });
+
   var data = _estoqueData.filter(function(p) {
-    var okCurva   = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
-    var okStatus  = _estoqueStatusFiltro.size === 0 ||
+    var okCurva  = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
+    var okStatus = _estoqueStatusFiltro.size === 0 ||
       (_estoqueStatusFiltro.has('sem')   && p.estoque === 0) ||
       (_estoqueStatusFiltro.has('baixo') && p.estoque > 0 && p.estoque <= thr) ||
       (_estoqueStatusFiltro.has('ok')    && p.estoque > thr);
-    var okBusca   = !busca ||
+    var okBusca  = !busca ||
       (p.codigo && p.codigo.toLowerCase().includes(busca)) ||
       (p.nome   && p.nome.toLowerCase().includes(busca));
-    return okCurva && okStatus && okBusca;
+    // filtro de grade (usa gradeMap já calculado acima)
+    var okGrade = true;
+    if (_estoqueGradeFiltro) {
+      var gKey = (p.codigo || '?') + '||' + (p.cor || '');
+      var gI   = gradeMap[gKey] || { presentes: [], faltando: [] };
+      var isCompleta = gI.faltando.length === 0;
+      okGrade = _estoqueGradeFiltro === 'completa' ? isCompleta : !isCompleta;
+    }
+    return okCurva && okStatus && okBusca && okGrade;
   });
 
   // ordenação
@@ -5011,11 +5169,31 @@ function _renderEstoqueTable() {
   });
 
   if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:24px">Nenhum SKU encontrado com os filtros selecionados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#9ca3af;padding:24px">Nenhum SKU encontrado com os filtros selecionados</td></tr>';
     return;
   }
 
   tbody.innerHTML = data.map(function(p) {
+    var chave    = (p.codigo || '?') + '||' + (p.cor || '');
+    var gInfo    = gradeMap[chave] || { presentes: [], faltando: [] };
+    var completa = gInfo.faltando.length === 0;
+
+    var presentesHtml = gInfo.presentes.length
+      ? gInfo.presentes.map(function(t) {
+          return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#dcfce7;color:#15803d;margin:1px;display:inline-block">' + t + '</span>';
+        }).join(' ')
+      : '<span style="color:#9ca3af;font-size:11px">—</span>';
+
+    var faltandoHtml = gInfo.faltando.length
+      ? gInfo.faltando.map(function(t) {
+          return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#fee2e2;color:#dc2626;margin:1px;display:inline-block">' + t + '</span>';
+        }).join(' ')
+      : '<span style="color:#16a34a;font-size:11px">—</span>';
+
+    var gradeBadge = completa
+      ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dcfce7;color:#15803d;white-space:nowrap">✅ Completa</span>'
+      : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fee2e2;color:#dc2626;white-space:nowrap">⚠️ Quebrada</span>';
+
     return '<tr>' +
       '<td style="font-size:11px;color:#6b7280;white-space:nowrap">' + (p.codigo || '—') + '</td>' +
       '<td><strong style="font-size:12px">' + (p.nome || '—') + '</strong></td>' +
@@ -5025,8 +5203,9 @@ function _renderEstoqueTable() {
       '<td style="font-size:12px;color:#6b7280">' + (p.tipo || '—') + '</td>' +
       '<td style="text-align:center">' + _curvaBadge(p.curva) + '</td>' +
       '<td style="text-align:center">' + _estCell(p.estoque, thr) + '</td>' +
-      '<td style="text-align:right;font-size:12px">' + fmtNum(p.vendas6m || 0) + '</td>' +
-      '<td style="text-align:right;font-size:12px">' + fmtNum(p.totalVendas || 0) + '</td>' +
+      '<td style="text-align:center">' + presentesHtml + '</td>' +
+      '<td style="text-align:center">' + faltandoHtml + '</td>' +
+      '<td style="text-align:center">' + gradeBadge + '</td>' +
     '</tr>';
   }).join('');
 }
@@ -5060,6 +5239,17 @@ function filtrarEstoqueStatus(status) {
   ['Sem','Baixo','Ok'].forEach(function(v) {
     var btn = document.getElementById('efSt' + v);
     if (btn) btn.classList.toggle('active', _estoqueStatusFiltro.has(v.toLowerCase()));
+  });
+  _renderEstoqueTable();
+}
+
+function filtrarEstoqueGrade(val) {
+  _estoqueGradeFiltro = (val === 'todos') ? '' : val;
+  var btnTodos = document.getElementById('efGrTodos');
+  if (btnTodos) btnTodos.classList.toggle('active', !_estoqueGradeFiltro);
+  ['Completa','Quebrada'].forEach(function(v) {
+    var btn = document.getElementById('efGr' + v);
+    if (btn) btn.classList.toggle('active', _estoqueGradeFiltro === v.toLowerCase());
   });
   _renderEstoqueTable();
 }
