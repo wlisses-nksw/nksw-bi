@@ -12,25 +12,25 @@
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
-        "base": 16109,
-        "pedidos": 21394,
-        "receita": 6780358,
+        "base": 16112,
+        "pedidos": 21398,
+        "receita": 6782488,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
       {
         "segmento": "🚨 Alto Valor Em Risco",
-        "base": 1281,
-        "pedidos": 3186,
-        "receita": 2487707,
+        "base": 1283,
+        "pedidos": 3196,
+        "receita": 2492822,
         "racional": "Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.",
         "acao": "Campanha win-back agressiva, desconto significativo ou produto exclusivo"
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1109,
-        "pedidos": 2238,
-        "receita": 2276372,
+        "base": 1107,
+        "pedidos": 2235,
+        "receita": 2271393,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
@@ -45,32 +45,32 @@
       {
         "segmento": "🌡️ Alto Valor Morno",
         "base": 907,
-        "pedidos": 1677,
-        "receita": 1735830,
+        "pedidos": 1670,
+        "receita": 1735694,
         "racional": "Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.",
         "acao": "Reativacao personalizada, oferta de produto complementar ao historico de compras"
       },
       {
         "segmento": "✨ Novo/Eventual",
-        "base": 2125,
-        "pedidos": 2488,
-        "receita": 1347178,
+        "base": 2122,
+        "pedidos": 2484,
+        "receita": 1345048,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
       {
         "segmento": "💎 VIP Ativo",
-        "base": 203,
-        "pedidos": 1501,
-        "receita": 920959,
+        "base": 201,
+        "pedidos": 1489,
+        "receita": 915488,
         "racional": "Top clientes com score RFM maximo (14-15) comprando nos ultimos 6 meses — nucleo e embaixadores da marca.",
         "acao": "Programa VIP exclusivo, acesso antecipado a lancamentos, presentes personalizados"
       },
       {
         "segmento": "🔔 VIP Reaquecer",
-        "base": 76,
-        "pedidos": 615,
-        "receita": 350201,
+        "base": 78,
+        "pedidos": 627,
+        "receita": 355672,
         "racional": "Top clientes esfriando (6-12 meses sem compra) — janela de reconquista antes da perda definitiva.",
         "acao": "Contato personalizado pelo atendente, oferta exclusiva de reengajamento"
       },
@@ -571,21 +571,21 @@
         "minTicket": 996,
         "maxTicket": 20114,
         "vipAtivos": {
-          "count": 203,
-          "revenue": 920959,
-          "avgRecency": 85,
-          "ticketMedio": 614
+          "count": 201,
+          "revenue": 915488,
+          "avgRecency": 86,
+          "ticketMedio": 615
         },
         "vipTrabalho": {
-          "count": 76,
-          "revenue": 350201,
-          "avgRecency": 258,
-          "ticketMedio": 569
+          "count": 78,
+          "revenue": 355672,
+          "avgRecency": 257,
+          "ticketMedio": 567
         },
         "vipPerdidos": {
           "count": 25,
           "revenue": 128838,
-          "avgRecency": 480,
+          "avgRecency": 481,
           "ticketMedio": 416
         }
       },
@@ -615,12 +615,12 @@
   },
   "periodo": {
     "inicio": "2026-04-01",
-    "fim": "2026-04-18",
+    "fim": "2026-04-19",
     "label": "custom"
   },
-  "generated_at": "2026-04-18T23:54:19Z",
+  "generated_at": "2026-04-19T06:17:57Z",
   "period": {
     "start": "2026-04-01",
-    "end": "2026-04-18"
+    "end": "2026-04-19"
   }
 }
