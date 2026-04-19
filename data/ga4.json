@@ -7,32 +7,32 @@
     "startDate": "2026-04-01",
     "endDate": "2026-04-19"
   },
-  "generatedAt": "2026-04-19T06:17:58.707Z",
+  "generatedAt": "2026-04-19T09:10:56.058Z",
   "propertyId": "374872616",
   "overview": {
-    "sessions": 27187,
-    "users": 18086,
-    "newUsers": 16115,
-    "newUserRate": 0.5927465332695774,
-    "bounceRate": 0.5261338139551992,
-    "avgSessionDuration": 119.1273882701659,
-    "screenPageViews": 79436,
+    "sessions": 27197,
+    "users": 18102,
+    "newUsers": 16128,
+    "newUserRate": 0.5930065816082656,
+    "bounceRate": 0.525719748501673,
+    "avgSessionDuration": 119.1114602099864,
+    "screenPageViews": 79473,
     "transactions": 181,
     "purchaseRevenue": 146953.700001,
-    "sessionConversionRate": 0.006252988560709162,
+    "sessionConversionRate": 0.006250689414273633,
     "addToCarts": 2750,
     "checkouts": 640,
     "purchases": 174,
     "averageOrderValue": 811.8988950331491,
     "funnelSummary": {
-      "sessions": 27187,
+      "sessions": 27197,
       "addToCarts": 2750,
       "checkouts": 640,
       "purchases": 174,
-      "sessionToCartRate": 0.10115128554088351,
+      "sessionToCartRate": 0.10111409346619113,
       "cartToCheckoutRate": 0.23272727272727273,
       "checkoutToPurchaseRate": 0.271875,
-      "overallConvRate": 0.006400117703314084
+      "overallConvRate": 0.0063977644593153655
     }
   },
   "channels": [
@@ -42,7 +42,7 @@
       "transactions": 43,
       "revenue": 33464.570013,
       "bounceRate": 0.631899845541013,
-      "avgDuration": 86.66728918990326,
+      "avgDuration": 86.66894692537191,
       "convRate": 0.0035769449638240794
     },
     {
@@ -50,18 +50,18 @@
       "sessions": 9313,
       "transactions": 53,
       "revenue": 54051.179993,
-      "bounceRate": 0.44539890475679156,
-      "avgDuration": 118.82720118662085,
+      "bounceRate": 0.4452915279716525,
+      "avgDuration": 118.83054769719747,
       "convRate": 0.005690969612369806
     },
     {
       "channel": "Direct",
-      "sessions": 2485,
+      "sessions": 2488,
       "transactions": 43,
-      "revenue": 41348.940005,
-      "bounceRate": 0.3891348088531187,
-      "avgDuration": 171.0674393231388,
-      "convRate": 0.017706237424547282
+      "revenue": 41348.940005000004,
+      "bounceRate": 0.3894694533762058,
+      "avgDuration": 170.86703487218648,
+      "convRate": 0.017684887459807074
     },
     {
       "channel": "Unassigned",
@@ -74,12 +74,12 @@
     },
     {
       "channel": "Organic Search",
-      "sessions": 842,
+      "sessions": 851,
       "transactions": 12,
       "revenue": 10168.480002,
-      "bounceRate": 0.32066508313539194,
-      "avgDuration": 225.7155133610451,
-      "convRate": 0.014251781472684086
+      "bounceRate": 0.3207990599294947,
+      "avgDuration": 224.1414650752056,
+      "convRate": 0.01410105757931845
     },
     {
       "channel": "Referral",
@@ -267,10 +267,18 @@
     {
       "date": "18/04/2026",
       "dateRaw": "20260418",
-      "sessions": 742,
+      "sessions": 744,
       "transactions": 4,
       "revenue": 2900.740002,
       "addToCarts": 93
+    },
+    {
+      "date": "19/04/2026",
+      "dateRaw": "20260419",
+      "sessions": 16,
+      "transactions": 0,
+      "revenue": 0,
+      "addToCarts": 0
     }
   ],
   "landingPages": [
@@ -281,7 +289,7 @@
       "transactions": 31,
       "revenue": 28819.989992000006,
       "bounceRate": 0.2774892752314292,
-      "avgDuration": 135.38765821675324,
+      "avgDuration": 135.38765840776702,
       "convRate": 0.006999322646195529
     },
     {
@@ -290,8 +298,8 @@
       "sessions": 3888,
       "transactions": 19,
       "revenue": 17260.650005,
-      "bounceRate": 0.4773662551440329,
-      "avgDuration": 127.88255006121399,
+      "bounceRate": 0.47710905349794236,
+      "avgDuration": 127.88525088425928,
       "convRate": 0.004886831275720165
     },
     {
@@ -337,22 +345,22 @@
     {
       "page": "/",
       "channel": "Organic Search",
-      "sessions": 622,
+      "sessions": 631,
       "transactions": 7,
       "revenue": 4530.429999,
-      "bounceRate": 0.1977491961414791,
-      "avgDuration": 259.4249822717042,
-      "convRate": 0.011254019292604502
+      "bounceRate": 0.19968304278922344,
+      "avgDuration": 256.8213367702061,
+      "convRate": 0.011093502377179081
     },
     {
       "page": "/",
       "channel": "Direct",
-      "sessions": 595,
+      "sessions": 597,
       "transactions": 5,
-      "revenue": 7628.650000000001,
-      "bounceRate": 0.3277310924369748,
-      "avgDuration": 221.44291742352942,
-      "convRate": 0.008403361344537815
+      "revenue": 7628.65,
+      "bounceRate": 0.32998324958123953,
+      "avgDuration": 220.70920652261307,
+      "convRate": 0.008375209380234505
     },
     {
       "page": "/produtos/calcinha-alana-leopard",
@@ -369,7 +377,7 @@
       "channel": "Organic Social",
       "sessions": 397,
       "transactions": 3,
-      "revenue": 4311.750000999999,
+      "revenue": 4311.750001,
       "bounceRate": 0.5667506297229219,
       "avgDuration": 83.8230101813602,
       "convRate": 0.007556675062972292
@@ -391,7 +399,7 @@
       "transactions": 3,
       "revenue": 2054.7000000000003,
       "bounceRate": 0.7166123778501629,
-      "avgDuration": 66.40796449185667,
+      "avgDuration": 66.40796449185669,
       "convRate": 0.009771986970684038
     },
     {
@@ -471,7 +479,7 @@
       "transactions": 1,
       "revenue": 1208,
       "bounceRate": 0.12666666666666668,
-      "avgDuration": 124.91813916666666,
+      "avgDuration": 124.91813916666669,
       "convRate": 0.006666666666666667
     },
     {
@@ -721,7 +729,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.7468354430379747,
-      "avgDuration": 40.141180999999996,
+      "avgDuration": 40.141181,
       "convRate": 0
     },
     {
@@ -741,7 +749,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.6623376623376623,
-      "avgDuration": 27.618178740259737,
+      "avgDuration": 27.618178740259744,
       "convRate": 0
     },
     {
@@ -751,7 +759,7 @@
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 0.32432432432432434,
-      "avgDuration": 169.20875624324322,
+      "avgDuration": 169.20875624324324,
       "convRate": 0
     },
     {
@@ -802,7 +810,7 @@
       "campaign": "home",
       "sessions": 2787,
       "transactions": 30,
-      "revenue": 25473.429994000002,
+      "revenue": 25473.429994,
       "bounceRate": 0.15536419088625764,
       "convRate": 0.010764262648008612
     },
@@ -822,7 +830,7 @@
       "campaign": "[AMAI] - Muse Collection",
       "sessions": 1306,
       "transactions": 11,
-      "revenue": 8024.580007,
+      "revenue": 8024.5800070000005,
       "bounceRate": 0.5666156202143952,
       "convRate": 0.008422664624808576
     },
@@ -830,11 +838,11 @@
       "source": "facebook",
       "medium": "paid",
       "campaign": "Social Testing Campaign",
-      "sessions": 939,
+      "sessions": 940,
       "transactions": 0,
       "revenue": 0,
-      "bounceRate": 0.5857294994675186,
-      "convRate": 0.0010649627263045794
+      "bounceRate": 0.5851063829787234,
+      "convRate": 0.0010638297872340426
     },
     {
       "source": "facebook",
@@ -982,7 +990,7 @@
     "addToCarts": 2750,
     "checkouts": 640,
     "purchases": 174,
-    "revenue": 146953.70000100002,
+    "revenue": 146953.700001,
     "itemsPurchased": 417,
     "rates": {
       "viewToCart": 0.0798119340608312,
@@ -994,19 +1002,19 @@
   "device": [
     {
       "device": "mobile",
-      "sessions": 25755,
-      "users": 17268,
+      "sessions": 25765,
+      "users": 17282,
       "transactions": 158,
       "revenue": 137113.03000399997,
-      "bounceRate": 0.5350805668802174
+      "bounceRate": 0.5347176402095867
     },
     {
       "device": "desktop",
-      "sessions": 1362,
-      "users": 749,
+      "sessions": 1364,
+      "users": 751,
       "transactions": 23,
       "revenue": 9840.669997,
-      "bounceRate": 0.38179148311306904
+      "bounceRate": 0.38269794721407624
     },
     {
       "device": "tablet",
@@ -1021,38 +1029,38 @@
     "states": [
       {
         "state": "State of Sao Paulo",
-        "sessions": 8996,
-        "users": 6391,
+        "sessions": 9001,
+        "users": 6397,
         "transactions": 46,
-        "revenue": 41778.780000000006
+        "revenue": 41778.78000000001
       },
       {
         "state": "State of Minas Gerais",
         "sessions": 3295,
-        "users": 2174,
+        "users": 2175,
         "transactions": 23,
-        "revenue": 22683.519999000004
+        "revenue": 22683.519998999996
       },
       {
         "state": "State of Rio de Janeiro",
-        "sessions": 2713,
-        "users": 1826,
+        "sessions": 2715,
+        "users": 1828,
         "transactions": 28,
         "revenue": 25244.549999000003
       },
       {
         "state": "Federal District",
-        "sessions": 1870,
-        "users": 1123,
+        "sessions": 1871,
+        "users": 1124,
         "transactions": 8,
-        "revenue": 6362.400002
+        "revenue": 6362.400001999999
       },
       {
         "state": "State of Goias",
         "sessions": 1538,
         "users": 1025,
         "transactions": 11,
-        "revenue": 10124.719999999998
+        "revenue": 10124.72
       },
       {
         "state": "State of Parana",
@@ -1066,7 +1074,7 @@
         "sessions": 1155,
         "users": 826,
         "transactions": 4,
-        "revenue": 1280.8000000000002
+        "revenue": 1280.8000000000006
       },
       {
         "state": "State of Bahia",
@@ -1077,10 +1085,10 @@
       },
       {
         "state": "State of Rio Grande do Sul",
-        "sessions": 952,
-        "users": 730,
+        "sessions": 953,
+        "users": 731,
         "transactions": 7,
-        "revenue": 8159.550004000001
+        "revenue": 8159.550004
       },
       {
         "state": "State of Espirito Santo",
@@ -1093,31 +1101,31 @@
     "cities": [
       {
         "city": "Sao Paulo",
-        "sessions": 5336,
-        "users": 3923,
+        "sessions": 5342,
+        "users": 3927,
         "transactions": 26,
-        "revenue": 26566.190005999997
+        "revenue": 26566.190006000004
       },
       {
         "city": "Rio de Janeiro",
-        "sessions": 2171,
-        "users": 1473,
+        "sessions": 2172,
+        "users": 1474,
         "transactions": 24,
         "revenue": 20034.699997999996
       },
       {
         "city": "Brasilia",
-        "sessions": 1853,
-        "users": 1110,
+        "sessions": 1854,
+        "users": 1111,
         "transactions": 8,
-        "revenue": 6362.400001999999
+        "revenue": 6362.400002
       },
       {
         "city": "Belo Horizonte",
-        "sessions": 1493,
-        "users": 1018,
+        "sessions": 1494,
+        "users": 1019,
         "transactions": 12,
-        "revenue": 10897.440003000002
+        "revenue": 10897.440002999998
       },
       {
         "city": "Goiania",
@@ -1145,7 +1153,7 @@
         "sessions": 701,
         "users": 540,
         "transactions": 13,
-        "revenue": -2794.5300010000005
+        "revenue": -2794.530001000001
       },
       {
         "city": "Campinas",
@@ -1156,8 +1164,8 @@
       },
       {
         "city": "Porto Alegre",
-        "sessions": 453,
-        "users": 372,
+        "sessions": 454,
+        "users": 373,
         "transactions": 5,
         "revenue": 6027.750000999999
       }
@@ -1167,8 +1175,8 @@
     "age": [
       {
         "bracket": "unknown",
-        "users": 17478,
-        "sessions": 26308
+        "users": 17497,
+        "sessions": 26318
       },
       {
         "bracket": "25-34",
@@ -1204,8 +1212,8 @@
     "gender": [
       {
         "gender": "unknown",
-        "users": 17384,
-        "sessions": 26204
+        "users": 17405,
+        "sessions": 26214
       },
       {
         "gender": "female",
@@ -1235,36 +1243,36 @@
       "medium": "linktree",
       "sessions": 2787,
       "transactions": 30,
-      "revenue": 25473.429994000006,
+      "revenue": 25473.429994000002,
       "convRate": 0.010764262648008612,
       "bounceRate": 0.15536419088625764
     },
     {
       "source": "(direct)",
       "medium": "(none)",
-      "sessions": 2485,
+      "sessions": 2488,
       "transactions": 43,
       "revenue": 41348.940002,
-      "convRate": 0.017706237424547282,
-      "bounceRate": 0.3891348088531187
+      "convRate": 0.017684887459807074,
+      "bounceRate": 0.3894694533762058
     },
     {
       "source": "ig",
       "medium": "Instagram_Stories",
-      "sessions": 2387,
+      "sessions": 2389,
       "transactions": 6,
       "revenue": 7611.999996999999,
-      "convRate": 0.0025136154168412233,
-      "bounceRate": 0.6170925848345203
+      "convRate": 0.0025115110925073253,
+      "bounceRate": 0.6174131435747174
     },
     {
       "source": "ig",
       "medium": "Instagram_Feed",
-      "sessions": 1688,
+      "sessions": 1689,
       "transactions": 10,
-      "revenue": 10782.399998,
-      "convRate": 0.005924170616113744,
-      "bounceRate": 0.5616113744075829
+      "revenue": 10782.399997999999,
+      "convRate": 0.005920663114268798,
+      "bounceRate": 0.5612788632326821
     },
     {
       "source": "instagram.com",
@@ -1280,18 +1288,18 @@
       "medium": "(not set)",
       "sessions": 983,
       "transactions": 23,
-      "revenue": 564.0499869999985,
+      "revenue": 564.0499870000003,
       "convRate": 0.01017293997965412,
       "bounceRate": 0.5707019328585962
     },
     {
       "source": "google",
       "medium": "organic",
-      "sessions": 813,
+      "sessions": 822,
       "transactions": 12,
       "revenue": 10168.480003,
-      "convRate": 0.014760147601476014,
-      "bounceRate": 0.3210332103321033
+      "convRate": 0.014598540145985401,
+      "bounceRate": 0.32116788321167883
     },
     {
       "source": "nakedsw.com.br",
@@ -1312,5 +1320,5 @@
       "bounceRate": 0.3524804177545692
     }
   ],
-  "generated_at": "2026-04-19T06:17:57Z"
+  "generated_at": "2026-04-19T09:10:54Z"
 }
