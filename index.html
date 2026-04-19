@@ -5120,7 +5120,7 @@ function _renderGradeCards() {
     gradeCard('B',     gB,     '#3b82f6', '#dbeafe', '#eff6ff', { bg: '#dbeafe', text: '#1e40af' });
 }
 
-/* ── renderiza tabela filtrada/ordenada ── */
+/* ── renderiza tabela — produto pai agrupado + SKUs expandíveis ── */
 function _renderEstoqueTable() {
   var tbody = document.getElementById('estoqueMainBody');
   if (!tbody) return;
@@ -5128,16 +5128,23 @@ function _renderEstoqueTable() {
   var thr   = _estoqueThreshold;
   var busca = _estoqueBusca.toLowerCase();
 
-  // Pré-computa mapa de grades usando TODOS os SKUs (não só os filtrados)
-  var gradeMap = {};
+  // 1. Mapa de grade + totais reais de TODOS os SKUs (não só filtrados)
+  var gradeMap  = {};
+  var groupData = {};
   _estoqueData.forEach(function(p) {
     var chave = (p.codigo || '?') + '||' + (p.cor || '');
-    if (!gradeMap[chave]) gradeMap[chave] = { presentes: [], faltando: [] };
+    if (!gradeMap[chave])  gradeMap[chave]  = { presentes: [], faltando: [] };
+    if (!groupData[chave]) groupData[chave] = {
+      codigo: p.codigo, nome: p.nome, cor: p.cor,
+      colecao: p.colecao, tipo: p.tipo, curva: p.curva, estoqueTotal: 0
+    };
+    groupData[chave].estoqueTotal += (p.estoque || 0);
     if ((p.estoque || 0) > 0) gradeMap[chave].presentes.push(p.tamanho || '?');
     else                       gradeMap[chave].faltando.push(p.tamanho || '?');
   });
 
-  var data = _estoqueData.filter(function(p) {
+  // 2. Filtra SKUs individuais
+  var filteredData = _estoqueData.filter(function(p) {
     var okCurva  = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
     var okStatus = _estoqueStatusFiltro.size === 0 ||
       (_estoqueStatusFiltro.has('sem')   && p.estoque === 0) ||
@@ -5146,68 +5153,116 @@ function _renderEstoqueTable() {
     var okBusca  = !busca ||
       (p.codigo && p.codigo.toLowerCase().includes(busca)) ||
       (p.nome   && p.nome.toLowerCase().includes(busca));
-    // filtro de grade (usa gradeMap já calculado acima)
-    var okGrade = true;
+    var okGrade  = true;
     if (_estoqueGradeFiltro) {
       var gKey = (p.codigo || '?') + '||' + (p.cor || '');
       var gI   = gradeMap[gKey] || { presentes: [], faltando: [] };
-      var isCompleta = gI.faltando.length === 0;
-      okGrade = _estoqueGradeFiltro === 'completa' ? isCompleta : !isCompleta;
+      okGrade  = _estoqueGradeFiltro === 'completa' ? gI.faltando.length === 0 : gI.faltando.length > 0;
     }
     return okCurva && okStatus && okBusca && okGrade;
   });
 
-  // ordenação
-  var campo = _estoqueSortBy;
-  var asc   = _estoqueSortAsc;
-  data.sort(function(a, b) {
-    var va = a[campo] !== undefined ? a[campo] : '';
-    var vb = b[campo] !== undefined ? b[campo] : '';
-    if (typeof va === 'number' && typeof vb === 'number') return asc ? va - vb : vb - va;
-    va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
-    return asc ? va.localeCompare(vb) : vb.localeCompare(va);
-  });
-
-  if (!data.length) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#9ca3af;padding:24px">Nenhum SKU encontrado com os filtros selecionados</td></tr>';
+  if (!filteredData.length) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#9ca3af;padding:24px">Nenhum produto encontrado com os filtros selecionados</td></tr>';
     return;
   }
 
-  tbody.innerHTML = data.map(function(p) {
-    var chave    = (p.codigo || '?') + '||' + (p.cor || '');
-    var gInfo    = gradeMap[chave] || { presentes: [], faltando: [] };
+  // 3. Agrupa SKUs filtrados por (codigo, cor)
+  var grupos = {};
+  var grupoOrder = [];
+  filteredData.forEach(function(p) {
+    var chave = (p.codigo || '?') + '||' + (p.cor || '');
+    if (!grupos[chave]) { grupos[chave] = []; grupoOrder.push(chave); }
+    grupos[chave].push(p);
+  });
+
+  // 4. Ordena grupos
+  var campo = _estoqueSortBy;
+  var asc   = _estoqueSortAsc;
+  grupoOrder.sort(function(ka, kb) {
+    var ga = groupData[ka] || {}, gb = groupData[kb] || {};
+    var va = campo === 'estoque' ? (ga.estoqueTotal || 0) : (ga[campo] || '');
+    var vb = campo === 'estoque' ? (gb.estoqueTotal || 0) : (gb[campo] || '');
+    if (typeof va === 'number' && typeof vb === 'number') return asc ? va - vb : vb - va;
+    return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+  });
+
+  // 5. Renderiza
+  var html = '';
+  var idx  = 0;
+
+  grupoOrder.forEach(function(chave) {
+    var itens   = grupos[chave];
+    var gd      = groupData[chave] || {};
+    var gInfo   = gradeMap[chave]  || { presentes: [], faltando: [] };
     var completa = gInfo.faltando.length === 0;
+    var gid     = 'eg' + (idx++);
 
-    var presentesHtml = gInfo.presentes.length
-      ? gInfo.presentes.map(function(t) {
-          return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#dcfce7;color:#15803d;margin:1px;display:inline-block">' + t + '</span>';
-        }).join(' ')
-      : '<span style="color:#9ca3af;font-size:11px">—</span>';
+    var presentesHtml = gInfo.presentes.map(function(t) {
+      return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#dcfce7;color:#15803d;margin:1px;display:inline-block">' + t + '</span>';
+    }).join(' ') || '<span style="color:#9ca3af;font-size:11px">—</span>';
 
-    var faltandoHtml = gInfo.faltando.length
-      ? gInfo.faltando.map(function(t) {
-          return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#fee2e2;color:#dc2626;margin:1px;display:inline-block">' + t + '</span>';
-        }).join(' ')
-      : '<span style="color:#16a34a;font-size:11px">—</span>';
+    var faltandoHtml = gInfo.faltando.map(function(t) {
+      return '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:#fee2e2;color:#dc2626;margin:1px;display:inline-block">' + t + '</span>';
+    }).join(' ') || '<span style="color:#16a34a;font-size:11px">—</span>';
 
     var gradeBadge = completa
       ? '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dcfce7;color:#15803d;white-space:nowrap">✅ Completa</span>'
       : '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fee2e2;color:#dc2626;white-space:nowrap">⚠️ Quebrada</span>';
 
-    return '<tr>' +
-      '<td style="font-size:11px;color:#6b7280;white-space:nowrap">' + (p.codigo || '—') + '</td>' +
-      '<td><strong style="font-size:12px">' + (p.nome || '—') + '</strong></td>' +
-      '<td style="font-size:12px">' + (p.cor || '—') + '</td>' +
-      '<td style="text-align:center;font-size:12px">' + (p.tamanho || '—') + '</td>' +
-      '<td style="font-size:12px;color:#6b7280">' + (p.colecao || '—') + '</td>' +
-      '<td style="font-size:12px;color:#6b7280">' + (p.tipo || '—') + '</td>' +
-      '<td style="text-align:center">' + _curvaBadge(p.curva) + '</td>' +
-      '<td style="text-align:center">' + _estCell(p.estoque, thr) + '</td>' +
+    var est = gd.estoqueTotal || 0;
+    var estHtml = est === 0 ? '<span style="font-weight:700;color:#dc2626">0</span>'
+                : est <= thr ? '<span style="font-weight:700;color:#d97706">' + est + '</span>'
+                : '<span style="font-weight:700;color:#16a34a">' + est + '</span>';
+
+    // Linha pai (produto agrupado)
+    html += '<tr style="cursor:pointer;background:#f9fafb" onclick="toggleGrupoEstoque(\'' + gid + '\')">' +
+      '<td style="font-size:11px;color:#6b7280;white-space:nowrap">' +
+        '<span id="btn-' + gid + '" style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:#e5e7eb;color:#374151;font-size:11px;font-weight:700;margin-right:5px;flex-shrink:0;vertical-align:middle">+</span>' +
+        (gd.codigo || '—') +
+      '</td>' +
+      '<td><strong style="font-size:12px">' + (gd.nome || '—') + '</strong></td>' +
+      '<td style="font-size:12px">' + (gd.cor || '—') + '</td>' +
+      '<td style="text-align:center;font-size:11px;color:#9ca3af">' + itens.length + ' tam.</td>' +
+      '<td style="font-size:12px;color:#6b7280">' + (gd.colecao || '—') + '</td>' +
+      '<td style="font-size:12px;color:#6b7280">' + (gd.tipo || '—') + '</td>' +
+      '<td style="text-align:center">' + _curvaBadge(gd.curva) + '</td>' +
+      '<td style="text-align:center">' + estHtml + '</td>' +
       '<td style="text-align:center">' + presentesHtml + '</td>' +
       '<td style="text-align:center">' + faltandoHtml + '</td>' +
       '<td style="text-align:center">' + gradeBadge + '</td>' +
     '</tr>';
-  }).join('');
+
+    // Linhas filhas — SKUs individuais (ocultas)
+    itens.forEach(function(p) {
+      html += '<tr data-group="' + gid + '" style="display:none;background:#fafafa">' +
+        '<td style="font-size:10px;color:#9ca3af;padding-left:28px;white-space:nowrap">↳</td>' +
+        '<td style="font-size:11px;color:#6b7280">' + (p.nome || '—') + '</td>' +
+        '<td style="font-size:11px;color:#6b7280">' + (p.cor || '—') + '</td>' +
+        '<td style="text-align:center;font-size:12px;font-weight:700;color:#374151">' + (p.tamanho || '—') + '</td>' +
+        '<td style="font-size:11px;color:#9ca3af">' + (p.colecao || '—') + '</td>' +
+        '<td style="font-size:11px;color:#9ca3af">' + (p.tipo || '—') + '</td>' +
+        '<td style="text-align:center">' + _curvaBadge(p.curva) + '</td>' +
+        '<td style="text-align:center">' + _estCell(p.estoque, thr) + '</td>' +
+        '<td colspan="3" style="text-align:center;font-size:10px;color:#bbb;font-style:italic">— SKU individual —</td>' +
+      '</tr>';
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+/* ── expande/colapsa grupo de SKUs ── */
+function toggleGrupoEstoque(gid) {
+  var rows   = document.querySelectorAll('tr[data-group="' + gid + '"]');
+  var btn    = document.getElementById('btn-' + gid);
+  var isOpen = rows.length > 0 && rows[0].style.display !== 'none';
+  rows.forEach(function(r) { r.style.display = isOpen ? 'none' : 'table-row'; });
+  if (btn) {
+    btn.textContent      = isOpen ? '+' : '−';
+    btn.style.background = isOpen ? '#e5e7eb' : '#374151';
+    btn.style.color      = isOpen ? '#374151' : '#fff';
+  }
 }
 
 /* ── filtros cliente ── */
@@ -5273,13 +5328,25 @@ function sortEstoque(campo) {
 /* ── export CSV ── */
 function exportarEstoqueCSV() {
   var thr  = _estoqueThreshold;
+  // CSV exporta SKUs individuais (sem agrupamento), respeitando filtros ativos
+  var gradeMapCsv = {};
+  _estoqueData.forEach(function(p) {
+    var c = (p.codigo||'?')+'||'+(p.cor||'');
+    if (!gradeMapCsv[c]) gradeMapCsv[c] = { faltando: [] };
+    if ((p.estoque||0) === 0) gradeMapCsv[c].faltando.push(p.tamanho||'?');
+  });
   var data = _estoqueData.filter(function(p) {
     var okCurva   = _estoqueFiltro.size === 0 || _estoqueFiltro.has(p.curva);
     var okStatus  = _estoqueStatusFiltro.size === 0 ||
       (_estoqueStatusFiltro.has('sem')   && p.estoque === 0) ||
       (_estoqueStatusFiltro.has('baixo') && p.estoque > 0 && p.estoque <= thr) ||
       (_estoqueStatusFiltro.has('ok')    && p.estoque > thr);
-    return okCurva && okStatus;
+    var okGrade = true;
+    if (_estoqueGradeFiltro) {
+      var gI = gradeMapCsv[(p.codigo||'?')+'||'+(p.cor||'')] || { faltando: [] };
+      okGrade = _estoqueGradeFiltro === 'completa' ? gI.faltando.length === 0 : gI.faltando.length > 0;
+    }
+    return okCurva && okStatus && okGrade;
   });
 
   var header = ['Codigo','Produto','Cor','Tamanho','Colecao','Tipo','Curva','Estoque','Vendas6m','TotalVendas'];
