@@ -6,11 +6,11 @@
       "total": 3796,
       "totalA": 216,
       "totalB": 217,
-      "semEstoque": 3005,
-      "estBaixo": 589,
-      "criticos": 3594,
+      "semEstoque": 3006,
+      "estBaixo": 587,
+      "criticos": 3593,
       "threshold": 5,
-      "valorEstoque": 1606775
+      "valorEstoque": 1605313
     },
     "mesesKeys": [
       "2025-01",
@@ -18909,7 +18909,7 @@
         "tecido": "SAND BLACK",
         "curva": "A",
         "preco": 379,
-        "estoque": 7,
+        "estoque": 8,
         "totalVendas": 122,
         "vendas6m": 73,
         "statusEst": "ok"
@@ -19133,10 +19133,10 @@
         "tecido": "PEARL",
         "curva": "A",
         "preco": 629,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 110,
         "vendas6m": 53,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "SAIA AURORA - PEARLPEARLM",
@@ -19469,7 +19469,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 379,
-        "estoque": 12,
+        "estoque": 13,
         "totalVendas": 101,
         "vendas6m": 61,
         "statusEst": "ok"
@@ -19693,10 +19693,10 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 5,
+        "estoque": 6,
         "totalVendas": 113,
         "vendas6m": 90,
-        "statusEst": "baixo"
+        "statusEst": "ok"
       },
       {
         "chave": "TOP ARIEL - LAGOONLAGOONM",
@@ -19709,7 +19709,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 23,
+        "estoque": 25,
         "totalVendas": 209,
         "vendas6m": 136,
         "statusEst": "ok"
@@ -19725,7 +19725,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 16,
+        "estoque": 17,
         "totalVendas": 118,
         "vendas6m": 82,
         "statusEst": "ok"
@@ -19901,7 +19901,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 259,
-        "estoque": 27,
+        "estoque": 26,
         "totalVendas": 47,
         "vendas6m": 33,
         "statusEst": "ok"
@@ -19965,7 +19965,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 379,
-        "estoque": 40,
+        "estoque": 39,
         "totalVendas": 194,
         "vendas6m": 140,
         "statusEst": "ok"
@@ -19981,7 +19981,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 379,
-        "estoque": 30,
+        "estoque": 29,
         "totalVendas": 95,
         "vendas6m": 76,
         "statusEst": "ok"
@@ -20061,7 +20061,7 @@
         "tecido": "CRISP BLANC",
         "curva": "A",
         "preco": 259,
-        "estoque": 13,
+        "estoque": 12,
         "totalVendas": 22,
         "vendas6m": 15,
         "statusEst": "ok"
@@ -20157,7 +20157,7 @@
         "tecido": "CRISP BLANC",
         "curva": "A",
         "preco": 379,
-        "estoque": 18,
+        "estoque": 17,
         "totalVendas": 11,
         "vendas6m": 11,
         "statusEst": "ok"
@@ -20173,7 +20173,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 8,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -20189,7 +20189,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 45,
         "vendas6m": 34,
         "statusEst": "baixo"
@@ -20205,7 +20205,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 14,
+        "estoque": 15,
         "totalVendas": 61,
         "vendas6m": 36,
         "statusEst": "ok"
@@ -20253,7 +20253,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 9,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -20269,7 +20269,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 10,
+        "estoque": 11,
         "totalVendas": 38,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -20285,7 +20285,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 7,
+        "estoque": 8,
         "totalVendas": 32,
         "vendas6m": 22,
         "statusEst": "ok"
@@ -20381,7 +20381,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 28,
         "vendas6m": 17,
         "statusEst": "baixo"
@@ -20445,7 +20445,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 8,
+        "estoque": 9,
         "totalVendas": 46,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -20461,7 +20461,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 14,
         "vendas6m": 7,
         "statusEst": "baixo"
@@ -20605,7 +20605,7 @@
         "tecido": "PEARL",
         "curva": "A",
         "preco": 549,
-        "estoque": 40,
+        "estoque": 39,
         "totalVendas": 369,
         "vendas6m": 86,
         "statusEst": "ok"
@@ -21101,10 +21101,10 @@
         "tecido": "SAND DUNA",
         "curva": "B",
         "preco": 249,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 67,
         "vendas6m": 18,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "CALCINHA GAIA - SAND DUNASAND DUNAG/FIO",
@@ -21496,7 +21496,7 @@
         "tecido": "PEARL",
         "curva": "B",
         "preco": 289,
-        "estoque": 15,
+        "estoque": 16,
         "totalVendas": 126,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -22163,7 +22163,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 27,
+        "estoque": 28,
         "totalVendas": 31,
         "vendas6m": 16,
         "statusEst": "ok"
@@ -22339,7 +22339,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 16,
+        "estoque": 15,
         "totalVendas": 15,
         "vendas6m": 12,
         "statusEst": "ok"
@@ -22403,7 +22403,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 26,
+        "estoque": 27,
         "totalVendas": 29,
         "vendas6m": 17,
         "statusEst": "ok"
@@ -22451,7 +22451,7 @@
         "tecido": "MILKSHAKE",
         "curva": "B",
         "preco": 359,
-        "estoque": 29,
+        "estoque": 30,
         "totalVendas": 140,
         "vendas6m": 63,
         "statusEst": "ok"
@@ -22798,10 +22798,10 @@
         "tecido": "CRISP NOIR",
         "curva": "B",
         "preco": 549,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 2,
         "vendas6m": 2,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "CALCINHA CASSIE - NOIRNOIRPP",
@@ -23486,7 +23486,7 @@
         "tecido": "MONTANA VERDE",
         "curva": "B",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 1,
         "totalVendas": 13,
         "vendas6m": 11,
         "statusEst": "baixo"
@@ -24606,7 +24606,7 @@
         "tecido": "MARINE",
         "curva": "A",
         "preco": 319,
-        "estoque": 13,
+        "estoque": 14,
         "totalVendas": 31,
         "vendas6m": 31,
         "statusEst": "ok"
@@ -26984,7 +26984,7 @@
         "tecido": "SAND BLACK",
         "curva": "C",
         "preco": 398,
-        "estoque": 1,
+        "estoque": 0,
         "totalVendas": 6,
         "vendas6m": 2
       },
@@ -37169,7 +37169,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 289,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 1,
         "vendas6m": 1
       },
@@ -37604,7 +37604,7 @@
         "tecido": "CRISP NOIR",
         "curva": "C",
         "preco": 329,
-        "estoque": 7,
+        "estoque": 8,
         "totalVendas": 20,
         "vendas6m": 13
       },
@@ -37709,7 +37709,7 @@
         "tecido": "CRISP NOIR",
         "curva": "C",
         "preco": 659,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -40694,7 +40694,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 379,
-        "estoque": 29,
+        "estoque": 28,
         "totalVendas": 8,
         "vendas6m": 8
       },
@@ -40769,7 +40769,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 249,
-        "estoque": 31,
+        "estoque": 30,
         "totalVendas": 13,
         "vendas6m": 13
       },
@@ -40784,7 +40784,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 249,
-        "estoque": 10,
+        "estoque": 11,
         "totalVendas": 6,
         "vendas6m": 6
       },
@@ -40799,7 +40799,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 0,
         "totalVendas": 1,
         "vendas6m": 1
       },
@@ -41364,7 +41364,7 @@
         "tecido": "CLAY",
         "curva": "C",
         "preco": 629,
-        "estoque": 1,
+        "estoque": 0,
         "totalVendas": 1,
         "vendas6m": 0
       },
@@ -43059,7 +43059,7 @@
         "tecido": "ATHENA BRISA",
         "curva": "C",
         "preco": 319,
-        "estoque": 1,
+        "estoque": 0,
         "totalVendas": 1,
         "vendas6m": 1
       },
@@ -47562,7 +47562,7 @@
         "tecido": "PEARL",
         "curva": "B",
         "preco": 289,
-        "estoque": 4,
+        "estoque": 5,
         "totalVendas": 9,
         "vendas6m": 9,
         "statusEst": "baixo"
@@ -63329,7 +63329,7 @@
         "tecido": "METEOR",
         "curva": "C",
         "preco": 1989,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -63734,7 +63734,7 @@
         "tecido": "METEOR",
         "curva": "C",
         "preco": 869,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -74009,7 +74009,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 819,
-        "estoque": 4,
+        "estoque": 2,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -74234,7 +74234,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 498,
-        "estoque": 3,
+        "estoque": 2,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -74309,7 +74309,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 789,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -75419,7 +75419,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 359,
-        "estoque": 55,
+        "estoque": 53,
         "totalVendas": 0,
         "vendas6m": 0
       }
@@ -75452,7 +75452,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 379,
-        "estoque": 40,
+        "estoque": 39,
         "totalVendas": 194,
         "vendas6m": 140,
         "statusEst": "ok"
@@ -75468,7 +75468,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 23,
+        "estoque": 25,
         "totalVendas": 209,
         "vendas6m": 136,
         "statusEst": "ok"
@@ -75548,10 +75548,10 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 5,
+        "estoque": 6,
         "totalVendas": 113,
         "vendas6m": 90,
-        "statusEst": "baixo"
+        "statusEst": "ok"
       },
       {
         "chave": "TOP LIV - NOIRNOIRP",
@@ -75596,7 +75596,7 @@
         "tecido": "PEARL",
         "curva": "A",
         "preco": 549,
-        "estoque": 40,
+        "estoque": 39,
         "totalVendas": 369,
         "vendas6m": 86,
         "statusEst": "ok"
@@ -75612,7 +75612,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 379,
-        "estoque": 16,
+        "estoque": 17,
         "totalVendas": 118,
         "vendas6m": 82,
         "statusEst": "ok"
@@ -75628,7 +75628,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 379,
-        "estoque": 30,
+        "estoque": 29,
         "totalVendas": 95,
         "vendas6m": 76,
         "statusEst": "ok"
@@ -75676,7 +75676,7 @@
         "tecido": "SAND BLACK",
         "curva": "A",
         "preco": 379,
-        "estoque": 7,
+        "estoque": 8,
         "totalVendas": 122,
         "vendas6m": 73,
         "statusEst": "ok"
@@ -75756,7 +75756,7 @@
         "tecido": "MILKSHAKE",
         "curva": "B",
         "preco": 359,
-        "estoque": 29,
+        "estoque": 30,
         "totalVendas": 140,
         "vendas6m": 63,
         "statusEst": "ok"
@@ -75772,7 +75772,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 379,
-        "estoque": 12,
+        "estoque": 13,
         "totalVendas": 101,
         "vendas6m": 61,
         "statusEst": "ok"
@@ -75852,10 +75852,10 @@
         "tecido": "PEARL",
         "curva": "A",
         "preco": 629,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 110,
         "vendas6m": 53,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "BODY KLEA - PEARLPEARLM",
@@ -76124,7 +76124,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 14,
+        "estoque": 15,
         "totalVendas": 61,
         "vendas6m": 36,
         "statusEst": "ok"
@@ -76236,7 +76236,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 45,
         "vendas6m": 34,
         "statusEst": "baixo"
@@ -76364,7 +76364,7 @@
         "tecido": "CRISP NOIR",
         "curva": "A",
         "preco": 259,
-        "estoque": 27,
+        "estoque": 26,
         "totalVendas": 47,
         "vendas6m": 33,
         "statusEst": "ok"
@@ -76444,7 +76444,7 @@
         "tecido": "MARINE",
         "curva": "A",
         "preco": 319,
-        "estoque": 13,
+        "estoque": 14,
         "totalVendas": 31,
         "vendas6m": 31,
         "statusEst": "ok"
@@ -76524,7 +76524,7 @@
         "tecido": "PEARL",
         "curva": "B",
         "preco": 289,
-        "estoque": 15,
+        "estoque": 16,
         "totalVendas": 126,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -76572,7 +76572,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 8,
+        "estoque": 9,
         "totalVendas": 46,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -76620,7 +76620,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 10,
+        "estoque": 11,
         "totalVendas": 38,
         "vendas6m": 29,
         "statusEst": "ok"
@@ -76908,7 +76908,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 7,
+        "estoque": 8,
         "totalVendas": 32,
         "vendas6m": 22,
         "statusEst": "ok"
@@ -77212,10 +77212,10 @@
         "tecido": "SAND DUNA",
         "curva": "B",
         "preco": 249,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 67,
         "vendas6m": 18,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "CALCINHA GAIA - SAND DUNASAND DUNAP/FIO",
@@ -77404,7 +77404,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 26,
+        "estoque": 27,
         "totalVendas": 29,
         "vendas6m": 17,
         "statusEst": "ok"
@@ -77420,7 +77420,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 28,
         "vendas6m": 17,
         "statusEst": "baixo"
@@ -77580,7 +77580,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 27,
+        "estoque": 28,
         "totalVendas": 31,
         "vendas6m": 16,
         "statusEst": "ok"
@@ -77724,7 +77724,7 @@
         "tecido": "CRISP BLANC",
         "curva": "A",
         "preco": 259,
-        "estoque": 13,
+        "estoque": 12,
         "totalVendas": 22,
         "vendas6m": 15,
         "statusEst": "ok"
@@ -78220,7 +78220,7 @@
         "tecido": "MILKSHAKE",
         "curva": "A",
         "preco": 249,
-        "estoque": 16,
+        "estoque": 15,
         "totalVendas": 15,
         "vendas6m": 12,
         "statusEst": "ok"
@@ -78380,7 +78380,7 @@
         "tecido": "MONTANA VERDE",
         "curva": "B",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 1,
         "totalVendas": 13,
         "vendas6m": 11,
         "statusEst": "baixo"
@@ -78412,7 +78412,7 @@
         "tecido": "CRISP BLANC",
         "curva": "A",
         "preco": 379,
-        "estoque": 18,
+        "estoque": 17,
         "totalVendas": 11,
         "vendas6m": 11,
         "statusEst": "ok"
@@ -78844,7 +78844,7 @@
         "tecido": "PEARL",
         "curva": "B",
         "preco": 289,
-        "estoque": 4,
+        "estoque": 5,
         "totalVendas": 9,
         "vendas6m": 9,
         "statusEst": "baixo"
@@ -79212,7 +79212,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 14,
         "vendas6m": 7,
         "statusEst": "baixo"
@@ -79532,7 +79532,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 9,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -79564,7 +79564,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 8,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -81372,10 +81372,10 @@
         "tecido": "CRISP NOIR",
         "curva": "B",
         "preco": 549,
-        "estoque": 0,
+        "estoque": 1,
         "totalVendas": 2,
         "vendas6m": 2,
-        "statusEst": "sem"
+        "statusEst": "baixo"
       },
       {
         "chave": "CALCINHA GAIA - SALTSALTPP/TRAD",
@@ -82452,22 +82452,6 @@
         "statusEst": "sem"
       },
       {
-        "chave": "SAIA AURORA - PEARLPEARLP",
-        "codigo": "163",
-        "nome": "SAIA AURORA - PEARL",
-        "cor": "PEARL",
-        "tamanho": "P",
-        "tipo": "SAIA",
-        "colecao": "NACRE",
-        "tecido": "PEARL",
-        "curva": "A",
-        "preco": 629,
-        "estoque": 0,
-        "totalVendas": 110,
-        "vendas6m": 53,
-        "statusEst": "sem"
-      },
-      {
         "chave": "TOP ARIEL - BLUEBERRYBLUEBERRYM",
         "codigo": "197",
         "nome": "TOP ARIEL - BLUEBERRY",
@@ -82956,22 +82940,6 @@
         "estoque": 0,
         "totalVendas": 19,
         "vendas6m": 19
-      },
-      {
-        "chave": "CALCINHA GAIA - SAND DUNASAND DUNAM/FIO",
-        "codigo": "128",
-        "nome": "CALCINHA GAIA - SAND DUNA",
-        "cor": "SAND DUNA",
-        "tamanho": "M/FIO",
-        "tipo": "CALCINHA",
-        "colecao": "NECTAR",
-        "tecido": "SAND DUNA",
-        "curva": "B",
-        "preco": 249,
-        "estoque": 0,
-        "totalVendas": 67,
-        "vendas6m": 18,
-        "statusEst": "sem"
       },
       {
         "chave": "SAIA AURORA - PEARLPEARLG",
@@ -87821,6 +87789,21 @@
         "vendas6m": 2
       },
       {
+        "chave": "TOP ROSE - SAND BLACKSAND BLACKGG",
+        "codigo": "120",
+        "nome": "TOP ROSE - SAND BLACK",
+        "cor": "SAND BLACK",
+        "tamanho": "GG",
+        "tipo": "TOP",
+        "colecao": "NECTAR",
+        "tecido": "SAND BLACK",
+        "curva": "C",
+        "preco": 398,
+        "estoque": 0,
+        "totalVendas": 6,
+        "vendas6m": 2
+      },
+      {
         "chave": "SAIA IRIS LONGA - SAND DUNASAND DUNAG",
         "codigo": "271",
         "nome": "SAIA IRIS LONGA - SAND DUNA",
@@ -88117,22 +88100,6 @@
         "colecao": "NACRE",
         "tecido": "PEARL",
         "curva": "A",
-        "preco": 549,
-        "estoque": 0,
-        "totalVendas": 2,
-        "vendas6m": 2,
-        "statusEst": "sem"
-      },
-      {
-        "chave": "BODY CLAIRE - NOIRNOIRGG",
-        "codigo": "311",
-        "nome": "BODY CLAIRE - NOIR",
-        "cor": "NOIR",
-        "tamanho": "GG",
-        "tipo": "BODY",
-        "colecao": "MUSE",
-        "tecido": "CRISP NOIR",
-        "curva": "B",
         "preco": 549,
         "estoque": 0,
         "totalVendas": 2,
@@ -91283,6 +91250,21 @@
         "vendas6m": 1
       },
       {
+        "chave": "CALCINHA GAIA - TIGERTIGERGG",
+        "codigo": "420",
+        "nome": "CALCINHA GAIA - TIGER",
+        "cor": "TIGER",
+        "tamanho": "GG",
+        "tipo": "CALCINHA",
+        "colecao": "TIGER",
+        "tecido": "TIGER",
+        "curva": "C",
+        "preco": 249,
+        "estoque": 0,
+        "totalVendas": 1,
+        "vendas6m": 1
+      },
+      {
         "chave": "VESTIDO NARA - LEOPARDLEOPARDM",
         "codigo": "429",
         "nome": "VESTIDO NARA - LEOPARD",
@@ -91488,6 +91470,21 @@
         "tecido": "ATHENA BRISA",
         "curva": "C",
         "preco": 498,
+        "estoque": 0,
+        "totalVendas": 1,
+        "vendas6m": 1
+      },
+      {
+        "chave": "CALCINHA ANNIE - BRISABRISAG/TRAD",
+        "codigo": "460",
+        "nome": "CALCINHA ANNIE - BRISA",
+        "cor": "BRISA",
+        "tamanho": "G/TRAD",
+        "tipo": "CALCINHA",
+        "colecao": "STONE",
+        "tecido": "ATHENA BRISA",
+        "curva": "C",
+        "preco": 319,
         "estoque": 0,
         "totalVendas": 1,
         "vendas6m": 1
@@ -96424,6 +96421,21 @@
         "tecido": "CRISP BLANC",
         "curva": "C",
         "preco": 518,
+        "estoque": 0,
+        "totalVendas": 1,
+        "vendas6m": 0
+      },
+      {
+        "chave": "SAIA AURORA - CLAYCLAYP",
+        "codigo": "432",
+        "nome": "SAIA AURORA - CLAY",
+        "cor": "CLAY",
+        "tamanho": "P",
+        "tipo": "SAIA",
+        "colecao": "NACRE",
+        "tecido": "CLAY",
+        "curva": "C",
+        "preco": 629,
         "estoque": 0,
         "totalVendas": 1,
         "vendas6m": 0
@@ -127572,19 +127584,19 @@
         "statusEst": "baixo"
       },
       {
-        "chave": "TOP ARIEL - LAGOONLAGOONP",
-        "codigo": "279",
-        "nome": "TOP ARIEL - LAGOON",
-        "cor": "LAGOON",
+        "chave": "SAIA AURORA - PEARLPEARLP",
+        "codigo": "163",
+        "nome": "SAIA AURORA - PEARL",
+        "cor": "PEARL",
         "tamanho": "P",
-        "tipo": "TOP",
-        "colecao": "WAVE",
-        "tecido": "MONTANA AZUL",
+        "tipo": "SAIA",
+        "colecao": "NACRE",
+        "tecido": "PEARL",
         "curva": "A",
-        "preco": 379,
-        "estoque": 5,
-        "totalVendas": 113,
-        "vendas6m": 90,
+        "preco": 629,
+        "estoque": 1,
+        "totalVendas": 110,
+        "vendas6m": 53,
         "statusEst": "baixo"
       },
       {
@@ -127646,7 +127658,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 45,
         "vendas6m": 34,
         "statusEst": "baixo"
@@ -127971,6 +127983,22 @@
         "statusEst": "baixo"
       },
       {
+        "chave": "CALCINHA GAIA - SAND DUNASAND DUNAM/FIO",
+        "codigo": "128",
+        "nome": "CALCINHA GAIA - SAND DUNA",
+        "cor": "SAND DUNA",
+        "tamanho": "M/FIO",
+        "tipo": "CALCINHA",
+        "colecao": "NECTAR",
+        "tecido": "SAND DUNA",
+        "curva": "B",
+        "preco": 249,
+        "estoque": 1,
+        "totalVendas": 67,
+        "vendas6m": 18,
+        "statusEst": "baixo"
+      },
+      {
         "chave": "TOP ARIEL - LIMONCELLOLIMONCELLOP",
         "codigo": "203",
         "nome": "TOP ARIEL - LIMONCELLO",
@@ -128061,7 +128089,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 28,
         "vendas6m": 17,
         "statusEst": "baixo"
@@ -128486,7 +128514,7 @@
         "tecido": "MONTANA VERDE",
         "curva": "B",
         "preco": 249,
-        "estoque": 2,
+        "estoque": 1,
         "totalVendas": 13,
         "vendas6m": 11,
         "statusEst": "baixo"
@@ -128800,7 +128828,7 @@
         "tecido": "PEARL",
         "curva": "B",
         "preco": 289,
-        "estoque": 4,
+        "estoque": 5,
         "totalVendas": 9,
         "vendas6m": 9,
         "statusEst": "baixo"
@@ -129097,7 +129125,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 14,
         "vendas6m": 7,
         "statusEst": "baixo"
@@ -129407,7 +129435,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 9,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -129438,7 +129466,7 @@
         "tecido": "MONTANA AZUL",
         "curva": "A",
         "preco": 249,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 8,
         "vendas6m": 6,
         "statusEst": "baixo"
@@ -131607,21 +131635,6 @@
         "statusEst": "baixo"
       },
       {
-        "chave": "TOP ROSE - SAND BLACKSAND BLACKGG",
-        "codigo": "120",
-        "nome": "TOP ROSE - SAND BLACK",
-        "cor": "SAND BLACK",
-        "tamanho": "GG",
-        "tipo": "TOP",
-        "colecao": "NECTAR",
-        "tecido": "SAND BLACK",
-        "curva": "C",
-        "preco": 398,
-        "estoque": 1,
-        "totalVendas": 6,
-        "vendas6m": 2
-      },
-      {
         "chave": "CALCINHA BRIGITTE - SAND DUNASAND DUNAM/TRAD",
         "codigo": "145",
         "nome": "CALCINHA BRIGITTE - SAND DUNA",
@@ -131840,6 +131853,22 @@
         "statusEst": "baixo"
       },
       {
+        "chave": "BODY CLAIRE - NOIRNOIRGG",
+        "codigo": "311",
+        "nome": "BODY CLAIRE - NOIR",
+        "cor": "NOIR",
+        "tamanho": "GG",
+        "tipo": "BODY",
+        "colecao": "MUSE",
+        "tecido": "CRISP NOIR",
+        "curva": "B",
+        "preco": 549,
+        "estoque": 1,
+        "totalVendas": 2,
+        "vendas6m": 2,
+        "statusEst": "baixo"
+      },
+      {
         "chave": "CALCINHA GAIA - SALTSALTPP/TRAD",
         "codigo": "335",
         "nome": "CALCINHA GAIA - SALT",
@@ -131929,7 +131958,7 @@
         "tecido": "CRISP NOIR",
         "curva": "C",
         "preco": 659,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -132155,7 +132184,7 @@
         "tecido": "METEOR",
         "curva": "C",
         "preco": 1989,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -132185,7 +132214,7 @@
         "tecido": "METEOR",
         "curva": "C",
         "preco": 869,
-        "estoque": 2,
+        "estoque": 3,
         "totalVendas": 2,
         "vendas6m": 2
       },
@@ -132869,7 +132898,7 @@
         "tecido": "TIGER",
         "curva": "C",
         "preco": 289,
-        "estoque": 1,
+        "estoque": 2,
         "totalVendas": 1,
         "vendas6m": 1
       },
@@ -133024,21 +133053,6 @@
         "vendas6m": 1
       },
       {
-        "chave": "CALCINHA GAIA - TIGERTIGERGG",
-        "codigo": "420",
-        "nome": "CALCINHA GAIA - TIGER",
-        "cor": "TIGER",
-        "tamanho": "GG",
-        "tipo": "CALCINHA",
-        "colecao": "TIGER",
-        "tecido": "TIGER",
-        "curva": "C",
-        "preco": 249,
-        "estoque": 1,
-        "totalVendas": 1,
-        "vendas6m": 1
-      },
-      {
         "chave": "CALCINHA ALANA - TIGERTIGERGG/FIO",
         "codigo": "421",
         "nome": "CALCINHA ALANA - TIGER",
@@ -133080,21 +133094,6 @@
         "tecido": "SAND DUNA",
         "curva": "C",
         "preco": 549,
-        "estoque": 1,
-        "totalVendas": 1,
-        "vendas6m": 1
-      },
-      {
-        "chave": "CALCINHA ANNIE - BRISABRISAG/TRAD",
-        "codigo": "460",
-        "nome": "CALCINHA ANNIE - BRISA",
-        "cor": "BRISA",
-        "tamanho": "G/TRAD",
-        "tipo": "CALCINHA",
-        "colecao": "STONE",
-        "tecido": "ATHENA BRISA",
-        "curva": "C",
-        "preco": 319,
         "estoque": 1,
         "totalVendas": 1,
         "vendas6m": 1
@@ -134075,21 +134074,6 @@
         "curva": "C",
         "preco": 549,
         "estoque": 3,
-        "totalVendas": 1,
-        "vendas6m": 0
-      },
-      {
-        "chave": "SAIA AURORA - CLAYCLAYP",
-        "codigo": "432",
-        "nome": "SAIA AURORA - CLAY",
-        "cor": "CLAY",
-        "tamanho": "P",
-        "tipo": "SAIA",
-        "colecao": "NACRE",
-        "tecido": "CLAY",
-        "curva": "C",
-        "preco": 629,
-        "estoque": 1,
         "totalVendas": 1,
         "vendas6m": 0
       },
@@ -136423,7 +136407,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 819,
-        "estoque": 4,
+        "estoque": 2,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -136483,7 +136467,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 498,
-        "estoque": 3,
+        "estoque": 2,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -136528,7 +136512,7 @@
         "tecido": "STRATA",
         "curva": "C",
         "preco": 789,
-        "estoque": 4,
+        "estoque": 3,
         "totalVendas": 0,
         "vendas6m": 0
       },
@@ -136584,5 +136568,5 @@
     "fim": "2026-04-19",
     "label": "last_30d"
   },
-  "generated_at": "2026-04-19T14:06:54Z"
+  "generated_at": "2026-04-19T16:03:03Z"
 }
