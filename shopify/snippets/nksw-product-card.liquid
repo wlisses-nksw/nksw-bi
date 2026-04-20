@@ -1,0 +1,143 @@
+{% comment %}
+  NKSW · Product Card
+  Uso: {%- render 'nksw-product-card', product: product -%}
+
+  Bolinhas (swatch dots): cada produto tem metafield `custom.color_siblings`
+  (lista de referências a produto) que contém os produtos-irmãos (mesmo modelo, cor diferente).
+  Ao hover em uma bolinha, o JS busca /products/{handle}.js e troca a imagem + preço do card.
+{% endcomment %}
+
+{%- liquid
+  assign card_product  = product
+  assign first_variant = card_product.selected_or_first_available_variant
+  assign has_sale      = false
+  if card_product.compare_at_price > card_product.price
+    assign has_sale = true
+    assign discount = card_product.compare_at_price | minus: card_product.price | times: 100 | divided_by: card_product.compare_at_price
+  endif
+
+  assign siblings = card_product.metafields.custom.color_siblings.value
+-%}
+
+<nksw-product-card
+  class="nksw-pcard"
+  data-handle="{{ card_product.handle }}"
+  data-url="{{ card_product.url }}"
+  data-img="{{ card_product.featured_image | image_url: width: 800 }}"
+  data-img2="{{ card_product.images[1] | default: card_product.featured_image | image_url: width: 800 }}"
+  data-color="{{ card_product.metafields.custom.color_name | default: card_product.title | split: ' - ' | last | escape }}"
+  data-price-html="{{ card_product.price | money }}"
+>
+  <div class="nksw-pcard-media">
+    <a href="{{ card_product.url }}" data-pcard-link aria-label="{{ card_product.title | escape }}">
+      <img
+        class="nksw-pcard-img nksw-pcard-img--main"
+        src="{{ card_product.featured_image | image_url: width: 800 }}"
+        srcset="{{ card_product.featured_image | image_url: width: 400 }} 400w,
+                {{ card_product.featured_image | image_url: width: 800 }} 800w"
+        sizes="(max-width: 768px) 50vw, 25vw"
+        alt="{{ card_product.featured_image.alt | default: card_product.title | escape }}"
+        loading="lazy"
+        width="{{ card_product.featured_image.width }}"
+        height="{{ card_product.featured_image.height }}"
+      />
+      {%- if card_product.images[1] -%}
+        <img
+          class="nksw-pcard-img nksw-pcard-img--hover"
+          src="{{ card_product.images[1] | image_url: width: 800 }}"
+          alt=""
+          loading="lazy"
+          width="{{ card_product.images[1].width }}"
+          height="{{ card_product.images[1].height }}"
+        />
+      {%- endif -%}
+    </a>
+
+    {%- comment %} Badges {%- endcomment %}
+    {%- if card_product.tags contains 'LANÇAMENTO' -%}
+      <span class="nksw-pcard-badge nksw-pcard-badge--lançamento">LANÇAMENTO</span>
+    {%- elsif card_product.tags contains 'PRE-SALE' -%}
+      <span class="nksw-pcard-badge nksw-pcard-badge--pre-sale">PRE-SALE</span>
+    {%- elsif has_sale -%}
+      <span class="nksw-pcard-badge nksw-pcard-badge--sale">SALE</span>
+    {%- endif -%}
+
+    {%- if has_sale -%}
+      <span class="nksw-pcard-badge nksw-pcard-badge--discount">-{{ discount }}%</span>
+    {%- endif -%}
+
+    {%- comment %} Wishlist {%- endcomment %}
+    <button class="nksw-pcard-wish" aria-label="Adicionar à lista de desejos">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 22l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+      </svg>
+    </button>
+
+    {%- comment %} Quick Add {%- endcomment %}
+    <nksw-quick-add>
+      <div class="nksw-pcard-quickadd">
+        <button class="nksw-quickadd-trigger" data-quickadd-trigger>
+          ADICIONAR AO CARRINHO
+        </button>
+        <div class="nksw-quickadd-panel">
+          {%- for variant in card_product.variants -%}
+            {%- if variant.available -%}
+              <button
+                class="nksw-quickadd-size"
+                data-quickadd-variant="{{ variant.id }}"
+              >{{ variant.title }}</button>
+            {%- else -%}
+              <button class="nksw-quickadd-size" disabled style="opacity:.35;cursor:not-allowed">
+                {{ variant.title }}
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </nksw-quick-add>
+  </div>
+
+  {%- comment %} Info {%- endcomment %}
+  <div class="nksw-pcard-info">
+    <a href="{{ card_product.url }}" data-pcard-link class="nksw-pcard-name" style="text-decoration:none;display:block">
+      {{ card_product.title | split: ' - ' | first }}
+      <span class="nksw-pcard-color"> · {{ card_product.metafields.custom.color_name | default: card_product.title | split: ' - ' | last }}</span>
+    </a>
+
+    <div class="nksw-pcard-prices">
+      {%- if has_sale -%}
+        <span class="nksw-price-was">{{ card_product.compare_at_price | money }}</span>
+        <span class="nksw-price-sale">{{ card_product.price | money }}</span>
+      {%- else -%}
+        <span class="nksw-price">{{ card_product.price | money }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- comment %} Bolinhas — produto atual + irmãos {%- endcomment %}
+    <div class="nksw-pcard-dots">
+      {%- comment %} Dot do próprio produto {%- endcomment %}
+      <button
+        class="nksw-dot is-sel"
+        data-handle="{{ card_product.handle }}"
+        data-color-name="{{ card_product.metafields.custom.color_name | default: '' | escape }}"
+        style="background: {{ card_product.metafields.custom.color_hex | default: '#e5e7eb' }}; border-color: transparent"
+        aria-label="{{ card_product.metafields.custom.color_name | default: card_product.title | split: ' - ' | last | escape }}"
+      ></button>
+
+      {%- comment %} Dots dos irmãos via metafield {%- endcomment %}
+      {%- if siblings != blank -%}
+        {%- for sibling_product in siblings limit: 4 -%}
+          {%- unless sibling_product.handle == card_product.handle -%}
+            <button
+              class="nksw-dot"
+              data-handle="{{ sibling_product.handle }}"
+              data-color-name="{{ sibling_product.metafields.custom.color_name | default: '' | escape }}"
+              style="background: {{ sibling_product.metafields.custom.color_hex | default: '#e5e7eb' }}; border-color: transparent"
+              aria-label="{{ sibling_product.metafields.custom.color_name | default: sibling_product.title | split: ' - ' | last | escape }}"
+            ></button>
+          {%- endunless -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</nksw-product-card>

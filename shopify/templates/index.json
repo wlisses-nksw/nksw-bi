@@ -1,0 +1,127 @@
+{
+  "sections": {
+    "nksw-announcement": {
+      "type": "nksw-announcement-bar",
+      "blocks": {
+        "msg1": { "type": "message", "settings": { "text": "GARANTA 5% OFF NO PIX" } },
+        "msg2": { "type": "message", "settings": { "text": "ENVIO GRÁTIS acima de R$ 1.200,00" } },
+        "msg3": { "type": "message", "settings": { "text": "10% OFF NA SUA PRIMEIRA COMPRA · CÓDIGO: NKSW10" } }
+      },
+      "block_order": ["msg1", "msg2", "msg3"]
+    },
+    "nksw-hero": {
+      "type": "nksw-hero",
+      "settings": {
+        "height": 90,
+        "eyebrow": "VERÃO 2026 · DROP STONE",
+        "title": "<p>Dare to be<br\/><em>yourself.<\/em><\/p>",
+        "cta_1_label": "SHOP NEW IN",
+        "cta_2_label": "DESCUBRA AS COLEÇÕES",
+        "text_align": "left"
+      }
+    },
+    "nksw-trust": {
+      "type": "nksw-trust-bar",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "truck",    "text": "ENVIO GRÁTIS acima de R$ 1.200" } },
+        "t2": { "type": "item", "settings": { "icon": "return",   "text": "TROCA FÁCIL em troquefacil.com.br" } },
+        "t3": { "type": "item", "settings": { "icon": "shield",   "text": "ATÉ 6× SEM JUROS · 5% OFF NO PIX" } },
+        "t4": { "type": "item", "settings": { "icon": "sparkles", "text": "FEITO À MÃO EM BRASÍLIA" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"]
+    },
+    "nksw-double": {
+      "type": "nksw-double-collection",
+      "blocks": {
+        "c1": { "type": "card", "settings": { "eyebrow": "NOVA COLEÇÃO", "label": "STONE", "cta": "SHOP STONE" } },
+        "c2": { "type": "card", "settings": { "eyebrow": "BEST SELLERS",  "label": "NACRE", "cta": "SHOP NACRE" } }
+      },
+      "block_order": ["c1", "c2"]
+    },
+    "nksw-new-in": {
+      "type": "nksw-product-grid",
+      "settings": {
+        "eyebrow": "Drop da semana",
+        "title": "New In",
+        "product_limit": 4,
+        "columns": 4,
+        "view_all_label": "VER TUDO"
+      }
+    },
+    "nksw-editorial": {
+      "type": "nksw-editorial-split",
+      "settings": {
+        "eyebrow": "Desde 2016 · Brasília · Brasil",
+        "title": "<p><em>Curadoria<\/em><br\/>feita à mão.<\/p>",
+        "body": "<p>Cada peça NKSW é desenvolvida com modelagem exclusiva e tecidos selecionados para entregar o fit perfeito. Da praia de Trancoso ao beach club de Ibiza — nossa curadoria acompanha sua próxima história. ✨<\/p>",
+        "cta_label": "NOSSA HISTÓRIA",
+        "image_right": false
+      }
+    },
+    "nksw-bestsellers": {
+      "type": "nksw-product-grid",
+      "settings": {
+        "eyebrow": "Ícones NKSW",
+        "title": "Best sellers",
+        "product_limit": 4,
+        "columns": 4,
+        "view_all_label": "VER TUDO"
+      }
+    },
+    "nksw-triple": {
+      "type": "nksw-triple-tiles",
+      "blocks": {
+        "t1": { "type": "tile", "settings": { "label": "BIQUÍNIS",       "sub": "Tops, calcinhas, sets" } },
+        "t2": { "type": "tile", "settings": { "label": "MAIÔS & BODIES", "sub": "Silhuetas esculturais" } },
+        "t3": { "type": "tile", "settings": { "label": "ROUPAS",         "sub": "Pareôs, vestidos, chemises" } }
+      },
+      "block_order": ["t1", "t2", "t3"]
+    },
+    "nksw-instashop": {
+      "type": "nksw-instashop",
+      "settings": {
+        "eyebrow": "@nakedswimwear · #NakedBabes",
+        "title": "Shop the feed"
+      },
+      "blocks": {
+        "p1": { "type": "post" }, "p2": { "type": "post" }, "p3": { "type": "post" },
+        "p4": { "type": "post" }, "p5": { "type": "post" }, "p6": { "type": "post" }
+      },
+      "block_order": ["p1","p2","p3","p4","p5","p6"]
+    },
+    "nksw-press": {
+      "type": "nksw-press-logos",
+      "settings": { "eyebrow": "AS SEEN ON" },
+      "blocks": {
+        "l1": { "type": "logo", "settings": { "text": "VOGUE",           "font_style": "var(--font-serif)", "font_size": 28 } },
+        "l2": { "type": "logo", "settings": { "text": "Marie Claire",    "font_style": "var(--font-serif)", "font_size": 22 } },
+        "l3": { "type": "logo", "settings": { "text": "GLAMOUR",         "font_style": "var(--font-sans)",  "font_size": 18 } },
+        "l4": { "type": "logo", "settings": { "text": "Forbes",          "font_style": "var(--font-serif)", "font_size": 26 } },
+        "l5": { "type": "logo", "settings": { "text": "Harper's Bazaar", "font_style": "var(--font-serif)", "font_size": 22 } }
+      },
+      "block_order": ["l1","l2","l3","l4","l5"]
+    },
+    "nksw-newsletter": {
+      "type": "nksw-newsletter",
+      "settings": {
+        "eyebrow": "Let's get naked!",
+        "title": "10% OFF na sua primeira compra.",
+        "body": "Receba lançamentos em primeira mão, acesso antecipado a drops e curadoria semanal direto no seu e-mail.",
+        "cta": "QUERO 10% OFF"
+      }
+    }
+  },
+  "order": [
+    "nksw-announcement",
+    "nksw-hero",
+    "nksw-trust",
+    "nksw-double",
+    "nksw-new-in",
+    "nksw-editorial",
+    "nksw-bestsellers",
+    "nksw-triple",
+    "nksw-instashop",
+    "nksw-press",
+    "nksw-newsletter"
+  ]
+}

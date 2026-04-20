@@ -1,0 +1,22 @@
+{% comment %}
+  NKSW · Cart Drawer
+  Adicionar em layout/theme.liquid, antes de </body>:
+    {%- render 'nksw-cart-drawer' -%}
+{% endcomment %}
+
+<div id="nksw-scrim" aria-hidden="true"></div>
+
+<nksw-cart-drawer>
+  <header class="nksw-cart-head">
+    <p class="nksw-cart-head-title">Sua sacola (<span data-cart-count hidden>0</span>)</p>
+    <button class="nksw-icon-btn" data-cart-close aria-label="Fechar carrinho">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="nksw-cart-inner">
+    {{- '' -}}
+  </div>
+</nksw-cart-drawer>

@@ -1,0 +1,190 @@
+{% comment %}
+  NKSW · Compre junto (Buy Together) — seção de PDP
+  Adicionar em templates/product.json ou em sections/main-product.liquid
+
+  Requer metafield: product.metafields.custom.companion_products (lista de handles)
+  Alternativa: configura os produtos diretamente nas settings do Shopify Admin.
+{% endcomment %}
+
+{%- liquid
+  assign main_product = product
+  assign companions   = section.settings.companion_1 | append: ',' | append: section.settings.companion_2
+  assign p1 = all_products[section.settings.companion_1]
+  assign p2 = all_products[section.settings.companion_2]
+
+  if product.metafields.custom.companion_1 != blank
+    assign p1 = all_products[product.metafields.custom.companion_1.value]
+  endif
+  if product.metafields.custom.companion_2 != blank
+    assign p2 = all_products[product.metafields.custom.companion_2.value]
+  endif
+-%}
+
+<nksw-buy-together class="nksw-buytogether">
+
+  <div class="nksw-bt-head">
+    <div class="nksw-section-eyebrow">Styled together</div>
+    <h2 class="nksw-section-title">Compre junto</h2>
+    <p class="nksw-bt-sub">
+      Selecionado pela equipe NKSW para compor o seu
+      <em>{{ main_product.metafields.custom.collection_name | default: main_product.type }}</em>.
+      Leve os três e ganhe <strong>10% OFF</strong> no conjunto.
+    </p>
+  </div>
+
+  <div class="nksw-bt-stage">
+    <div class="nksw-bt-row">
+
+      {%- comment %} Produto principal — sempre selecionado e bloqueado {%- endcomment %}
+      {%- assign main_variant = main_product.selected_or_first_available_variant -%}
+      <label
+        class="nksw-bt-card is-on is-main"
+        data-price="{{ main_product.price | money_without_currency | remove: '.' | remove: ',' }}"
+        data-variant-id="{{ main_variant.id }}"
+      >
+        <input type="checkbox" checked disabled aria-label="{{ main_product.title }}"/>
+        <div class="nksw-bt-card-img">
+          <img
+            src="{{ main_product.featured_image | image_url: width: 600 }}"
+            alt="{{ main_product.title | escape }}"
+            loading="lazy"
+          />
+          <span class="nksw-bt-pin">Esta peça</span>
+          <span class="nksw-bt-check">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+        </div>
+        <div class="nksw-bt-card-info">
+          <div class="t-micro" style="color:var(--fg-2);letter-spacing:.12em">{{ main_product.type }}</div>
+          <div class="nksw-bt-card-name">{{ main_product.title | split: ' - ' | first }}</div>
+          <div class="nksw-bt-card-price">{{ main_product.price | money }}</div>
+        </div>
+      </label>
+
+      <div class="nksw-bt-plus" aria-hidden="true">+</div>
+
+      {%- comment %} Produto companheiro 1 {%- endcomment %}
+      {%- if p1 != blank -%}
+        {%- assign p1_variant = p1.selected_or_first_available_variant -%}
+        <label
+          class="nksw-bt-card is-on"
+          data-price="{{ p1.price | money_without_currency | remove: '.' | remove: ',' }}"
+          data-variant-id="{{ p1_variant.id }}"
+        >
+          <input type="checkbox" checked aria-label="{{ p1.title }}"/>
+          <div class="nksw-bt-card-img">
+            <img
+              src="{{ p1.featured_image | image_url: width: 600 }}"
+              alt="{{ p1.title | escape }}"
+              loading="lazy"
+            />
+            <span class="nksw-bt-check">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+          </div>
+          <div class="nksw-bt-card-info">
+            <div class="t-micro" style="color:var(--fg-2);letter-spacing:.12em">{{ p1.type }}</div>
+            <div class="nksw-bt-card-name">{{ p1.title | split: ' - ' | first }}</div>
+            <div class="nksw-bt-card-price">{{ p1.price | money }}</div>
+          </div>
+        </label>
+      {%- endif -%}
+
+      <div class="nksw-bt-plus" aria-hidden="true">+</div>
+
+      {%- comment %} Produto companheiro 2 {%- endcomment %}
+      {%- if p2 != blank -%}
+        {%- assign p2_variant = p2.selected_or_first_available_variant -%}
+        <label
+          class="nksw-bt-card is-on"
+          data-price="{{ p2.price | money_without_currency | remove: '.' | remove: ',' }}"
+          data-variant-id="{{ p2_variant.id }}"
+        >
+          <input type="checkbox" checked aria-label="{{ p2.title }}"/>
+          <div class="nksw-bt-card-img">
+            <img
+              src="{{ p2.featured_image | image_url: width: 600 }}"
+              alt="{{ p2.title | escape }}"
+              loading="lazy"
+            />
+            <span class="nksw-bt-check">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+          </div>
+          <div class="nksw-bt-card-info">
+            <div class="t-micro" style="color:var(--fg-2);letter-spacing:.12em">{{ p2.type }}</div>
+            <div class="nksw-bt-card-name">{{ p2.title | split: ' - ' | first }}</div>
+            <div class="nksw-bt-card-price">{{ p2.price | money }}</div>
+          </div>
+        </label>
+      {%- endif -%}
+
+    </div>
+
+    {%- comment %} Painel de resumo {%- endcomment %}
+    <aside class="nksw-bt-summary">
+      <div class="nksw-bt-sum-head">
+        <span class="nksw-section-eyebrow" style="text-transform:uppercase">Seu conjunto</span>
+        <span class="nksw-bt-count" data-bt-count>3/3 peças</span>
+      </div>
+
+      <ul class="nksw-bt-sum-list">
+        <li><span>{{ main_product.title | split: ' - ' | first }}</span><span>{{ main_product.price | money }}</span></li>
+        {%- if p1 != blank -%}
+          <li><span>{{ p1.title | split: ' - ' | first }}</span><span>{{ p1.price | money }}</span></li>
+        {%- endif -%}
+        {%- if p2 != blank -%}
+          <li><span>{{ p2.title | split: ' - ' | first }}</span><span>{{ p2.price | money }}</span></li>
+        {%- endif -%}
+      </ul>
+
+      <div class="nksw-bt-sum-totals">
+        <div class="nksw-bt-sum-row">
+          <span>Subtotal</span>
+          <span data-bt-subtotal>—</span>
+        </div>
+        <div class="nksw-bt-sum-row nksw-bt-sum-save" data-bt-discount-row>
+          <span data-bt-discount-label>Desconto bundle 10%</span>
+          <span data-bt-saved>—</span>
+        </div>
+        <div class="nksw-bt-sum-row nksw-bt-sum-total">
+          <span>Total</span>
+          <div style="text-align:right">
+            <div class="nksw-bt-total-price" data-bt-total>—</div>
+            <div class="nksw-bt-installment">ou 6× de <span data-bt-installment>—</span> sem juros</div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="nksw-btn nksw-btn-primary nksw-btn-block"
+        style="margin-top:18px"
+        data-bt-add
+      >
+        ADICIONAR CONJUNTO
+      </button>
+
+      <div class="nksw-bt-hint" data-bt-hint>
+        Monte seu conjunto: duas peças garantem <strong>5% OFF</strong>, três garantem <strong>10% OFF</strong>.
+      </div>
+    </aside>
+  </div>
+
+</nksw-buy-together>
+
+{% schema %}
+{
+  "name": "NKSW · Compre junto",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Configure os produtos companheiros abaixo. Alternativa: use metafields `custom.companion_1` e `custom.companion_2` no produto para definir por produto."
+    },
+    { "type": "product", "id": "companion_1", "label": "Produto companheiro 1" },
+    { "type": "product", "id": "companion_2", "label": "Produto companheiro 2" }
+  ],
+  "presets": [{ "name": "NKSW · Compre junto" }],
+  "templates": ["product"]
+}
+{% endschema %}

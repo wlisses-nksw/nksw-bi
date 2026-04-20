@@ -1,0 +1,57 @@
+<section class="nksw-double">
+  {%- for block in section.blocks -%}
+    <a
+      href="{{ block.settings.url }}"
+      class="nksw-double-card"
+      {{ block.shopify_attributes }}
+    >
+      {%- if block.settings.image != blank -%}
+        <img
+          src="{{ block.settings.image | image_url: width: 1200 }}"
+          srcset="{{ block.settings.image | image_url: width: 800 }} 800w,
+                  {{ block.settings.image | image_url: width: 1200 }} 1200w"
+          sizes="50vw"
+          alt="{{ block.settings.image.alt | default: block.settings.label | escape }}"
+          loading="lazy"
+        />
+      {%- endif -%}
+      <div class="nksw-double-overlay">
+        {%- if block.settings.eyebrow != blank -%}
+          <div class="t-eyebrow" style="color:#fff;opacity:.85;letter-spacing:.18em">{{ block.settings.eyebrow }}</div>
+        {%- endif -%}
+        <div class="nksw-double-title">{{ block.settings.label }}</div>
+        {%- if block.settings.cta != blank -%}
+          <span class="nksw-link-arrow" style="color:#fff;margin-top:14px">{{ block.settings.cta }} →</span>
+        {%- endif -%}
+      </div>
+    </a>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Dupla de coleções",
+  "tag": "section",
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        { "type": "image_picker", "id": "image",   "label": "Imagem" },
+        { "type": "text",         "id": "eyebrow", "label": "Eyebrow", "default": "NOVA COLEÇÃO" },
+        { "type": "text",         "id": "label",   "label": "Título",  "default": "STONE" },
+        { "type": "text",         "id": "cta",     "label": "CTA",     "default": "SHOP STONE" },
+        { "type": "url",          "id": "url",     "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "NKSW · Dupla de coleções",
+    "blocks": [
+      { "type": "card", "settings": { "eyebrow": "NOVA COLEÇÃO", "label": "STONE", "cta": "SHOP STONE" } },
+      { "type": "card", "settings": { "eyebrow": "BEST SELLERS",  "label": "NACRE", "cta": "SHOP NACRE" } }
+    ]
+  }]
+}
+{% endschema %}

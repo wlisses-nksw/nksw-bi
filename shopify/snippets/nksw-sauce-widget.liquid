@@ -1,0 +1,44 @@
+{% comment %}
+  NKSW · Sauce / Giulia — Concierge flutuante
+  Adicionar em layout/theme.liquid, antes de </body>:
+    {%- render 'nksw-sauce-widget' -%}
+{% endcomment %}
+
+<nksw-sauce-widget>
+  <button class="nksw-sauce-btn" aria-label="Falar com Giulia" aria-expanded="false">
+    <span style="font-family:var(--font-serif);font-style:italic;font-weight:600;font-size:22px">G</span>
+  </button>
+
+  <div class="nksw-sauce-panel" role="dialog" aria-label="Concierge Giulia">
+    <div class="nksw-sauce-head">
+      <div>
+        <div class="nksw-sauce-head-title">Giulia</div>
+        <div class="nksw-sauce-head-status">● online · concierge NKSW</div>
+      </div>
+      <button class="nksw-icon-btn" data-sauce-close aria-label="Fechar" style="color:#fff">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="nksw-sauce-body">
+      <div class="nksw-bubble">Oi! Sou a Giulia, concierge da NKSW. Como posso te ajudar hoje? ✨</div>
+      <div class="nksw-bubble">Posso te ajudar a encontrar o fit perfeito, tirar dúvidas de tamanho, troca ou envio. 🖤</div>
+      <div class="nksw-sauce-quick">
+        <button data-sauce-action>Preciso de ajuda com tamanho</button>
+        <button data-sauce-action>Status do meu pedido</button>
+        <button data-sauce-action>Quero uma curadoria para viagem ✈️</button>
+      </div>
+    </div>
+
+    <div class="nksw-sauce-input">
+      <input type="text" placeholder="Escreva uma mensagem…" aria-label="Mensagem para Giulia"/>
+      <button aria-label="Enviar">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nksw-sauce-widget>

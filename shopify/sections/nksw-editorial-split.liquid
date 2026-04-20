@@ -1,0 +1,56 @@
+{%- assign reverse = section.settings.image_right -%}
+
+<section class="nksw-editorial{% if reverse %} nksw-editorial--reverse{% endif %}">
+  <div class="nksw-editorial-media">
+    {%- if section.settings.image != blank -%}
+      <img
+        src="{{ section.settings.image | image_url: width: 1200 }}"
+        srcset="{{ section.settings.image | image_url: width: 800 }} 800w,
+                {{ section.settings.image | image_url: width: 1200 }} 1200w"
+        sizes="50vw"
+        alt="{{ section.settings.image.alt | escape }}"
+        loading="lazy"
+      />
+    {%- endif -%}
+  </div>
+
+  <div class="nksw-editorial-copy">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="nksw-section-eyebrow">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+
+    <h2 class="nksw-editorial-title">{{ section.settings.title }}</h2>
+
+    {%- if section.settings.body != blank -%}
+      <div class="nksw-editorial-body">{{ section.settings.body }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.cta_label != blank -%}
+      <a href="{{ section.settings.cta_url }}" class="nksw-link-arrow">
+        {{ section.settings.cta_label }} →
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+<style>
+  .nksw-editorial--reverse { direction: rtl; }
+  .nksw-editorial--reverse > * { direction: ltr; }
+</style>
+
+{% schema %}
+{
+  "name": "NKSW · Editorial split",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image",       "label": "Imagem" },
+    { "type": "text",         "id": "eyebrow",     "label": "Eyebrow",  "default": "Desde 2016 · Brasília · Brasil" },
+    { "type": "richtext",     "id": "title",       "label": "Título",   "default": "<p><em>Curadoria<\/em><br\/>feita à mão.<\/p>" },
+    { "type": "richtext",     "id": "body",        "label": "Texto",    "default": "<p>Cada peça NKSW é desenvolvida com modelagem exclusiva e tecidos selecionados para entregar o fit perfeito.<\/p>" },
+    { "type": "text",         "id": "cta_label",   "label": "CTA",      "default": "NOSSA HISTÓRIA" },
+    { "type": "url",          "id": "cta_url",     "label": "CTA link" },
+    { "type": "checkbox",     "id": "image_right", "label": "Imagem à direita", "default": false }
+  ],
+  "presets": [{ "name": "NKSW · Editorial split" }]
+}
+{% endschema %}

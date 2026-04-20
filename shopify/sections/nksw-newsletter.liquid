@@ -1,0 +1,48 @@
+<section class="nksw-newsletter">
+  {%- if section.settings.eyebrow != blank -%}
+    <div class="nksw-section-eyebrow" style="color:#fff;opacity:.7">{{ section.settings.eyebrow }}</div>
+  {%- endif -%}
+
+  <h2 class="nksw-newsletter-title">{{ section.settings.title }}</h2>
+
+  {%- if section.settings.body != blank -%}
+    <p class="nksw-newsletter-sub">{{ section.settings.body }}</p>
+  {%- endif -%}
+
+  {%- form 'customer', id: 'nksw-newsletter-form' -%}
+    <input type="hidden" name="contact[tags]" value="newsletter"/>
+    <div class="nksw-news-form">
+      <input
+        type="email"
+        name="contact[email]"
+        id="nksw-newsletter-email"
+        required
+        autocomplete="email"
+        placeholder="{{ section.settings.placeholder | default: 'seu.email@exemplo.com' }}"
+        aria-label="{{ section.settings.cta | default: 'Quero 10% OFF' }}"
+      />
+      <button type="submit">{{ section.settings.cta | default: 'QUERO 10% OFF' }}</button>
+    </div>
+    {%- if form.posted_successfully? -%}
+      <p style="color:#6ee7b7;margin-top:16px;font-family:var(--font-sans);font-size:13px">
+        ✨ {{ section.settings.success_msg | default: 'Bem-vindo(a) à família NKSW! Verifique seu e-mail para o cupom.' }}
+      </p>
+    {%- endif -%}
+  {%- endform -%}
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Newsletter",
+  "tag": "section",
+  "settings": [
+    { "type": "text",     "id": "eyebrow",     "label": "Eyebrow",          "default": "Let's get naked!" },
+    { "type": "text",     "id": "title",       "label": "Título",           "default": "10% OFF na sua primeira compra." },
+    { "type": "textarea", "id": "body",        "label": "Subtítulo",        "default": "Receba lançamentos em primeira mão, acesso antecipado a drops e curadoria semanal direto no seu e-mail." },
+    { "type": "text",     "id": "placeholder", "label": "Placeholder e-mail", "default": "seu.email@exemplo.com" },
+    { "type": "text",     "id": "cta",         "label": "Texto do botão",   "default": "QUERO 10% OFF" },
+    { "type": "text",     "id": "success_msg", "label": "Mensagem de sucesso", "default": "Bem-vindo(a) à família NKSW! Verifique seu e-mail para o cupom." }
+  ],
+  "presets": [{ "name": "NKSW · Newsletter" }]
+}
+{% endschema %}

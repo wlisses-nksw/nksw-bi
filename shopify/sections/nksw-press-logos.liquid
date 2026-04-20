@@ -1,0 +1,55 @@
+<section class="nksw-press">
+  <div class="nksw-press-eyebrow">{{ section.settings.eyebrow }}</div>
+  <div class="nksw-press-logos">
+    {%- for block in section.blocks -%}
+      {%- if block.settings.logo != blank -%}
+        <img
+          src="{{ block.settings.logo | image_url: height: 40 }}"
+          alt="{{ block.settings.alt }}"
+          style="height:{{ block.settings.height }}px;width:auto;object-fit:contain"
+          loading="lazy"
+          {{ block.shopify_attributes }}
+        />
+      {%- elsif block.settings.text != blank -%}
+        <span
+          style="font-family:{{ block.settings.font_style }};font-size:{{ block.settings.font_size }}px"
+          {{ block.shopify_attributes }}
+        >{{ block.settings.text }}</span>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Press / As seen on",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "AS SEEN ON" }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        { "type": "image_picker", "id": "logo",       "label": "Logo (imagem)" },
+        { "type": "text",         "id": "alt",         "label": "Alt text" },
+        { "type": "range",        "id": "height",      "label": "Altura (px)", "min": 20, "max": 60, "step": 4, "default": 32 },
+        { "type": "text",         "id": "text",        "label": "Texto (sem imagem)", "default": "VOGUE" },
+        { "type": "text",         "id": "font_style",  "label": "Font (sem imagem)", "default": "var(--font-serif)" },
+        { "type": "range",        "id": "font_size",   "label": "Tamanho (px)", "min": 14, "max": 48, "step": 2, "default": 28 }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "NKSW · Press logos",
+    "blocks": [
+      { "type": "logo", "settings": { "text": "VOGUE",           "font_style": "var(--font-serif)", "font_size": 28 } },
+      { "type": "logo", "settings": { "text": "Marie Claire",    "font_style": "var(--font-serif)", "font_size": 22 } },
+      { "type": "logo", "settings": { "text": "GLAMOUR",         "font_style": "var(--font-sans)",  "font_size": 18 } },
+      { "type": "logo", "settings": { "text": "Forbes",          "font_style": "var(--font-serif)", "font_size": 26 } },
+      { "type": "logo", "settings": { "text": "Harper's Bazaar", "font_style": "var(--font-serif)", "font_size": 22 } }
+    ]
+  }]
+}
+{% endschema %}

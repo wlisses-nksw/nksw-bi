@@ -1,0 +1,54 @@
+{%- liquid
+  assign collection = collections[section.settings.collection]
+  assign products   = collection.products | default: recommendations.products
+  assign limit      = section.settings.product_limit | default: 4
+  assign cols       = section.settings.columns | default: 4
+-%}
+
+<section class="nksw-section">
+  <div class="nksw-section-head">
+    <div>
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="nksw-section-eyebrow">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+      <h2 class="nksw-section-title">{{ section.settings.title }}</h2>
+    </div>
+    {%- if section.settings.view_all_label != blank and collection != blank -%}
+      <a href="{{ collection.url }}" class="nksw-link-arrow">{{ section.settings.view_all_label }} →</a>
+    {%- endif -%}
+  </div>
+
+  <div class="nksw-pgrid nksw-pgrid--{{ cols }}">
+    {%- for product in products limit: limit -%}
+      {%- render 'nksw-product-card', product: product -%}
+    {%- else -%}
+      {%- for i in (1..limit) -%}
+        <div class="nksw-pcard">
+          <div class="nksw-pcard-media" style="background:var(--gray-100)"></div>
+          <div class="nksw-pcard-info">
+            <div class="nksw-pcard-name" style="color:var(--fg-3)">Produto {{ i }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Grid de produtos",
+  "tag": "section",
+  "settings": [
+    { "type": "text",            "id": "eyebrow",        "label": "Eyebrow",           "default": "Drop da semana" },
+    { "type": "text",            "id": "title",          "label": "Título",            "default": "New In" },
+    { "type": "collection",      "id": "collection",     "label": "Coleção" },
+    { "type": "range",           "id": "product_limit",  "label": "Nº de produtos",    "min": 2, "max": 12, "step": 2, "default": 4 },
+    { "type": "range",           "id": "columns",        "label": "Colunas (desktop)", "min": 2, "max": 4,  "step": 1, "default": 4 },
+    { "type": "text",            "id": "view_all_label", "label": "Link 'ver tudo'",   "default": "VER TUDO" }
+  ],
+  "presets": [
+    { "name": "NKSW · New In",      "settings": { "eyebrow": "Drop da semana", "title": "New In",      "view_all_label": "VER TUDO" } },
+    { "name": "NKSW · Best Sellers","settings": { "eyebrow": "Ícones NKSW",   "title": "Best sellers","view_all_label": "VER TUDO" } }
+  ]
+}
+{% endschema %}

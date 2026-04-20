@@ -1,0 +1,54 @@
+<section class="nksw-triple">
+  {%- for block in section.blocks -%}
+    <a
+      href="{{ block.settings.url }}"
+      class="nksw-triple-card"
+      {{ block.shopify_attributes }}
+    >
+      {%- if block.settings.image != blank -%}
+        <img
+          src="{{ block.settings.image | image_url: width: 900 }}"
+          srcset="{{ block.settings.image | image_url: width: 600 }} 600w,
+                  {{ block.settings.image | image_url: width: 900 }} 900w"
+          sizes="33vw"
+          alt="{{ block.settings.image.alt | default: block.settings.label | escape }}"
+          loading="lazy"
+        />
+      {%- endif -%}
+      <div class="nksw-triple-overlay">
+        <div class="nksw-triple-label">{{ block.settings.label }}</div>
+        {%- if block.settings.sub != blank -%}
+          <div class="nksw-triple-sub">{{ block.settings.sub }}</div>
+        {%- endif -%}
+      </div>
+    </a>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Três categorias",
+  "tag": "section",
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Tile",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Imagem" },
+        { "type": "text",         "id": "label", "label": "Título", "default": "BIQUÍNIS" },
+        { "type": "text",         "id": "sub",   "label": "Subtítulo", "default": "Tops, calcinhas, sets" },
+        { "type": "url",          "id": "url",   "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "NKSW · Três categorias",
+    "blocks": [
+      { "type": "tile", "settings": { "label": "BIQUÍNIS",       "sub": "Tops, calcinhas, sets" } },
+      { "type": "tile", "settings": { "label": "MAIÔS & BODIES", "sub": "Silhuetas esculturais" } },
+      { "type": "tile", "settings": { "label": "ROUPAS",         "sub": "Pareôs, vestidos, chemises" } }
+    ]
+  }]
+}
+{% endschema %}

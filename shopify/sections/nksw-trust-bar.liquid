@@ -1,0 +1,54 @@
+<section class="nksw-trust">
+  {%- for block in section.blocks -%}
+    <div class="nksw-trust-item" {{ block.shopify_attributes }}>
+      {%- case block.settings.icon -%}
+        {%- when 'truck' -%}
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+        {%- when 'return' -%}
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>
+        {%- when 'shield' -%}
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2 4 5v7c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V5l-8-3z"/></svg>
+        {%- when 'sparkles' -%}
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/></svg>
+      {%- endcase -%}
+      <span>{{ block.settings.text }}</span>
+    </div>
+  {%- endfor -%}
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Barra de confiança",
+  "tag": "section",
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ícone",
+          "options": [
+            { "value": "truck",    "label": "Caminhão (envio)" },
+            { "value": "return",   "label": "Seta (troca)" },
+            { "value": "shield",   "label": "Escudo (segurança)" },
+            { "value": "sparkles", "label": "Estrelas (artesanal)" }
+          ],
+          "default": "truck"
+        },
+        { "type": "text", "id": "text", "label": "Texto", "default": "ENVIO GRÁTIS acima de R$ 1.200" }
+      ]
+    }
+  ],
+  "presets": [{
+    "name": "NKSW · Barra de confiança",
+    "blocks": [
+      { "type": "item", "settings": { "icon": "truck",    "text": "ENVIO GRÁTIS acima de R$ 1.200" } },
+      { "type": "item", "settings": { "icon": "return",   "text": "TROCA FÁCIL em troquefacil.com.br" } },
+      { "type": "item", "settings": { "icon": "shield",   "text": "ATÉ 6× SEM JUROS · 5% OFF NO PIX" } },
+      { "type": "item", "settings": { "icon": "sparkles", "text": "FEITO À MÃO EM BRASÍLIA" } }
+    ]
+  }]
+}
+{% endschema %}

@@ -1,0 +1,42 @@
+<nksw-announcement-bar class="nksw-announce" aria-live="polite">
+  <div class="nksw-announce-track">
+    {%- for block in section.blocks -%}
+      <div class="nksw-announce-msg" {{ block.shopify_attributes }}>
+        {%- if block.settings.link != blank -%}
+          <a href="{{ block.settings.link }}">{{ block.settings.text }}</a>
+        {%- else -%}
+          {{ block.settings.text }}
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</nksw-announcement-bar>
+
+{% schema %}
+{
+  "name": "NKSW · Barra de anúncios",
+  "tag": "section",
+  "class": "nksw-announcement-section",
+  "limit": 1,
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Mensagem",
+      "settings": [
+        { "type": "text",  "id": "text", "label": "Texto",  "default": "GARANTA 5% OFF NO PIX" },
+        { "type": "url",   "id": "link", "label": "Link (opcional)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "NKSW · Barra de anúncios",
+      "blocks": [
+        { "type": "message", "settings": { "text": "GARANTA 5% OFF NO PIX" } },
+        { "type": "message", "settings": { "text": "ENVIO GRÁTIS acima de R$ 1.200,00" } },
+        { "type": "message", "settings": { "text": "10% OFF NA SUA PRIMEIRA COMPRA · CÓDIGO: NKSW10" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

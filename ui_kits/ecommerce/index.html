@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NKSW — Naked Swimwear · UI Kit</title>
+<link rel="stylesheet" href="../../colors_and_type.css"/>
+<link rel="stylesheet" href="styles.css"/>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="components/products.jsx"></script>
+<script type="text/babel" src="components/shared.jsx"></script>
+<script type="text/babel" src="components/product_card.jsx"></script>
+<script type="text/babel" src="components/cart_search.jsx"></script>
+<script type="text/babel" src="components/home.jsx"></script>
+<script type="text/babel" src="components/plp.jsx"></script>
+<script type="text/babel" src="components/pdp.jsx"></script>
+
+<script type="text/babel">
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "typeStyle": "balanced",
+  "accentColor": "#171410",
+  "startPage": "home"
+}/*EDITMODE-END*/;
+
+const App = () => {
+  // Persist current page / product / cart — so refresh doesn't lose state (design-iteration friendly)
+  const [page, setPage] = React.useState(() => localStorage.getItem('nksw_page') || TWEAKS.startPage);
+  const [plpSlug, setPlpSlug] = React.useState(() => localStorage.getItem('nksw_plp') || 'new-in');
+  const [pdpId, setPdpId] = React.useState(() => localStorage.getItem('nksw_pdp') || PRODUCTS[0].id);
+  const [cart, setCart] = React.useState([]);
+  const [wish, setWish] = React.useState(0);
+
+  const [mega, setMega] = React.useState(null);
+  const [cartOpen, setCartOpen] = React.useState(false);
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [tweaksOpen, setTweaksOpen] = React.useState(false);
+  const [tweaks, setTweaks] = React.useState(TWEAKS);
+
+  // Track scroll for sticky header state
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Persist nav
+  React.useEffect(() => { localStorage.setItem('nksw_page', page); }, [page]);
+  React.useEffect(() => { localStorage.setItem('nksw_plp', plpSlug); }, [plpSlug]);
+  React.useEffect(() => { localStorage.setItem('nksw_pdp', pdpId); }, [pdpId]);
+
+  // Apply type-style tweak (Bodoni-heavy vs balanced vs Montserrat-heavy)
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (tweaks.typeStyle === 'bodoni-heavy') {
+      root.style.setProperty('--nksw-pcard-font', 'var(--font-serif)');
+      document.body.classList.add('is-bodoni-heavy');
+      document.body.classList.remove('is-montserrat-heavy');
+    } else if (tweaks.typeStyle === 'montserrat-heavy') {
+      document.body.classList.add('is-montserrat-heavy');
+      document.body.classList.remove('is-bodoni-heavy');
+    } else {
+      document.body.classList.remove('is-bodoni-heavy');
+      document.body.classList.remove('is-montserrat-heavy');
+    }
+    root.style.setProperty('--nksw-red', tweaks.accentColor);
+  }, [tweaks]);
+
+  // Tweaks protocol
+  React.useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksOpen(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksOpen(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({type:'__edit_mode_available'}, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const updateTweak = (key, val) => {
+    const next = {...tweaks, [key]: val};
+    setTweaks(next);
+    window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[key]: val}}, '*');
+  };
+
+  const addToCart = (p, colorIdx=0, size='M') => {
+    setCart(c => {
+      const existing = c.findIndex(i => i.p.id === p.id && i.colorIdx === colorIdx && i.size === size);
+      if (existing >= 0) return c.map((i,k) => k===existing ? {...i, qty: i.qty+1} : i);
+      return [...c, { p, colorIdx, size, qty: 1 }];
+    });
+    setCartOpen(true);
+  };
+  const removeFromCart = (idx) => setCart(c => c.filter((_,k) => k!==idx));
+  const setQty = (idx, q) => setCart(c => q <= 0 ? c.filter((_,k)=>k!==idx) : c.map((i,k) => k===idx ? {...i, qty: q} : i));
+
+  const openPDP = (p) => { setPdpId(p.id); setPage('pdp'); window.scrollTo(0,0); };
+  const goPLP = (slug) => {
+    if (slug === 'home') { setPage('home'); }
+    else { setPlpSlug(slug); setPage('plp'); }
+    setMega(null);
+    window.scrollTo(0,0);
+  };
+
+  const cartCount = cart.reduce((s,i)=>s+i.qty, 0);
+  const curProduct = PRODUCTS.find(p => p.id === pdpId) || PRODUCTS[0];
+
+  return (
+    <div data-screen-label={page === 'home' ? '01 Home' : page === 'plp' ? `02 PLP — ${plpSlug}` : `03 PDP — ${curProduct.shortName}`}>
+      <AnnouncementBar />
+      <div style={{position:'relative'}}>
+        <Header
+          onOpenMenu={setMega}
+          onOpenSearch={() => setSearchOpen(true)}
+          onOpenCart={() => setCartOpen(true)}
+          cartCount={cartCount}
+          wishCount={wish}
+          scrolled={scrolled}
+        />
+        <MegaMenu open={mega} onClose={() => setMega(null)} />
+      </div>
+
+      {/* Top-level page nav (tweakable) */}
+      <div className="nksw-pagenav">
+        <button onClick={() => goPLP('home')} className={page==='home'?'is-on':''}>HOME</button>
+        <button onClick={() => goPLP('new-in')} className={page==='plp' && plpSlug==='new-in'?'is-on':''}>PLP · NEW IN</button>
+        <button onClick={() => goPLP('sale')} className={page==='plp' && plpSlug==='sale'?'is-on':''}>PLP · SALE</button>
+        <button onClick={() => openPDP(PRODUCTS[0])} className={page==='pdp'?'is-on':''}>PDP · TOP ARIEL</button>
+        <button onClick={() => setCartOpen(true)}>CART DRAWER</button>
+        <button onClick={() => setSearchOpen(true)}>SEARCH</button>
+      </div>
+
+      {page === 'home' && <Home onAdd={addToCart} onOpenPDP={openPDP} onGoPLP={goPLP} />}
+      {page === 'plp' && <PLP slug={plpSlug} onAdd={addToCart} onOpenPDP={openPDP} onGoPLP={goPLP} />}
+      {page === 'pdp' && <PDP p={curProduct} onAdd={addToCart} onGoPLP={goPLP} onOpenPDP={openPDP} />}
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cart} onRemove={removeFromCart} onQty={setQty} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SauceWidget />
+
+      {tweaksOpen && (
+        <div className="nksw-tweaks">
+          <div className="nksw-tweaks-head">
+            <strong style={{fontFamily:'var(--font-serif)', fontSize:18}}>Tweaks</strong>
+            <button className="nksw-icon-btn" onClick={() => setTweaksOpen(false)}><Icon name="close" size={16}/></button>
+          </div>
+          <div className="nksw-tweaks-body">
+            <label className="t-eyebrow">Type style</label>
+            <div className="nksw-tweak-group">
+              {['bodoni-heavy','balanced','montserrat-heavy'].map(v => (
+                <button key={v} className={tweaks.typeStyle===v?'is-on':''} onClick={() => updateTweak('typeStyle', v)}>
+                  {v === 'bodoni-heavy' ? 'Mais Bodoni' : v === 'balanced' ? 'Equilibrado' : 'Mais Montserrat'}
+                </button>
+              ))}
+            </div>
+            <label className="t-eyebrow" style={{marginTop:16}}>Accent color</label>
+            <div className="nksw-tweak-group">
+              {[['#c20000','Red NKSW'], ['#171410','Ink'], ['#b07a3e','Tiger'], ['#4a5b7a','Blueberry']].map(([h,n]) => (
+                <button key={h} className={tweaks.accentColor===h?'is-on':''} onClick={() => updateTweak('accentColor', h)} style={{display:'flex', alignItems:'center', gap:8}}>
+                  <span style={{width:14, height:14, background:h, borderRadius:'50%', display:'inline-block'}}></span>{n}
+                </button>
+              ))}
+            </div>
+            <label className="t-eyebrow" style={{marginTop:16}}>Start page</label>
+            <div className="nksw-tweak-group">
+              {['home','plp','pdp'].map(v => (
+                <button key={v} className={tweaks.startPage===v?'is-on':''} onClick={() => updateTweak('startPage', v)}>
+                  {v.toUpperCase()}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+
+<style>
+/* Type-tweak overrides */
+body.is-bodoni-heavy .nksw-pcard-name,
+body.is-bodoni-heavy .nksw-triple-sub,
+body.is-bodoni-heavy .nksw-pdp-label,
+body.is-bodoni-heavy .t-eyebrow { font-family: var(--font-serif); letter-spacing: 0.04em; text-transform: none; font-style: italic; font-weight: 500; }
+body.is-bodoni-heavy .nksw-pill { font-family: var(--font-serif); text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+body.is-montserrat-heavy .nksw-section-title,
+body.is-montserrat-heavy .nksw-plp-title,
+body.is-montserrat-heavy .nksw-hero-title,
+body.is-montserrat-heavy .nksw-editorial-title,
+body.is-montserrat-heavy .nksw-pdp-title,
+body.is-montserrat-heavy .nksw-double-title { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.02em; }
+
+/* internal page-nav — non-production, helps designer jump between templates */
+.nksw-pagenav {
+  display: flex;
+  gap: 4px;
+  padding: 10px 20px;
+  background: var(--bg-editorial);
+  border-bottom: 1px solid var(--border-2);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.nksw-pagenav button {
+  padding: 6px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fg-2);
+  border-radius: 999px;
+  transition: all var(--dur-fast);
+}
+.nksw-pagenav button:hover { color: var(--nksw-black); background: #fff; }
+.nksw-pagenav button.is-on { background: var(--nksw-black); color: #fff; }
+
+/* Tweaks panel */
+.nksw-tweaks {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 280px;
+  background: #fff;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 70;
+  overflow: hidden;
+}
+.nksw-tweaks-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-2);
+  background: var(--bg-editorial);
+}
+.nksw-tweaks-body { padding: 16px; }
+.nksw-tweaks-body label { display: block; margin-bottom: 8px; }
+.nksw-tweak-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.nksw-tweak-group button {
+  padding: 7px 12px;
+  border: 1px solid var(--border-1);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all var(--dur-fast);
+}
+.nksw-tweak-group button:hover { border-color: var(--nksw-red); }
+.nksw-tweak-group button.is-on { background: var(--nksw-black); color: #fff; border-color: var(--nksw-black); }
+</style>
+</body>
+</html>

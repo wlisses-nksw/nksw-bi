@@ -1,0 +1,81 @@
+{%- liquid
+  assign has_image = false
+  if section.settings.image != blank
+    assign has_image = true
+  endif
+-%}
+
+<section class="nksw-hero" style="height: {{ section.settings.height }}vh;">
+  {%- if has_image -%}
+    <img
+      src="{{ section.settings.image | image_url: width: 2000 }}"
+      srcset="{{ section.settings.image | image_url: width: 800 }} 800w,
+              {{ section.settings.image | image_url: width: 1200 }} 1200w,
+              {{ section.settings.image | image_url: width: 1600 }} 1600w,
+              {{ section.settings.image | image_url: width: 2000 }} 2000w"
+      sizes="100vw"
+      alt="{{ section.settings.image.alt | escape }}"
+      loading="eager"
+      fetchpriority="high"
+    />
+  {%- endif -%}
+
+  <div class="nksw-hero-overlay" style="
+    --overlay-from: {{ section.settings.overlay_from }};
+    --overlay-to:   {{ section.settings.overlay_to }};
+    text-align: {{ section.settings.text_align }};
+    align-items: {{ section.settings.text_align | replace: 'left','flex-start' | replace: 'right','flex-end' | replace: 'center','center' }};
+  ">
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="nksw-hero-eyebrow">{{ section.settings.eyebrow }}</div>
+    {%- endif -%}
+
+    {%- if section.settings.title != blank -%}
+      <h1 class="nksw-hero-title">{{ section.settings.title }}</h1>
+    {%- endif -%}
+
+    <div class="nksw-hero-ctas">
+      {%- if section.settings.cta_1_label != blank -%}
+        <a href="{{ section.settings.cta_1_url }}" class="nksw-btn nksw-btn-primary">
+          {{ section.settings.cta_1_label }} →
+        </a>
+      {%- endif -%}
+      {%- if section.settings.cta_2_label != blank -%}
+        <a href="{{ section.settings.cta_2_url }}" class="nksw-btn nksw-btn-ghost">
+          {{ section.settings.cta_2_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "NKSW · Hero editorial",
+  "tag": "section",
+  "settings": [
+    { "type": "image_picker", "id": "image",   "label": "Imagem" },
+    { "type": "range", "id": "height", "label": "Altura (%vh)", "min": 50, "max": 100, "step": 5, "default": 90 },
+    { "type": "text",  "id": "eyebrow", "label": "Eyebrow", "default": "VERÃO 2026 · DROP STONE" },
+    { "type": "richtext", "id": "title", "label": "Título", "default": "<p>Dare to be<br\/><em>yourself.<\/em><\/p>" },
+    { "type": "text",  "id": "cta_1_label", "label": "CTA principal", "default": "SHOP NEW IN" },
+    { "type": "url",   "id": "cta_1_url",   "label": "CTA principal · link" },
+    { "type": "text",  "id": "cta_2_label", "label": "CTA secundário", "default": "DESCUBRA AS COLEÇÕES" },
+    { "type": "url",   "id": "cta_2_url",   "label": "CTA secundário · link" },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alinhamento",
+      "options": [
+        { "value": "left",   "label": "Esquerda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right",  "label": "Direita" }
+      ],
+      "default": "left"
+    },
+    { "type": "color", "id": "overlay_from", "label": "Gradiente topo", "default": "rgba(0,0,0,0.05)" },
+    { "type": "color", "id": "overlay_to",   "label": "Gradiente baixo", "default": "rgba(0,0,0,0.45)" }
+  ],
+  "presets": [{ "name": "NKSW · Hero editorial" }]
+}
+{% endschema %}
