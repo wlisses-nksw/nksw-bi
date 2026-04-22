@@ -3,12 +3,140 @@
   "pedidos": {
     "contadores": {
       "aprovados": 0,
-      "pendentes": 197,
+      "pendentes": 213,
       "em_transito": 0,
       "cancelados": 0,
       "entregues": 0
     },
     "lista": [
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1228,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 277.2,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 592.23,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 653.14,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1059.64,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1999.6,
+        "data": "21/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 622.87,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 622.87,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 565.57,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 66.9,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1217,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 888.41,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 188.21,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 886.15,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 565.51,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 890.48,
+        "data": "20/04/2026",
+        "cliente": ""
+      },
       {
         "id": "",
         "produto": "",
@@ -680,134 +808,6 @@
         "valor": 917.36,
         "data": "12/04/2026",
         "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1208,
-        "data": "12/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1208,
-        "data": "12/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1422.08,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 711.28,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 707.33,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 885.57,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 986.45,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 357.57,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 565.51,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 547.85,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 803.02,
-        "data": "11/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 592.23,
-        "data": "10/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 528.53,
-        "data": "10/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 600.7,
-        "data": "10/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1210.87,
-        "data": "10/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 552.62,
-        "data": "10/04/2026",
-        "cliente": ""
       }
     ]
   },
@@ -816,7 +816,7 @@
     "fim": "2026-04-22",
     "label": "custom"
   },
-  "generated_at": "2026-04-22T10:49:27Z",
+  "generated_at": "2026-04-22T15:52:46Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-22"
