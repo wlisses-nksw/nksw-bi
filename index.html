@@ -931,6 +931,28 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
+      <!-- ANÁLISE DIÁRIA GA4 -->
+      <div class="section-header">
+        <div>
+          <div class="section-title">Análise Diária</div>
+          <div class="section-sub" id="ga4DailySubtitle">Sessões e conversão por dia no período selecionado</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <div class="chart-card" style="margin:0">
+          <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:0 4px">Sessões por Dia</div>
+          <div class="chart-wrap"><canvas id="ga4DailySessionsChart" class="chart-canvas"></canvas></div>
+        </div>
+        <div class="chart-card" style="margin:0">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;padding:0 4px">
+            <span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px">Pedidos · Taxa de Conversão</span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7280"><span style="display:inline-block;width:10px;height:10px;background:#111827;border-radius:2px"></span>Pedidos</span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#c20000"><span style="display:inline-block;width:16px;height:2px;background:#c20000;border-radius:2px"></span>Conversão</span>
+          </div>
+          <div class="chart-wrap"><canvas id="ga4DailyOrdersChart" class="chart-canvas"></canvas></div>
+        </div>
+      </div>
+
       <!-- ORIGEM / MÍDIAS -->
       <div class="section-header">
         <div>
@@ -2157,6 +2179,144 @@ function initDailyChart() {
   } catch(e) { console.warn('Daily chart error:', e); }
 }
 
+/* ===== GA4 DAILY CHARTS (Web Analytics) ===== */
+function initGA4DailyCharts(dailyData) {
+  destroyChart('ga4DailySessionsChart');
+  destroyChart('ga4DailyOrdersChart');
+
+  // Mapa de sessões vindas do GA4 (dateRaw "20260419" → ISO "2026-04-19")
+  var sessMap = {};
+  if (dailyData && dailyData.length) {
+    dailyData.forEach(function(d) {
+      if (d.dateRaw && d.dateRaw.length === 8) {
+        var iso = d.dateRaw.substring(0,4) + '-' + d.dateRaw.substring(4,6) + '-' + d.dateRaw.substring(6,8);
+        sessMap[iso] = d.sessions || 0;
+      }
+    });
+  }
+
+  // Mapa de pedidos vindos do cache de Metas/Indicadores
+  var cacheKey = navYear + '_' + String(navMonth+1).padStart(2,'0');
+  var cache = (typeof _metasDiarioCache !== 'undefined') ? _metasDiarioCache[cacheKey] : null;
+  var ordMap = {};
+  if (cache && cache.length) {
+    cache.forEach(function(e) { if (e.dia) ordMap[e.dia] = e.pedidos || 0; });
+  } else if (_indDiarioData && _indDiarioData.length) {
+    _indDiarioData.forEach(function(e) { if (e.dia) ordMap[e.dia] = e.pedidos || 0; });
+  }
+
+  // União de todos os dias com dado
+  var allDaysSet = {};
+  Object.keys(sessMap).forEach(function(k) { allDaysSet[k] = true; });
+  Object.keys(ordMap).forEach(function(k)  { allDaysSet[k] = true; });
+
+  var days = Object.keys(allDaysSet).sort();
+  if (!days.length) return;
+
+  var labels   = days.map(function(d) { var p = d.split('-'); return p[2] + '/' + p[1]; });
+  var sessions = days.map(function(d) { return sessMap[d] || 0; });
+  var orders   = days.map(function(d) { return ordMap[d]  || 0; });
+  var convRates = days.map(function(d) {
+    var s = sessMap[d] || 0, o = ordMap[d] || 0;
+    return s > 0 ? Math.round(o / s * 10000) / 100 : 0;
+  });
+
+  // ── Gráfico 1: Sessões por dia ───────────────────────────────────────────
+  var ctx1 = document.getElementById('ga4DailySessionsChart');
+  if (ctx1) {
+    try {
+      charts['ga4DailySessionsChart'] = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            type: 'bar', label: 'Sessões',
+            data: sessions,
+            backgroundColor: '#111827',
+            borderRadius: 4, maxBarThickness: 16,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: {mode:'index', intersect:false},
+          layout: { padding: { top: 22 } },
+          plugins: {
+            legend: {display: false},
+            tooltip: { callbacks: { label: function(c) { return ' Sessões: ' + fmtNum(c.raw); } } },
+            datalabels: {
+              display: function(c) { return c.datasetIndex === 0 && c.parsed.y > 0; },
+              anchor: 'end', align: 'top',
+              color: '#374151', font: {size: 9, weight: '600'},
+              formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(1)+'k' : String(v); }
+            }
+          },
+          scales: {
+            y: { position:'left', grid:{color:'#f3f4f6'}, ticks:{callback:function(v){ return v>=1000?(v/1000).toFixed(0)+'k':v; }, font:{size:11}} },
+            x: { grid:{display:false}, ticks:{font:{size:10}} }
+          }
+        }
+      });
+    } catch(e) { console.warn('ga4DailySessionsChart:', e); }
+  }
+
+  // ── Gráfico 2: Pedidos (barras) + Conversão (linha) ──────────────────────
+  var ctx2 = document.getElementById('ga4DailyOrdersChart');
+  if (ctx2) {
+    try {
+      charts['ga4DailyOrdersChart'] = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'bar', label: 'Pedidos',
+              data: orders,
+              backgroundColor: '#111827',
+              borderRadius: 4, maxBarThickness: 16, yAxisID: 'y',
+            },
+            {
+              type: 'line', label: 'Conversão',
+              data: convRates,
+              borderColor: '#c20000', backgroundColor: 'transparent',
+              borderWidth: 2, tension: 0.3,
+              pointRadius: 2, pointBackgroundColor: '#c20000',
+              yAxisID: 'y2',
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: {mode:'index', intersect:false},
+          layout: { padding: { top: 22 } },
+          plugins: {
+            legend: {display: false},
+            tooltip: {
+              callbacks: {
+                label: function(c) {
+                  if (c.dataset.label === 'Pedidos')   return ' Pedidos: ' + c.raw;
+                  if (c.dataset.label === 'Conversão') return ' Conversão: ' + c.raw.toFixed(2) + '%';
+                  return c.raw;
+                }
+              }
+            },
+            datalabels: {
+              display: function(c) { return c.datasetIndex === 0 && c.parsed.y > 0; },
+              anchor: 'end', align: 'top',
+              color: '#374151', font: {size: 9, weight: '600'},
+              formatter: function(v) { return String(v); }
+            }
+          },
+          scales: {
+            y:  { position:'left',  grid:{color:'#f3f4f6'}, ticks:{precision:0, font:{size:11}} },
+            y2: { position:'right', grid:{display:false},   ticks:{callback:function(v){ return v.toFixed(1)+'%'; }, font:{size:11}, color:'#c20000'} },
+            x:  { grid:{display:false}, ticks:{font:{size:10}} }
+          }
+        }
+      });
+    } catch(e) { console.warn('ga4DailyOrdersChart:', e); }
+  }
+}
+
 /* ===== META API ===== */
 async function metaFetch(path) {
   var r = await fetch(GRAPH_API + path + '&access_token=' + META_TOKEN);
@@ -3009,6 +3169,8 @@ async function loadGA4Data() {
     renderGA4GeoCharts(data.geo || null);
     // Funil por produto — usa productFunnel (pós-reimplante) ou landingPages como aproximação
     renderGA4FunnelTable(data.productFunnel || null, data.landingPages || null, data.funnel || null);
+    // Gráficos de análise diária (sessões + pedidos + conversão)
+    initGA4DailyCharts(data.daily || null);
   } catch(e) {
     console.warn('GA4 fallback:', e.message);
     _indGA4FunilData  = null;
@@ -3045,6 +3207,7 @@ function applyMockGA4() {
   renderGA4DeviceCards(null);
   renderGA4GeoCharts(null);
   renderGA4FunnelTable(null);
+  initGA4DailyCharts(null); // usa dados do cache Metas/Indicadores se disponíveis
 }
 
 function renderGA4Sparklines() {
