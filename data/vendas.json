@@ -2,21 +2,21 @@
   "ok": true,
   "vendas": {
     "kpis": {
-      "receita": 241608.88,
-      "pedidos": 272,
-      "ticket": 888.27,
-      "lucro": 241608.88,
+      "receita": 243121.12,
+      "pedidos": 275,
+      "ticket": 884.08,
+      "lucro": 243121.12,
       "custo": 0,
       "taxaCancel": 0,
-      "descontoTotal": 25618.98,
+      "descontoTotal": 26825.42,
       "pctCupom": 29.8,
-      "receitaSemFrete": 236068.02,
-      "valorFrete": 5540.86,
+      "receitaSemFrete": 237557.78,
+      "valorFrete": 5563.34,
       "pctFrete": 2.3,
-      "pedidosComFrete": 218,
-      "pedidosSemFrete": 54,
-      "pctComFrete": 80.1,
-      "pctSemFrete": 19.9
+      "pedidosComFrete": 219,
+      "pedidosSemFrete": 56,
+      "pctComFrete": 79.6,
+      "pctSemFrete": 20.4
     },
     "diario": [
       {
@@ -143,23 +143,28 @@
         "dia": "2026-04-26",
         "receita": 11986.23,
         "pedidos": 14
+      },
+      {
+        "dia": "2026-04-27",
+        "receita": 1512.24,
+        "pedidos": 3
       }
     ],
     "canais": [
       {
         "canal": "Mobile",
-        "receita": 179220.07,
-        "pedidos": 203
+        "receita": 180517.77,
+        "pedidos": 204
       },
       {
         "canal": "Pedidos manuais",
         "receita": 40383.97,
-        "pedidos": 47
+        "pedidos": 48
       },
       {
         "canal": "Loja virtual",
-        "receita": 11467.79,
-        "pedidos": 14
+        "receita": 11682.33,
+        "pedidos": 15
       },
       {
         "canal": "Ponto de venda",
@@ -171,27 +176,27 @@
       {
         "mes": "2026-04",
         "label": "Abr/26",
-        "receita": 241608.88,
-        "pedidos": 272
+        "receita": 243121.12,
+        "pedidos": 275
       }
     ],
     "formaPag": [
       {
         "forma": "Nuvem Pago",
-        "receita": 240674.19,
-        "pedidos": 270
+        "receita": 242186.43,
+        "pedidos": 272
       },
       {
         "forma": "Em espécie",
         "receita": 934.69,
-        "pedidos": 2
+        "pedidos": 3
       }
     ],
     "porEstado": [
       {
         "estado": "São Paulo",
-        "receita": 85159.22,
-        "pedidos": 92
+        "receita": 86671.46,
+        "pedidos": 94
       },
       {
         "estado": "Minas Gerais",
@@ -206,7 +211,7 @@
       {
         "estado": "Distrito Federal",
         "receita": 16940.42,
-        "pedidos": 23
+        "pedidos": 24
       },
       {
         "estado": "Paraná",
@@ -267,62 +272,62 @@
     "porVendedor": [
       {
         "vendedor": "Site",
-        "receita": 185834.88,
-        "pedidos": 215
+        "receita": 187324.64,
+        "pedidos": 217
       },
       {
         "vendedor": "Mari",
         "receita": 50233.14,
-        "pedidos": 57
+        "pedidos": 58
       }
     ],
     "statusPagamento": [
       {
         "status": "Confirmado",
-        "receita": 241608.88,
-        "pedidos": 272,
+        "receita": 243121.12,
+        "pedidos": 275,
         "kpis": {
-          "receita": 241608.88,
-          "pedidos": 272,
-          "ticket": 888.27,
-          "lucro": 241608.88,
+          "receita": 243121.12,
+          "pedidos": 275,
+          "ticket": 884.08,
+          "lucro": 243121.12,
           "custo": 0,
           "taxaCancel": 0,
-          "descontoTotal": 25618.98,
+          "descontoTotal": 26825.42,
           "pctCupom": 29.8,
-          "receitaSemFrete": 236068.02,
-          "valorFrete": 5540.86,
+          "receitaSemFrete": 237557.78,
+          "valorFrete": 5563.34,
           "pctFrete": 2.3,
-          "pedidosComFrete": 218,
-          "pedidosSemFrete": 54,
-          "pctComFrete": 80.1,
-          "pctSemFrete": 19.9
+          "pedidosComFrete": 219,
+          "pedidosSemFrete": 56,
+          "pctComFrete": 79.6,
+          "pctSemFrete": 20.4
         },
         "porMes": [
           {
             "mes": "2026-04",
             "label": "Abr/26",
-            "receita": 241608.88,
-            "pedidos": 272
+            "receita": 243121.12,
+            "pedidos": 275
           }
         ],
         "porVendedor": [
           {
             "vendedor": "Site",
-            "receita": 185834.88,
-            "pedidos": 215
+            "receita": 187324.64,
+            "pedidos": 217
           },
           {
             "vendedor": "Mari",
             "receita": 50233.14,
-            "pedidos": 57
+            "pedidos": 58
           }
         ],
         "porEstado": [
           {
             "estado": "São Paulo",
-            "receita": 85159.22,
-            "pedidos": 92
+            "receita": 86671.46,
+            "pedidos": 94
           },
           {
             "estado": "Minas Gerais",
@@ -337,7 +342,7 @@
           {
             "estado": "Distrito Federal",
             "receita": 16940.42,
-            "pedidos": 23
+            "pedidos": 24
           },
           {
             "estado": "Paraná",
@@ -389,6 +394,11 @@
         "qtd": 5
       },
       {
+        "produto": "'7891237038446",
+        "receita": 6085.6,
+        "qtd": 5
+      },
+      {
         "produto": "'8984133435682",
         "receita": 3878.7,
         "qtd": 4
@@ -416,11 +426,6 @@
       {
         "produto": "'7891237038453",
         "receita": 3973.81,
-        "qtd": 4
-      },
-      {
-        "produto": "'7891237038446",
-        "receita": 4787.9,
         "qtd": 4
       },
       {
@@ -675,6 +680,11 @@
         "cupom": "FRETEGRATIS",
         "pedidos": 1,
         "valor": 521.55
+      },
+      {
+        "cupom": "TROCA3354",
+        "pedidos": 1,
+        "valor": 34.48
       }
     ]
   },
@@ -683,7 +693,7 @@
     "fim": "2026-04-28",
     "label": "custom"
   },
-  "generated_at": "2026-04-28T13:18:58Z",
+  "generated_at": "2026-04-28T18:13:42Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-28"

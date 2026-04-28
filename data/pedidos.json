@@ -3,12 +3,36 @@
   "pedidos": {
     "contadores": {
       "aprovados": 0,
-      "pendentes": 272,
+      "pendentes": 275,
       "em_transito": 0,
       "cancelados": 0,
       "entregues": 0
     },
     "lista": [
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 1297.7,
+        "data": "27/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 0,
+        "data": "27/04/2026",
+        "cliente": ""
+      },
+      {
+        "id": "",
+        "produto": "",
+        "status": "Pendente",
+        "valor": 214.54,
+        "data": "27/04/2026",
+        "cliente": ""
+      },
       {
         "id": "",
         "produto": "",
@@ -784,30 +808,6 @@
         "valor": 510.6,
         "data": "16/04/2026",
         "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1697.4,
-        "data": "16/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 1778.37,
-        "data": "16/04/2026",
-        "cliente": ""
-      },
-      {
-        "id": "",
-        "produto": "",
-        "status": "Pendente",
-        "valor": 856.48,
-        "data": "15/04/2026",
-        "cliente": ""
       }
     ]
   },
@@ -816,7 +816,7 @@
     "fim": "2026-04-28",
     "label": "custom"
   },
-  "generated_at": "2026-04-28T13:18:58Z",
+  "generated_at": "2026-04-28T18:13:42Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-28"
