@@ -19,9 +19,6 @@ const GA4_PROPERTY_ID = '374872616'; // Sua property ID
 // ─── ENTRY POINT ───────────────────────────────────────────────────────────
 function doGet(e) {
   try {
-    // Instala o gatilho diário automaticamente na primeira execução
-    autoInstallTrigger();
-
     const period    = e?.parameter?.period    || 'last_7d';
     const section   = e?.parameter?.section   || 'all';
     const startDate = e?.parameter?.startDate || null;
@@ -29,33 +26,31 @@ function doGet(e) {
 
     const data = fetchAllData(period, section, startDate, endDate);
 
-    return ContentService
-      .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders ? addCors(data) : buildResponse(data);
+    return buildResponse(data);
   } catch (err) {
     return buildErrorResponse(err.message);
   }
 }
 
-// Cria o gatilho diário às 8h uma única vez — detecta automaticamente se já existe
-function autoInstallTrigger() {
-  const props = PropertiesService.getScriptProperties();
-  if (props.getProperty('triggerInstalled') === 'true') return; // já instalado
-
-  // Remove duplicatas por segurança
-  ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === 'sendDailyReport') ScriptApp.deleteTrigger(t);
+// ─── GERENCIAMENTO DE GATILHO ─────────────────────────────────────────────
+// Execute esta função UMA VEZ no editor para criar/recriar o gatilho diário às 8h.
+// NÃO deve ser chamada de doGet — requer escopo ScriptApp que pode bloquear a Web App.
+function criarGatilhoDiario() {
+  // Remove gatilhos antigos do sendDailyReport para evitar duplicatas
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'sendDailyReport') {
+      ScriptApp.deleteTrigger(trigger);
+    }
   });
 
+  // Cria novo gatilho: todo dia entre 08:00 e 09:00
   ScriptApp.newTrigger('sendDailyReport')
     .timeBased()
     .everyDays(1)
     .atHour(8)
     .create();
 
-  props.setProperty('triggerInstalled', 'true');
-  Logger.log('✅ Gatilho diário instalado automaticamente às 8h.');
+  Logger.log('✅ Gatilho criado! sendDailyReport vai rodar todo dia entre 08:00 e 09:00.');
 }
 
 function buildResponse(data) {
