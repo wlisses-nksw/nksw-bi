@@ -5681,6 +5681,26 @@ async function fetchMonthData(m, y) {
       return;
     }
 
+    // ── Adiciona dias SEM vendas que têm dados de GA4 ou Meta Ads ──────────
+    // A API de Planilhas só retorna dias com ao menos 1 venda; dias com spend/sessões
+    // mas sem venda (ex: domingo, feriado) precisam entrar no diário com receita=0
+    // para que sessões e gasto de marketing apareçam corretamente em Metas e Indicadores.
+    var diarioDaySet = {};
+    diario.forEach(function(d) { diarioDaySet[d.dia] = true; });
+    var allActivityDays = {};
+    Object.keys(sessoesByDay).forEach(function(k) { allActivityDays[k] = true; });
+    Object.keys(spendByDay).forEach(function(k)   { allActivityDays[k] = true; });
+    Object.keys(allActivityDays).forEach(function(dayStr) {
+      if (diarioDaySet[dayStr]) return; // já existe com vendas
+      var parts = dayStr.split('-');
+      if (parts.length !== 3) return;
+      var dY = parseInt(parts[0]), dM = parseInt(parts[1]) - 1;
+      if (dY !== y || dM !== m) return; // só dias do mês correto
+      diario.push({ dia: dayStr, receita: 0, pedidos: 0 });
+    });
+    diario.sort(function(a, b) { return a.dia < b.dia ? -1 : 1; });
+    // ────────────────────────────────────────────────────────────────────────
+
     var totalPed = (vendasResp && vendasResp.vendas && vendasResp.vendas.kpis)
                    ? (vendasResp.vendas.kpis.pedidos || 0) : 0;
 
@@ -6066,7 +6086,9 @@ function getDayRealized(key, dayNum, m, y) {
   if (cache) {
     var dayStr = y + '-' + String(m+1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
     var cEntry = cache.find(function(e) { return e.dia === dayStr; });
-    if (cEntry && cEntry[key] !== undefined && cEntry[key] !== null && cEntry[key] > 0) return cEntry[key];
+    // Retorna o valor real mesmo que seja 0 (dia sem vendas mas com sessões/spend)
+    // null = dia não encontrado no cache (sem dado algum)
+    if (cEntry) return (key in cEntry && cEntry[key] !== null && cEntry[key] !== undefined) ? cEntry[key] : null;
   }
 
   // Fallback para mês atual: _indDiarioFull (dados brutos da aba Vendas)
