@@ -1705,10 +1705,7 @@ function goTo(page, el) {
   if (page === 'metas')    renderGoals();
   if (page === 'admin')    loadUsersTable();
   if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
-  if (page === 'webanalytics') setTimeout(function() {
-    var c = charts['ga4DailyComboChart'];
-    if (c) c.resize(); else renderGA4DailyComboChart();
-  }, 50);
+  if (page === 'webanalytics') setTimeout(renderGA4DailyComboChart, 50);
 }
 
 function updateTopbar(page) {
@@ -2154,15 +2151,19 @@ function initDailyChart() {
             }
           },
           datalabels: {
-            display: function(ctx) { return ctx.datasetIndex === 0 && ctx.raw > 0; },
             anchor: 'end',
             align: 'top',
-            clamp: true,
+            clip: false,
             color: '#374151',
             font: { size: 9, weight: '600' },
-            formatter: function(value) { return 'R$' + (value / 1000).toFixed(1) + 'k'; }
+            formatter: function(value, ctx) {
+              if (ctx.datasetIndex !== 0) return null;
+              if (!value) return null;
+              return 'R$' + (value / 1000).toFixed(1) + 'k';
+            }
           }
         },
+        layout: { padding: { top: 35 } },
         scales: {
           y: {
             position:'left',
@@ -3115,13 +3116,15 @@ function renderGA4DailyComboChart() {
             }
           },
           datalabels: {
-            display: function(ctx) { return ctx.raw > 0; },
             anchor: 'end',
             align: 'top',
-            clamp: true,
+            clip: false,
             color: '#374151',
             font: { size: 9, weight: '600' },
-            formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(1)+'k' : String(v); }
+            formatter: function(value) {
+              if (!value) return null;
+              return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : String(value);
+            }
           }
         },
         scales: {
