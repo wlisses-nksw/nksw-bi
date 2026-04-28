@@ -901,20 +901,6 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
-      <!-- GRÁFICO COMBO: Acessos x Pedidos por Dia + Taxa de Conversão -->
-      <div class="section-header">
-        <div>
-          <div class="section-title">Acessos × Pedidos por Dia</div>
-          <div class="section-sub">Sessões diárias no período</div>
-        </div>
-        <div class="chart-legend">
-          <div class="cl-item"><div class="cl-dot" style="background:#111827"></div>Sessões por dia</div>
-        </div>
-      </div>
-      <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
-        <div style="height:280px;position:relative"><canvas id="ga4DailyComboChart"></canvas></div>
-      </div>
-
       <!-- 4 GRÁFICOS: GÊNERO · FAIXA ETÁRIA · CANAIS · FONTES -->
       <div class="section-header">
         <div>
@@ -1012,6 +998,20 @@ tbody tr:hover{background:#fafafa}
           </thead>
           <tbody id="ga4FunnelBody"></tbody>
         </table>
+      </div>
+
+      <!-- GRÁFICO: Sessões por Dia -->
+      <div class="section-header">
+        <div>
+          <div class="section-title">Sessões por Dia</div>
+          <div class="section-sub">Acessos diários no período</div>
+        </div>
+        <div class="chart-legend">
+          <div class="cl-item"><div class="cl-dot" style="background:#111827"></div>Sessões</div>
+        </div>
+      </div>
+      <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
+        <div style="height:300px;position:relative"><canvas id="ga4DailyComboChart"></canvas></div>
       </div>
     </div>
 
@@ -1705,6 +1705,10 @@ function goTo(page, el) {
   if (page === 'metas')    renderGoals();
   if (page === 'admin')    loadUsersTable();
   if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
+  if (page === 'webanalytics') setTimeout(function() {
+    var c = charts['ga4DailyComboChart'];
+    if (c) c.resize(); else renderGA4DailyComboChart();
+  }, 50);
 }
 
 function updateTopbar(page) {
@@ -2150,9 +2154,10 @@ function initDailyChart() {
             }
           },
           datalabels: {
-            display: function(ctx) { return ctx.datasetIndex === 0 && ctx.parsed.y > 0; },
+            display: function(ctx) { return ctx.datasetIndex === 0 && ctx.raw > 0; },
             anchor: 'end',
             align: 'top',
+            clamp: true,
             color: '#374151',
             font: { size: 9, weight: '600' },
             formatter: function(value) { return 'R$' + (value / 1000).toFixed(1) + 'k'; }
@@ -3110,12 +3115,13 @@ function renderGA4DailyComboChart() {
             }
           },
           datalabels: {
-            display: function(ctx) { return ctx.parsed.y > 0; },
+            display: function(ctx) { return ctx.raw > 0; },
             anchor: 'end',
             align: 'top',
+            clamp: true,
             color: '#374151',
             font: { size: 9, weight: '600' },
-            formatter: function(v) { return fmtNum(v); }
+            formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(1)+'k' : String(v); }
           }
         },
         scales: {
