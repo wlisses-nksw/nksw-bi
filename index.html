@@ -901,6 +901,22 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
+      <!-- GRÁFICO COMBO: Acessos x Pedidos por Dia + Taxa de Conversão -->
+      <div class="section-header">
+        <div>
+          <div class="section-title">Acessos × Pedidos por Dia</div>
+          <div class="section-sub">Barras: Sessões e Pedidos diários · Linha: Taxa de conversão (eixo direito)</div>
+        </div>
+        <div class="chart-legend">
+          <div class="cl-item"><div class="cl-dot" style="background:#6b7280"></div>Sessões</div>
+          <div class="cl-item"><div class="cl-dot" style="background:#c20000"></div>Pedidos</div>
+          <div class="cl-item"><div class="cl-dot" style="background:#16a34a;border-radius:50%"></div>Taxa Conv.</div>
+        </div>
+      </div>
+      <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
+        <div style="height:280px;position:relative"><canvas id="ga4DailyComboChart"></canvas></div>
+      </div>
+
       <!-- 4 GRÁFICOS: GÊNERO · FAIXA ETÁRIA · CANAIS · FONTES -->
       <div class="section-header">
         <div>
@@ -928,28 +944,6 @@ tbody tr:hover{background:#fafafa}
           <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Fontes de Tráfego</div>
           <div style="height:150px;position:relative"><canvas id="trafficChart"></canvas></div>
           <div id="trafficLegend" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;font-size:11px"></div>
-        </div>
-      </div>
-
-      <!-- ANÁLISE DIÁRIA GA4 -->
-      <div class="section-header">
-        <div>
-          <div class="section-title">Análise Diária</div>
-          <div class="section-sub" id="ga4DailySubtitle">Sessões e conversão por dia no período selecionado</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-        <div class="chart-card" style="margin:0">
-          <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:0 4px">Sessões por Dia</div>
-          <div class="chart-wrap"><canvas id="ga4DailySessionsChart" class="chart-canvas"></canvas></div>
-        </div>
-        <div class="chart-card" style="margin:0">
-          <div style="display:flex;align-items:center;gap:14px;margin-bottom:4px;padding:0 4px">
-            <span style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:1px">Pedidos · Taxa de Conversão</span>
-            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#6b7280"><span style="display:inline-block;width:10px;height:10px;background:#111827;border-radius:2px"></span>Pedidos</span>
-            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:#c20000"><span style="display:inline-block;width:16px;height:2px;background:#c20000;border-radius:2px"></span>Conversão</span>
-          </div>
-          <div class="chart-wrap"><canvas id="ga4DailyOrdersChart" class="chart-canvas"></canvas></div>
         </div>
       </div>
 
@@ -2179,144 +2173,6 @@ function initDailyChart() {
   } catch(e) { console.warn('Daily chart error:', e); }
 }
 
-/* ===== GA4 DAILY CHARTS (Web Analytics) ===== */
-function initGA4DailyCharts(dailyData) {
-  destroyChart('ga4DailySessionsChart');
-  destroyChart('ga4DailyOrdersChart');
-
-  // Mapa de sessões vindas do GA4 (dateRaw "20260419" → ISO "2026-04-19")
-  var sessMap = {};
-  if (dailyData && dailyData.length) {
-    dailyData.forEach(function(d) {
-      if (d.dateRaw && d.dateRaw.length === 8) {
-        var iso = d.dateRaw.substring(0,4) + '-' + d.dateRaw.substring(4,6) + '-' + d.dateRaw.substring(6,8);
-        sessMap[iso] = d.sessions || 0;
-      }
-    });
-  }
-
-  // Mapa de pedidos vindos do cache de Metas/Indicadores
-  var cacheKey = navYear + '_' + String(navMonth+1).padStart(2,'0');
-  var cache = (typeof _metasDiarioCache !== 'undefined') ? _metasDiarioCache[cacheKey] : null;
-  var ordMap = {};
-  if (cache && cache.length) {
-    cache.forEach(function(e) { if (e.dia) ordMap[e.dia] = e.pedidos || 0; });
-  } else if (_indDiarioData && _indDiarioData.length) {
-    _indDiarioData.forEach(function(e) { if (e.dia) ordMap[e.dia] = e.pedidos || 0; });
-  }
-
-  // União de todos os dias com dado
-  var allDaysSet = {};
-  Object.keys(sessMap).forEach(function(k) { allDaysSet[k] = true; });
-  Object.keys(ordMap).forEach(function(k)  { allDaysSet[k] = true; });
-
-  var days = Object.keys(allDaysSet).sort();
-  if (!days.length) return;
-
-  var labels   = days.map(function(d) { var p = d.split('-'); return p[2] + '/' + p[1]; });
-  var sessions = days.map(function(d) { return sessMap[d] || 0; });
-  var orders   = days.map(function(d) { return ordMap[d]  || 0; });
-  var convRates = days.map(function(d) {
-    var s = sessMap[d] || 0, o = ordMap[d] || 0;
-    return s > 0 ? Math.round(o / s * 10000) / 100 : 0;
-  });
-
-  // ── Gráfico 1: Sessões por dia ───────────────────────────────────────────
-  var ctx1 = document.getElementById('ga4DailySessionsChart');
-  if (ctx1) {
-    try {
-      charts['ga4DailySessionsChart'] = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            type: 'bar', label: 'Sessões',
-            data: sessions,
-            backgroundColor: '#111827',
-            borderRadius: 4, maxBarThickness: 16,
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          interaction: {mode:'index', intersect:false},
-          layout: { padding: { top: 22 } },
-          plugins: {
-            legend: {display: false},
-            tooltip: { callbacks: { label: function(c) { return ' Sessões: ' + fmtNum(c.raw); } } },
-            datalabels: {
-              display: function(c) { return c.datasetIndex === 0 && c.parsed.y > 0; },
-              anchor: 'end', align: 'top',
-              color: '#374151', font: {size: 9, weight: '600'},
-              formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(1)+'k' : String(v); }
-            }
-          },
-          scales: {
-            y: { position:'left', grid:{color:'#f3f4f6'}, ticks:{callback:function(v){ return v>=1000?(v/1000).toFixed(0)+'k':v; }, font:{size:11}} },
-            x: { grid:{display:false}, ticks:{font:{size:10}} }
-          }
-        }
-      });
-    } catch(e) { console.warn('ga4DailySessionsChart:', e); }
-  }
-
-  // ── Gráfico 2: Pedidos (barras) + Conversão (linha) ──────────────────────
-  var ctx2 = document.getElementById('ga4DailyOrdersChart');
-  if (ctx2) {
-    try {
-      charts['ga4DailyOrdersChart'] = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              type: 'bar', label: 'Pedidos',
-              data: orders,
-              backgroundColor: '#111827',
-              borderRadius: 4, maxBarThickness: 16, yAxisID: 'y',
-            },
-            {
-              type: 'line', label: 'Conversão',
-              data: convRates,
-              borderColor: '#c20000', backgroundColor: 'transparent',
-              borderWidth: 2, tension: 0.3,
-              pointRadius: 2, pointBackgroundColor: '#c20000',
-              yAxisID: 'y2',
-            }
-          ]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          interaction: {mode:'index', intersect:false},
-          layout: { padding: { top: 22 } },
-          plugins: {
-            legend: {display: false},
-            tooltip: {
-              callbacks: {
-                label: function(c) {
-                  if (c.dataset.label === 'Pedidos')   return ' Pedidos: ' + c.raw;
-                  if (c.dataset.label === 'Conversão') return ' Conversão: ' + c.raw.toFixed(2) + '%';
-                  return c.raw;
-                }
-              }
-            },
-            datalabels: {
-              display: function(c) { return c.datasetIndex === 0 && c.parsed.y > 0; },
-              anchor: 'end', align: 'top',
-              color: '#374151', font: {size: 9, weight: '600'},
-              formatter: function(v) { return String(v); }
-            }
-          },
-          scales: {
-            y:  { position:'left',  grid:{color:'#f3f4f6'}, ticks:{precision:0, font:{size:11}} },
-            y2: { position:'right', grid:{display:false},   ticks:{callback:function(v){ return v.toFixed(1)+'%'; }, font:{size:11}, color:'#c20000'} },
-            x:  { grid:{display:false}, ticks:{font:{size:10}} }
-          }
-        }
-      });
-    } catch(e) { console.warn('ga4DailyOrdersChart:', e); }
-  }
-}
-
 /* ===== META API ===== */
 async function metaFetch(path) {
   var r = await fetch(GRAPH_API + path + '&access_token=' + META_TOKEN);
@@ -3169,8 +3025,7 @@ async function loadGA4Data() {
     renderGA4GeoCharts(data.geo || null);
     // Funil por produto — usa productFunnel (pós-reimplante) ou landingPages como aproximação
     renderGA4FunnelTable(data.productFunnel || null, data.landingPages || null, data.funnel || null);
-    // Gráficos de análise diária (sessões + pedidos + conversão)
-    initGA4DailyCharts(data.daily || null);
+    renderGA4DailyComboChart();
   } catch(e) {
     console.warn('GA4 fallback:', e.message);
     _indGA4FunilData  = null;
@@ -3207,7 +3062,107 @@ function applyMockGA4() {
   renderGA4DeviceCards(null);
   renderGA4GeoCharts(null);
   renderGA4FunnelTable(null);
-  initGA4DailyCharts(null); // usa dados do cache Metas/Indicadores se disponíveis
+  renderGA4DailyComboChart();
+}
+
+function renderGA4DailyComboChart() {
+  destroyChart('ga4DailyComboChart');
+  var ctx = document.getElementById('ga4DailyComboChart');
+  if (!ctx) return;
+
+  var cacheKey = navYear + '_' + String(navMonth + 1).padStart(2, '0');
+  var cached   = (typeof _metasDiarioCache !== 'undefined') ? _metasDiarioCache[cacheKey] : null;
+  var rawArr   = (cached && cached.length > 0) ? cached
+               : (_indDiarioFull && _indDiarioFull.length > 0) ? _indDiarioFull
+               : MOCK.diario;
+
+  var d = rawArr.map(function(item) {
+    var lbl = item.dia || '';
+    if (lbl.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      var p = lbl.split('-');
+      lbl = p[2] + '/' + p[1];
+    }
+    var sess    = item.sessoes  || 0;
+    var ped     = item.pedidos  || 0;
+    var taxa    = item.taxaConv != null ? item.taxaConv
+                : (sess > 0 ? parseFloat((ped / sess * 100).toFixed(2)) : 0);
+    return { lbl: lbl, sessoes: sess, pedidos: ped, taxa: taxa };
+  });
+
+  try {
+    charts['ga4DailyComboChart'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: d.map(function(x) { return x.lbl; }),
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Sessões',
+            data: d.map(function(x) { return x.sessoes; }),
+            backgroundColor: '#9ca3af',
+            borderRadius: 3,
+            maxBarThickness: 12,
+            yAxisID: 'y',
+          },
+          {
+            type: 'bar',
+            label: 'Pedidos',
+            data: d.map(function(x) { return x.pedidos; }),
+            backgroundColor: '#c20000',
+            borderRadius: 3,
+            maxBarThickness: 12,
+            yAxisID: 'y',
+          },
+          {
+            type: 'line',
+            label: 'Taxa Conv. %',
+            data: d.map(function(x) { return x.taxa; }),
+            borderColor: '#16a34a',
+            backgroundColor: 'rgba(22,163,74,0.08)',
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 2,
+            pointHoverRadius: 5,
+            fill: true,
+            yAxisID: 'yRight',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        layout: { padding: { top: 10 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                if (ctx.dataset.label === 'Sessões')    return ' Sessões: '    + fmtNum(ctx.raw);
+                if (ctx.dataset.label === 'Pedidos')    return ' Pedidos: '    + fmtNum(ctx.raw);
+                if (ctx.dataset.label === 'Taxa Conv. %') return ' Taxa Conv.: ' + ctx.raw.toFixed(2) + '%';
+                return ctx.dataset.label + ': ' + ctx.raw;
+              }
+            }
+          },
+          datalabels: { display: false }
+        },
+        scales: {
+          y: {
+            position: 'left',
+            grid: { color: '#f3f4f6' },
+            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 10 } }
+          },
+          yRight: {
+            position: 'right',
+            grid: { display: false },
+            ticks: { callback: function(v) { return v.toFixed(1) + '%'; }, font: { size: 10 } }
+          },
+          x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+  } catch(e) { console.warn('GA4 daily combo chart error:', e); }
 }
 
 function renderGA4Sparklines() {
@@ -5844,26 +5799,6 @@ async function fetchMonthData(m, y) {
       return;
     }
 
-    // ── Adiciona dias SEM vendas que têm dados de GA4 ou Meta Ads ──────────
-    // A API de Planilhas só retorna dias com ao menos 1 venda; dias com spend/sessões
-    // mas sem venda (ex: domingo, feriado) precisam entrar no diário com receita=0
-    // para que sessões e gasto de marketing apareçam corretamente em Metas e Indicadores.
-    var diarioDaySet = {};
-    diario.forEach(function(d) { diarioDaySet[d.dia] = true; });
-    var allActivityDays = {};
-    Object.keys(sessoesByDay).forEach(function(k) { allActivityDays[k] = true; });
-    Object.keys(spendByDay).forEach(function(k)   { allActivityDays[k] = true; });
-    Object.keys(allActivityDays).forEach(function(dayStr) {
-      if (diarioDaySet[dayStr]) return; // já existe com vendas
-      var parts = dayStr.split('-');
-      if (parts.length !== 3) return;
-      var dY = parseInt(parts[0]), dM = parseInt(parts[1]) - 1;
-      if (dY !== y || dM !== m) return; // só dias do mês correto
-      diario.push({ dia: dayStr, receita: 0, pedidos: 0 });
-    });
-    diario.sort(function(a, b) { return a.dia < b.dia ? -1 : 1; });
-    // ────────────────────────────────────────────────────────────────────────
-
     var totalPed = (vendasResp && vendasResp.vendas && vendasResp.vendas.kpis)
                    ? (vendasResp.vendas.kpis.pedidos || 0) : 0;
 
@@ -5944,12 +5879,12 @@ function _getCohortClientes(m, y) {
 var GOAL_DEFS = {
   receita:      {icon:'💰',name:'Receita',           desc:'Receita total do período',       prefix:'R$',suffix:'',  required:true,  step:1000, lowerIsBetter:false, realized:function(){return _indRealizadoReceita !== null ? _indRealizadoReceita : MOCK.realizado;},  fmt:function(v){return fmtBRL(v);}},
   roas:         {icon:'📈',name:'ROAS',               desc:'Retorno sobre investimento',     prefix:'',  suffix:'x', required:true,  step:0.1,  lowerIsBetter:false, realized:function(){return _indRoasAtual       !== null ? _indRoasAtual        : MOCK.roas;},         fmt:function(v){return v.toFixed(2)+'x';}},
-  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasPedidos   !== null ? _indVendasPedidos    : 533;},              fmt:function(v){return fmtNum(v);}},
-  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasTicket    !== null ? _indVendasTicket     : MOCK.ticketMedio;}, fmt:function(v){return fmtBRL(v);}},
-  cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){return _indMktCpp          !== null ? _indMktCpp           : MOCK.cac;},         fmt:function(v){return fmtBRL(v);}},
-  custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return _indMktSpend        !== null ? _indMktSpend         : MOCK.custoMarketing;}, fmt:function(v){return fmtBRL(v);}},
-  sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return _indGA4Sessions     !== null ? _indGA4Sessions      : (MOCK.ga4 ? MOCK.ga4.sessions : 50296);}, fmt:function(v){return fmtNum(v);}},
-  taxaConv:     {icon:'🎯',name:'Taxa de Conversão',   desc:'% de visitantes que compram',    prefix:'',  suffix:'%', required:false, step:0.1,  lowerIsBetter:false, realized:function(){ var ses = _indGA4Sessions || (MOCK.ga4 ? MOCK.ga4.sessions : 50296); var ped = _indVendasPedidos !== null ? _indVendasPedidos : 533; return ses > 0 ? ped / ses * 100 : (MOCK.ga4 ? MOCK.ga4.convRate : 2.9); }, fmt:function(v){return v.toFixed(2)+'%';}},
+  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return 533;},                                               fmt:function(v){return fmtNum(v);}},
+  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return MOCK.ticketMedio;},                                  fmt:function(v){return fmtBRL(v);}},
+  cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){return MOCK.cac;},                                          fmt:function(v){return fmtBRL(v);}},
+  custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return MOCK.custoMarketing;},                              fmt:function(v){return fmtBRL(v);}},
+  sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.sessions:50296;},                  fmt:function(v){return fmtNum(v);}},
+  taxaConv:     {icon:'🎯',name:'Taxa de Conversão',   desc:'% de visitantes que compram',    prefix:'',  suffix:'%', required:false, step:0.1,  lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.convRate:2.9;},                   fmt:function(v){return v.toFixed(2)+'%';}},
   novosClientes:{icon:'👤',name:'Novos Clientes',       desc:'Clientes novos no período',      prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false,
     realized:function(){ var c = _getCohortClientes(goalMonth, goalYear); return c !== null ? c : MOCK.novosClientes; },
     fmt:function(v){return fmtNum(v);}},
@@ -6249,9 +6184,7 @@ function getDayRealized(key, dayNum, m, y) {
   if (cache) {
     var dayStr = y + '-' + String(m+1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
     var cEntry = cache.find(function(e) { return e.dia === dayStr; });
-    // Retorna o valor real mesmo que seja 0 (dia sem vendas mas com sessões/spend)
-    // null = dia não encontrado no cache (sem dado algum)
-    if (cEntry) return (key in cEntry && cEntry[key] !== null && cEntry[key] !== undefined) ? cEntry[key] : null;
+    if (cEntry && cEntry[key] !== undefined && cEntry[key] !== null && cEntry[key] > 0) return cEntry[key];
   }
 
   // Fallback para mês atual: _indDiarioFull (dados brutos da aba Vendas)
