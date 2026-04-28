@@ -5772,7 +5772,27 @@ async function fetchMonthData(m, y) {
     var totalSpend     = metaTotalSpend > 0 ? metaTotalSpend
                        : (mktKpis ? (mktKpis.spend || 0) : 0);
 
-    _metasDiarioCache[cacheKey] = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
+    var enriched = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
+
+    // Adiciona entradas sintéticas para dias com sessões GA4 ou spend Meta mas sem venda no Sheets
+    var diasComVenda = {};
+    enriched.forEach(function(e) { diasComVenda[e.dia] = true; });
+    var allExtraDays = {};
+    Object.keys(sessoesByDay).forEach(function(d) { allExtraDays[d] = true; });
+    Object.keys(spendByDay).forEach(function(d)   { allExtraDays[d] = true; });
+    Object.keys(allExtraDays).forEach(function(iso) {
+      if (!diasComVenda[iso]) {
+        enriched.push({
+          dia: iso, receita: 0, pedidos: 0, ticket: 0,
+          custoMkt: spendByDay[iso] || 0, roas: 0,
+          sessoes: sessoesByDay[iso] || 0,
+          taxaConv: 0, cac: 0, novosClientes: 0
+        });
+      }
+    });
+    enriched.sort(function(a, b) { return a.dia < b.dia ? -1 : a.dia > b.dia ? 1 : 0; });
+
+    _metasDiarioCache[cacheKey] = enriched;
   } catch(e) {
     console.warn('fetchMonthData error:', e.message);
     _metasDiarioCache[cacheKey] = null;
