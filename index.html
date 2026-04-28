@@ -905,12 +905,11 @@ tbody tr:hover{background:#fafafa}
       <div class="section-header">
         <div>
           <div class="section-title">Acessos × Pedidos por Dia</div>
-          <div class="section-sub">Barras: Sessões e Pedidos diários · Linha: Taxa de conversão (eixo direito)</div>
+          <div class="section-sub">Sessões (eixo esquerdo) · Pedidos (eixo direito)</div>
         </div>
         <div class="chart-legend">
-          <div class="cl-item"><div class="cl-dot" style="background:#6b7280"></div>Sessões</div>
+          <div class="cl-item"><div class="cl-dot" style="background:#9ca3af"></div>Sessões</div>
           <div class="cl-item"><div class="cl-dot" style="background:#c20000"></div>Pedidos</div>
-          <div class="cl-item"><div class="cl-dot" style="background:#16a34a;border-radius:50%"></div>Taxa Conv.</div>
         </div>
       </div>
       <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
@@ -3082,11 +3081,7 @@ function renderGA4DailyComboChart() {
       var p = lbl.split('-');
       lbl = p[2] + '/' + p[1];
     }
-    var sess    = item.sessoes  || 0;
-    var ped     = item.pedidos  || 0;
-    var taxa    = item.taxaConv != null ? item.taxaConv
-                : (sess > 0 ? parseFloat((ped / sess * 100).toFixed(2)) : 0);
-    return { lbl: lbl, sessoes: sess, pedidos: ped, taxa: taxa };
+    return { lbl: lbl, sessoes: item.sessoes || 0, pedidos: item.pedidos || 0 };
   });
 
   try {
@@ -3096,35 +3091,20 @@ function renderGA4DailyComboChart() {
         labels: d.map(function(x) { return x.lbl; }),
         datasets: [
           {
-            type: 'bar',
             label: 'Sessões',
             data: d.map(function(x) { return x.sessoes; }),
             backgroundColor: '#9ca3af',
             borderRadius: 3,
-            maxBarThickness: 12,
-            yAxisID: 'y',
+            maxBarThickness: 14,
+            yAxisID: 'ySessoes',
           },
           {
-            type: 'bar',
             label: 'Pedidos',
             data: d.map(function(x) { return x.pedidos; }),
             backgroundColor: '#c20000',
             borderRadius: 3,
-            maxBarThickness: 12,
-            yAxisID: 'y',
-          },
-          {
-            type: 'line',
-            label: 'Taxa Conv. %',
-            data: d.map(function(x) { return x.taxa; }),
-            borderColor: '#16a34a',
-            backgroundColor: 'rgba(22,163,74,0.08)',
-            borderWidth: 2,
-            tension: 0.3,
-            pointRadius: 2,
-            pointHoverRadius: 5,
-            fill: true,
-            yAxisID: 'yRight',
+            maxBarThickness: 14,
+            yAxisID: 'yPedidos',
           }
         ]
       },
@@ -3138,25 +3118,25 @@ function renderGA4DailyComboChart() {
           tooltip: {
             callbacks: {
               label: function(ctx) {
-                if (ctx.dataset.label === 'Sessões')    return ' Sessões: '    + fmtNum(ctx.raw);
-                if (ctx.dataset.label === 'Pedidos')    return ' Pedidos: '    + fmtNum(ctx.raw);
-                if (ctx.dataset.label === 'Taxa Conv. %') return ' Taxa Conv.: ' + ctx.raw.toFixed(2) + '%';
-                return ctx.dataset.label + ': ' + ctx.raw;
+                if (ctx.dataset.label === 'Sessões') return ' Sessões: ' + fmtNum(ctx.raw);
+                return ' Pedidos: ' + fmtNum(ctx.raw);
               }
             }
           },
           datalabels: { display: false }
         },
         scales: {
-          y: {
+          ySessoes: {
             position: 'left',
             grid: { color: '#f3f4f6' },
-            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 10 } }
+            title: { display: true, text: 'Sessões', font: { size: 10 }, color: '#9ca3af' },
+            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 10 }, color: '#9ca3af' }
           },
-          yRight: {
+          yPedidos: {
             position: 'right',
             grid: { display: false },
-            ticks: { callback: function(v) { return v.toFixed(1) + '%'; }, font: { size: 10 } }
+            title: { display: true, text: 'Pedidos', font: { size: 10 }, color: '#c20000' },
+            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 10 }, color: '#c20000' }
           },
           x: { grid: { display: false }, ticks: { font: { size: 9 } } }
         }
