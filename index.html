@@ -2166,7 +2166,8 @@ function initDailyChart() {
           },
           x: {grid:{display:false}, ticks:{font:{size:10}}}
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
   } catch(e) { console.warn('Daily chart error:', e); }
 }
@@ -3124,7 +3125,8 @@ function renderGA4DailyComboChart() {
           },
           x: { grid: { display: false }, ticks: { font: { size: 10 } } }
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
   } catch(e) { console.warn('GA4 daily chart error:', e); }
 }
