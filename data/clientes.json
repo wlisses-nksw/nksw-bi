@@ -2,51 +2,51 @@
   "ok": true,
   "clientes": {
     "kpis": {
-      "total": 23451,
-      "recompras": 7569,
+      "total": 23457,
+      "recompras": 7572,
       "pctRecomp": 32,
       "ltv": 783,
       "avgDaysBetween": 271,
-      "totalReceita": 18368052
+      "totalReceita": 18375763
     },
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
         "base": 16144,
-        "pedidos": 21449,
-        "receita": 6809182,
+        "pedidos": 21450,
+        "receita": 6809991,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
       {
         "segmento": "🚨 Alto Valor Em Risco",
-        "base": 1302,
-        "pedidos": 3209,
-        "receita": 2518029,
+        "base": 1301,
+        "pedidos": 3205,
+        "receita": 2516943,
         "racional": "Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.",
         "acao": "Campanha win-back agressiva, desconto significativo ou produto exclusivo"
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1071,
-        "pedidos": 2180,
-        "receita": 2190853,
+        "base": 1076,
+        "pedidos": 2192,
+        "receita": 2200918,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
       {
         "segmento": "❄️ Alto Valor Hibernado",
-        "base": 1080,
-        "pedidos": 3862,
-        "receita": 1985638,
+        "base": 1079,
+        "pedidos": 3860,
+        "receita": 1984553,
         "racional": "Ex-clientes de alto valor sem compra ha mais de 2 anos — avaliar custo x beneficio de reativacao.",
         "acao": "Campanha em data especial (aniversario), avaliar ROI antes de investir na reativacao"
       },
       {
         "segmento": "🌡️ Alto Valor Morno",
-        "base": 931,
-        "pedidos": 1712,
-        "receita": 1813259,
+        "base": 929,
+        "pedidos": 1708,
+        "receita": 1807103,
         "racional": "Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.",
         "acao": "Reativacao personalizada, oferta de produto complementar ao historico de compras"
       },
@@ -54,15 +54,15 @@
         "segmento": "✨ Novo/Eventual",
         "base": 2168,
         "pedidos": 2536,
-        "receita": 1370944,
+        "receita": 1371044,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
       {
         "segmento": "💎 VIP Ativo",
-        "base": 201,
-        "pedidos": 1490,
-        "receita": 912331,
+        "base": 202,
+        "pedidos": 1495,
+        "receita": 915438,
         "racional": "Top clientes com score RFM maximo (14-15) comprando nos ultimos 6 meses — nucleo e embaixadores da marca.",
         "acao": "Programa VIP exclusivo, acesso antecipado a lancamentos, presentes personalizados"
       },
@@ -76,9 +76,9 @@
       },
       {
         "segmento": "🌱 Emergente",
-        "base": 377,
-        "pedidos": 377,
-        "receita": 210606,
+        "base": 380,
+        "pedidos": 380,
+        "receita": 211578,
         "racional": "Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.",
         "acao": "Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato"
       },
@@ -92,9 +92,9 @@
       },
       {
         "segmento": "🚀 Potencial Ativo",
-        "base": 49,
-        "pedidos": 172,
-        "receita": 43532,
+        "base": 50,
+        "pedidos": 175,
+        "receita": 44518,
         "racional": "Bom score RFM (12-13) comprando regularmente — caminho claro para Alto Valor se a frequencia aumentar.",
         "acao": "Cross-sell e upsell, apresentar linha premium, recomendacao personalizada"
       },
@@ -221,7 +221,7 @@
       {
         "safra": "Jul. 2025",
         "clientes": 454,
-        "receita": 559428,
+        "receita": 560508,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -465,7 +465,7 @@
         "m": [
           100,
           13,
-          3,
+          4,
           null,
           null,
           null,
@@ -498,7 +498,7 @@
         "gasto": 0,
         "m": [
           100,
-          4,
+          5,
           null,
           null,
           null,
@@ -526,8 +526,8 @@
       },
       {
         "safra": "Abr. 2026",
-        "clientes": 171,
-        "receita": 175850,
+        "clientes": 177,
+        "receita": 180726,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -562,8 +562,8 @@
     "abc": [
       {
         "classe": "A",
-        "count": 305,
-        "revenue": 1403771,
+        "count": 306,
+        "revenue": 1406877,
         "pctCount": 1,
         "pctRevenue": 8,
         "ticketMedio": 577,
@@ -571,9 +571,9 @@
         "minTicket": 996,
         "maxTicket": 20114,
         "vipAtivos": {
-          "count": 201,
-          "revenue": 912331,
-          "avgRecency": 93,
+          "count": 202,
+          "revenue": 915438,
+          "avgRecency": 92,
           "ticketMedio": 612
         },
         "vipTrabalho": {
@@ -591,8 +591,8 @@
       },
       {
         "classe": "B",
-        "count": 4457,
-        "revenue": 8573548,
+        "count": 4459,
+        "revenue": 8576273,
         "pctCount": 19,
         "pctRevenue": 47,
         "ticketMedio": 762,
@@ -602,8 +602,8 @@
       },
       {
         "classe": "C",
-        "count": 18689,
-        "revenue": 8390732,
+        "count": 18692,
+        "revenue": 8392613,
         "pctCount": 80,
         "pctRevenue": 46,
         "ticketMedio": 344,
@@ -618,7 +618,7 @@
     "fim": "2026-04-29",
     "label": "custom"
   },
-  "generated_at": "2026-04-29T12:06:26Z",
+  "generated_at": "2026-04-29T17:10:55Z",
   "period": {
     "start": "2026-04-01",
     "end": "2026-04-29"
