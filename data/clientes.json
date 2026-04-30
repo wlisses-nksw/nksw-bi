@@ -12,25 +12,25 @@
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
-        "base": 16144,
-        "pedidos": 21450,
-        "receita": 6809991,
+        "base": 16150,
+        "pedidos": 21457,
+        "receita": 6812295,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
       {
         "segmento": "🚨 Alto Valor Em Risco",
-        "base": 1301,
-        "pedidos": 3205,
-        "receita": 2516943,
+        "base": 1302,
+        "pedidos": 3209,
+        "receita": 2518995,
         "racional": "Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.",
         "acao": "Campanha win-back agressiva, desconto significativo ou produto exclusivo"
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1076,
-        "pedidos": 2192,
-        "receita": 2200918,
+        "base": 1071,
+        "pedidos": 2184,
+        "receita": 2190434,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
@@ -44,41 +44,41 @@
       },
       {
         "segmento": "🌡️ Alto Valor Morno",
-        "base": 929,
-        "pedidos": 1708,
-        "receita": 1807103,
+        "base": 933,
+        "pedidos": 1712,
+        "receita": 1815536,
         "racional": "Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.",
         "acao": "Reativacao personalizada, oferta de produto complementar ao historico de compras"
       },
       {
         "segmento": "✨ Novo/Eventual",
-        "base": 2168,
-        "pedidos": 2536,
-        "receita": 1371044,
+        "base": 2170,
+        "pedidos": 2537,
+        "receita": 1374654,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
       {
         "segmento": "💎 VIP Ativo",
-        "base": 202,
-        "pedidos": 1495,
-        "receita": 915438,
+        "base": 200,
+        "pedidos": 1479,
+        "receita": 906933,
         "racional": "Top clientes com score RFM maximo (14-15) comprando nos ultimos 6 meses — nucleo e embaixadores da marca.",
         "acao": "Programa VIP exclusivo, acesso antecipado a lancamentos, presentes personalizados"
       },
       {
         "segmento": "🔔 VIP Reaquecer",
-        "base": 78,
-        "pedidos": 620,
-        "receita": 359528,
+        "base": 80,
+        "pedidos": 636,
+        "receita": 368033,
         "racional": "Top clientes esfriando (6-12 meses sem compra) — janela de reconquista antes da perda definitiva.",
         "acao": "Contato personalizado pelo atendente, oferta exclusiva de reengajamento"
       },
       {
         "segmento": "🌱 Emergente",
-        "base": 380,
-        "pedidos": 380,
-        "receita": 211578,
+        "base": 372,
+        "pedidos": 372,
+        "receita": 205664,
         "racional": "Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.",
         "acao": "Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato"
       },
@@ -571,21 +571,21 @@
         "minTicket": 996,
         "maxTicket": 20114,
         "vipAtivos": {
-          "count": 202,
-          "revenue": 915438,
-          "avgRecency": 92,
-          "ticketMedio": 612
+          "count": 200,
+          "revenue": 906933,
+          "avgRecency": 93,
+          "ticketMedio": 613
         },
         "vipTrabalho": {
-          "count": 78,
-          "revenue": 359528,
-          "avgRecency": 263,
-          "ticketMedio": 580
+          "count": 80,
+          "revenue": 368033,
+          "avgRecency": 261,
+          "ticketMedio": 579
         },
         "vipPerdidos": {
           "count": 26,
           "revenue": 131912,
-          "avgRecency": 486,
+          "avgRecency": 487,
           "ticketMedio": 407
         }
       },
@@ -615,12 +615,12 @@
   },
   "periodo": {
     "inicio": "2026-04-01",
-    "fim": "2026-04-29",
+    "fim": "2026-04-30",
     "label": "custom"
   },
-  "generated_at": "2026-04-29T23:40:07Z",
+  "generated_at": "2026-04-30T07:52:58Z",
   "period": {
     "start": "2026-04-01",
-    "end": "2026-04-29"
+    "end": "2026-04-30"
   }
 }
