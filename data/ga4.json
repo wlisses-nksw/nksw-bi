@@ -7,16 +7,16 @@
     "startDate": "2026-05-01",
     "endDate": "2026-05-01"
   },
-  "generatedAt": "2026-05-01T07:17:26.260Z",
+  "generatedAt": "2026-05-01T11:40:15.524Z",
   "propertyId": "374872616",
   "overview": {
-    "sessions": 0,
-    "users": 0,
+    "sessions": 2,
+    "users": 2,
     "newUsers": 0,
     "newUserRate": 0,
-    "bounceRate": 0,
-    "avgSessionDuration": 0,
-    "screenPageViews": 0,
+    "bounceRate": 0.5,
+    "avgSessionDuration": 132.044829,
+    "screenPageViews": 3,
     "transactions": 0,
     "purchaseRevenue": 0,
     "sessionConversionRate": 0,
@@ -25,7 +25,7 @@
     "purchases": 0,
     "averageOrderValue": 0,
     "funnelSummary": {
-      "sessions": 0,
+      "sessions": 2,
       "addToCarts": 0,
       "checkouts": 0,
       "purchases": 0,
@@ -35,9 +35,39 @@
       "overallConvRate": 0
     }
   },
-  "channels": [],
-  "daily": [],
-  "landingPages": [],
+  "channels": [
+    {
+      "channel": "Direct",
+      "sessions": 2,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5,
+      "avgDuration": 132.044829,
+      "convRate": 0
+    }
+  ],
+  "daily": [
+    {
+      "date": "01/05/2026",
+      "dateRaw": "20260501",
+      "sessions": 2,
+      "transactions": 0,
+      "revenue": 0,
+      "addToCarts": 0
+    }
+  ],
+  "landingPages": [
+    {
+      "page": "/",
+      "channel": "Direct",
+      "sessions": 2,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5,
+      "avgDuration": 132.044829,
+      "convRate": 0
+    }
+  ],
   "sources": [],
   "funnel": {
     "itemsViewed": 0,
@@ -53,16 +83,66 @@
       "overall": 0
     }
   },
-  "device": [],
+  "device": [
+    {
+      "device": "desktop",
+      "sessions": 1,
+      "users": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1
+    },
+    {
+      "device": "mobile",
+      "sessions": 1,
+      "users": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0
+    }
+  ],
   "geo": {
-    "states": [],
-    "cities": []
+    "states": [
+      {
+        "state": "State of Sao Paulo",
+        "sessions": 2,
+        "users": 2,
+        "transactions": 0,
+        "revenue": 0
+      }
+    ],
+    "cities": [
+      {
+        "city": "Carapicuiba",
+        "sessions": 1,
+        "users": 1,
+        "transactions": 0,
+        "revenue": 0
+      },
+      {
+        "city": "Sao Paulo",
+        "sessions": 1,
+        "users": 1,
+        "transactions": 0,
+        "revenue": 0
+      }
+    ]
   },
   "demographics": {
     "age": [],
     "gender": []
   },
   "productFunnel": [],
-  "allSources": [],
-  "generated_at": "2026-05-01T07:17:25Z"
+  "allSources": [
+    {
+      "source": "(direct)",
+      "medium": "(none)",
+      "sessions": 2,
+      "transactions": 0,
+      "revenue": 0,
+      "convRate": 0,
+      "bounceRate": 0.5
+    }
+  ],
+  "generated_at": "2026-05-01T11:40:14Z"
 }
