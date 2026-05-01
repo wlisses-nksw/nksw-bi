@@ -2,59 +2,59 @@
   "ok": true,
   "clientes": {
     "kpis": {
-      "total": 23457,
-      "recompras": 7572,
+      "total": 23469,
+      "recompras": 7577,
       "pctRecomp": 32,
-      "ltv": 783,
+      "ltv": 784,
       "avgDaysBetween": 271,
-      "totalReceita": 18375763
+      "totalReceita": 18400750
     },
     "rfm": [
       {
         "segmento": "💤 Baixo Engajamento",
-        "base": 16163,
-        "pedidos": 21472,
-        "receita": 6817642,
+        "base": 16175,
+        "pedidos": 21492,
+        "receita": 6830776,
         "racional": "Compras raras ou unicas ha muito tempo — base de baixo potencial imediato, custo alto de reativacao.",
         "acao": "Automacao de baixo custo, acionar apenas em campanhas sazonais de alto volume"
       },
       {
         "segmento": "🚨 Alto Valor Em Risco",
-        "base": 1307,
-        "pedidos": 3216,
-        "receita": 2521326,
+        "base": 1298,
+        "pedidos": 3203,
+        "receita": 2510959,
         "racional": "Muito gastaram, mas inativos ha 1 a 2 anos — recuperacao dificil, impacto alto se perdidos.",
         "acao": "Campanha win-back agressiva, desconto significativo ou produto exclusivo"
       },
       {
         "segmento": "🌟 Alto Valor Ativo",
-        "base": 1068,
-        "pedidos": 2174,
-        "receita": 2184089,
+        "base": 1077,
+        "pedidos": 2195,
+        "receita": 2209227,
         "racional": "Gasto historico no top 20% da base, comprando nos ultimos 6 meses — candidatos naturais ao grupo VIP.",
         "acao": "Incentivar frequencia, convidar para clube exclusivo, apresentar produtos premium"
       },
       {
         "segmento": "❄️ Alto Valor Hibernado",
-        "base": 1081,
-        "pedidos": 3871,
-        "receita": 1992031,
+        "base": 1077,
+        "pedidos": 3861,
+        "receita": 1987687,
         "racional": "Ex-clientes de alto valor sem compra ha mais de 2 anos — avaliar custo x beneficio de reativacao.",
         "acao": "Campanha em data especial (aniversario), avaliar ROI antes de investir na reativacao"
       },
       {
         "segmento": "🌡️ Alto Valor Morno",
-        "base": 929,
-        "pedidos": 1704,
-        "receita": 1812073,
+        "base": 926,
+        "pedidos": 1701,
+        "receita": 1808815,
         "racional": "Alto gasto historico (top 20%) mas comprando menos — risco de migrar para concorrente.",
         "acao": "Reativacao personalizada, oferta de produto complementar ao historico de compras"
       },
       {
         "segmento": "✨ Novo/Eventual",
-        "base": 2171,
-        "pedidos": 2536,
-        "receita": 1377652,
+        "base": 2174,
+        "pedidos": 2539,
+        "receita": 1380313,
         "racional": "Poucos pedidos e baixo score, mas compra recente — ainda avaliando a marca, momento de criar vinculo.",
         "acao": "Sequencia de boas-vindas, pesquisa de satisfacao, oferta exclusiva de 2a compra"
       },
@@ -76,9 +76,9 @@
       },
       {
         "segmento": "🌱 Emergente",
-        "base": 358,
-        "pedidos": 358,
-        "receita": 197319,
+        "base": 362,
+        "pedidos": 362,
+        "receita": 199347,
         "racional": "Primeira compra muito recente — ainda formando opiniao sobre a marca, momento decisivo da experiencia.",
         "acao": "Impressionar na pos-compra (unboxing, agradecimento), capturar feedback imediato"
       },
@@ -94,7 +94,7 @@
         "segmento": "🚀 Potencial Ativo",
         "base": 50,
         "pedidos": 175,
-        "receita": 44518,
+        "receita": 44511,
         "racional": "Bom score RFM (12-13) comprando regularmente — caminho claro para Alto Valor se a frequencia aumentar.",
         "acao": "Cross-sell e upsell, apresentar linha premium, recomendacao personalizada"
       },
@@ -289,7 +289,7 @@
       {
         "safra": "Set. 2025",
         "clientes": 374,
-        "receita": 411396,
+        "receita": 412025,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -391,7 +391,7 @@
       {
         "safra": "Dez. 2025",
         "clientes": 283,
-        "receita": 321717,
+        "receita": 322455,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -425,7 +425,7 @@
       {
         "safra": "Jan. 2026",
         "clientes": 274,
-        "receita": 265576,
+        "receita": 268768,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -493,12 +493,12 @@
       {
         "safra": "Mar. 2026",
         "clientes": 355,
-        "receita": 263925,
+        "receita": 265454,
         "cac": 0,
         "gasto": 0,
         "m": [
           100,
-          5,
+          6,
           0,
           null,
           null,
@@ -526,8 +526,8 @@
       },
       {
         "safra": "Abr. 2026",
-        "clientes": 177,
-        "receita": 180726,
+        "clientes": 189,
+        "receita": 193465,
         "cac": 0,
         "gasto": 0,
         "m": [
@@ -591,25 +591,25 @@
       },
       {
         "classe": "B",
-        "count": 4459,
-        "revenue": 8576273,
+        "count": 4452,
+        "revenue": 8583436,
         "pctCount": 19,
         "pctRevenue": 47,
-        "ticketMedio": 762,
+        "ticketMedio": 763,
         "avgDaysBetween": 275,
         "minTicket": 489,
         "maxTicket": 32775
       },
       {
         "classe": "C",
-        "count": 18692,
-        "revenue": 8392613,
+        "count": 18711,
+        "revenue": 8410436,
         "pctCount": 80,
         "pctRevenue": 46,
-        "ticketMedio": 344,
+        "ticketMedio": 345,
         "avgDaysBetween": 272,
         "minTicket": 1,
-        "maxTicket": 1085
+        "maxTicket": 1086
       }
     ]
   },
@@ -618,7 +618,7 @@
     "fim": "2026-05-01",
     "label": "custom"
   },
-  "generated_at": "2026-05-01T11:40:14Z",
+  "generated_at": "2026-05-01T14:42:39Z",
   "period": {
     "start": "2026-05-01",
     "end": "2026-05-01"

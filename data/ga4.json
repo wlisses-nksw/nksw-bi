@@ -7,7 +7,7 @@
     "startDate": "2026-05-01",
     "endDate": "2026-05-01"
   },
-  "generatedAt": "2026-05-01T11:40:15.524Z",
+  "generatedAt": "2026-05-01T14:42:40.293Z",
   "propertyId": "374872616",
   "overview": {
     "sessions": 2,
@@ -144,5 +144,5 @@
       "bounceRate": 0.5
     }
   ],
-  "generated_at": "2026-05-01T11:40:14Z"
+  "generated_at": "2026-05-01T14:42:39Z"
 }
