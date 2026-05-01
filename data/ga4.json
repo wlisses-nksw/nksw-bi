@@ -7,15 +7,15 @@
     "startDate": "2026-05-01",
     "endDate": "2026-05-01"
   },
-  "generatedAt": "2026-05-01T14:42:40.293Z",
+  "generatedAt": "2026-05-01T18:10:48.897Z",
   "propertyId": "374872616",
   "overview": {
-    "sessions": 2,
+    "sessions": 3,
     "users": 2,
     "newUsers": 0,
     "newUserRate": 0,
-    "bounceRate": 0.5,
-    "avgSessionDuration": 132.044829,
+    "bounceRate": 0.6666666666666666,
+    "avgSessionDuration": 88.02988599999999,
     "screenPageViews": 3,
     "transactions": 0,
     "purchaseRevenue": 0,
@@ -25,7 +25,7 @@
     "purchases": 0,
     "averageOrderValue": 0,
     "funnelSummary": {
-      "sessions": 2,
+      "sessions": 3,
       "addToCarts": 0,
       "checkouts": 0,
       "purchases": 0,
@@ -38,11 +38,11 @@
   "channels": [
     {
       "channel": "Direct",
-      "sessions": 2,
+      "sessions": 3,
       "transactions": 0,
       "revenue": 0,
-      "bounceRate": 0.5,
-      "avgDuration": 132.044829,
+      "bounceRate": 0.6666666666666666,
+      "avgDuration": 88.02988599999999,
       "convRate": 0
     }
   ],
@@ -50,7 +50,7 @@
     {
       "date": "01/05/2026",
       "dateRaw": "20260501",
-      "sessions": 2,
+      "sessions": 3,
       "transactions": 0,
       "revenue": 0,
       "addToCarts": 0
@@ -65,6 +65,16 @@
       "revenue": 0,
       "bounceRate": 0.5,
       "avgDuration": 132.044829,
+      "convRate": 0
+    },
+    {
+      "page": "",
+      "channel": "Direct",
+      "sessions": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 1,
+      "avgDuration": 0,
       "convRate": 0
     }
   ],
@@ -85,20 +95,20 @@
   },
   "device": [
     {
+      "device": "mobile",
+      "sessions": 2,
+      "users": 1,
+      "transactions": 0,
+      "revenue": 0,
+      "bounceRate": 0.5
+    },
+    {
       "device": "desktop",
       "sessions": 1,
       "users": 1,
       "transactions": 0,
       "revenue": 0,
       "bounceRate": 1
-    },
-    {
-      "device": "mobile",
-      "sessions": 1,
-      "users": 1,
-      "transactions": 0,
-      "revenue": 0,
-      "bounceRate": 0
     }
   ],
   "geo": {
@@ -107,6 +117,13 @@
         "state": "State of Sao Paulo",
         "sessions": 2,
         "users": 2,
+        "transactions": 0,
+        "revenue": 0
+      },
+      {
+        "state": "State of Bahia",
+        "sessions": 1,
+        "users": 0,
         "transactions": 0,
         "revenue": 0
       }
@@ -125,6 +142,13 @@
         "users": 1,
         "transactions": 0,
         "revenue": 0
+      },
+      {
+        "city": "Vitoria da Conquista",
+        "sessions": 1,
+        "users": 0,
+        "transactions": 0,
+        "revenue": 0
       }
     ]
   },
@@ -137,12 +161,12 @@
     {
       "source": "(direct)",
       "medium": "(none)",
-      "sessions": 2,
+      "sessions": 3,
       "transactions": 0,
       "revenue": 0,
       "convRate": 0,
-      "bounceRate": 0.5
+      "bounceRate": 0.6666666666666666
     }
   ],
-  "generated_at": "2026-05-01T14:42:39Z"
+  "generated_at": "2026-05-01T18:10:47Z"
 }
