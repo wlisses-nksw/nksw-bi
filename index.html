@@ -605,10 +605,20 @@ tbody tr:hover{background:#fafafa}
       </div>
     </div>
     <button id="topbar-new-user-btn" onclick="openUserModal()" style="display:none;padding:8px 18px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">+ Novo Usuário</button>
+    <div id="shopify-topbar-sync" style="display:none;flex-direction:column;align-items:flex-end;gap:2px">
+      <button onclick="runShopifySync('update')" style="padding:6px 12px;background:#ea580c;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">↻ Atualizar Shopify</button>
+      <span id="shopify-sync-ts" style="display:none;font-size:10px;color:#9ca3af"></span>
+    </div>
     <div class="tb-status">
       <span class="s-dot ok" id="statusDotTop"></span>
       <span id="statusTextTop">Conectado</span>
     </div>
+  </div>
+
+  <!-- SHOPIFY SYNC BANNER — visível apenas quando dados não estão sincronizados -->
+  <div id="shopify-sync-banner" style="display:none;align-items:center;gap:12px;padding:10px 20px;background:#fff7ed;border-bottom:1px solid #fed7aa;font-size:13px;color:#92400e;flex-wrap:wrap">
+    <span>⚡ Dados Shopify de <strong id="shopify-sync-month-label"></strong> ainda não sincronizados.</span>
+    <button id="shopify-sync-btn" onclick="runShopifySync('full')" style="padding:5px 14px;background:#ea580c;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">↻ Sincronizar agora</button>
   </div>
 
   <!-- CONTENT -->
@@ -931,20 +941,6 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
-      <!-- GRÁFICO: Sessões por Dia -->
-      <div class="section-header">
-        <div>
-          <div class="section-title">Sessões por Dia</div>
-          <div class="section-sub">Acessos diários no período</div>
-        </div>
-        <div class="chart-legend">
-          <div class="cl-item"><div class="cl-dot" style="background:#111827"></div>Sessões</div>
-        </div>
-      </div>
-      <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
-        <div style="height:300px;position:relative"><canvas id="ga4DailyComboChart"></canvas></div>
-      </div>
-
       <!-- ORIGEM / MÍDIAS -->
       <div class="section-header">
         <div>
@@ -1013,7 +1009,6 @@ tbody tr:hover{background:#fafafa}
           <tbody id="ga4FunnelBody"></tbody>
         </table>
       </div>
-
     </div>
 
     <!-- ============================================================ -->
@@ -1488,6 +1483,15 @@ const SHEET_PRODUTOS = SHEETS_SCRIPT_URL;
 const SHEET_PEDIDOS  = SHEETS_SCRIPT_URL;
 const SHEET_CLIENTES = SHEETS_SCRIPT_URL;
 
+// ── Shopify BI — dados de maio/2026 em diante ──
+const SHOPIFY_BI_URL   = 'https://nksw-api.vercel.app/api/shopify-bi';
+const SHOPIFY_SYNC_URL = 'https://nksw-api.vercel.app/api/shopify-sync';
+const SHOPIFY_SYNC_SECRET = 'nksw2025';
+// Corte: navMonth >= SHOPIFY_CUTOFF_MONTH && navYear >= SHOPIFY_CUTOFF_YEAR
+// navMonth é 0-indexado (0=Jan ... 4=Mai)
+const SHOPIFY_CUTOFF_YEAR  = 2026;
+const SHOPIFY_CUTOFF_MONTH = 4; // 0-indexed → maio
+
 /* ===== MOCK DATA ===== */
 const MOCK = {
   metaReceita: 500000,
@@ -1706,7 +1710,6 @@ function goTo(page, el) {
   if (page === 'metas')    renderGoals();
   if (page === 'admin')    loadUsersTable();
   if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
-  if (page === 'webanalytics') setTimeout(renderGA4DailyComboChart, 50);
 }
 
 function updateTopbar(page) {
@@ -1769,6 +1772,9 @@ function updateNavPeriodLabel() {
   _navLabel = GOAL_MONTHS_NAMES[navMonth] + ' de ' + navYear;
   var lbl = document.getElementById('nav-period-label');
   if (lbl) lbl.textContent = _navLabel;
+  // Mostra botão Shopify no topbar apenas para mai/2026 em diante
+  var shopifyBtn = document.getElementById('shopify-topbar-sync');
+  if (shopifyBtn) shopifyBtn.style.display = isShopifyPeriod() ? 'flex' : 'none';
 }
 
 function changeNavMonth(delta) {
@@ -2152,19 +2158,14 @@ function initDailyChart() {
             }
           },
           datalabels: {
+            display: function(ctx) { return ctx.datasetIndex === 0 && ctx.parsed.y > 0; },
             anchor: 'end',
             align: 'top',
-            clip: false,
             color: '#374151',
             font: { size: 9, weight: '600' },
-            formatter: function(value, ctx) {
-              if (ctx.datasetIndex !== 0) return null;
-              if (!value) return null;
-              return 'R$' + (value / 1000).toFixed(1) + 'k';
-            }
+            formatter: function(value) { return 'R$' + (value / 1000).toFixed(1) + 'k'; }
           }
         },
-        layout: { padding: { top: 35 } },
         scales: {
           y: {
             position:'left',
@@ -2173,8 +2174,7 @@ function initDailyChart() {
           },
           x: {grid:{display:false}, ticks:{font:{size:10}}}
         }
-      },
-      plugins: [ChartDataLabels]
+      }
     });
   } catch(e) { console.warn('Daily chart error:', e); }
 }
@@ -3031,7 +3031,6 @@ async function loadGA4Data() {
     renderGA4GeoCharts(data.geo || null);
     // Funil por produto — usa productFunnel (pós-reimplante) ou landingPages como aproximação
     renderGA4FunnelTable(data.productFunnel || null, data.landingPages || null, data.funnel || null);
-    renderGA4DailyComboChart();
   } catch(e) {
     console.warn('GA4 fallback:', e.message);
     _indGA4FunilData  = null;
@@ -3068,77 +3067,6 @@ function applyMockGA4() {
   renderGA4DeviceCards(null);
   renderGA4GeoCharts(null);
   renderGA4FunnelTable(null);
-  renderGA4DailyComboChart();
-}
-
-function renderGA4DailyComboChart() {
-  destroyChart('ga4DailyComboChart');
-  var ctx = document.getElementById('ga4DailyComboChart');
-  if (!ctx) return;
-
-  var cacheKey = navYear + '_' + String(navMonth + 1).padStart(2, '0');
-  var cached   = (typeof _metasDiarioCache !== 'undefined') ? _metasDiarioCache[cacheKey] : null;
-  var rawArr   = (cached && cached.length > 0) ? cached
-               : (_indDiarioFull && _indDiarioFull.length > 0) ? _indDiarioFull
-               : MOCK.diario;
-
-  var d = rawArr.map(function(item) {
-    var lbl = item.dia || '';
-    if (lbl.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      var p = lbl.split('-');
-      lbl = p[2] + '/' + p[1];
-    }
-    return { lbl: lbl, sessoes: item.sessoes || 0 };
-  });
-
-  try {
-    charts['ga4DailyComboChart'] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: d.map(function(x) { return x.lbl; }),
-        datasets: [{
-          label: 'Sessões',
-          data: d.map(function(x) { return x.sessoes; }),
-          backgroundColor: '#111827',
-          borderRadius: 4,
-          maxBarThickness: 16,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        layout: { padding: { top: 22 } },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(ctx) { return ' Sessões: ' + fmtNum(ctx.raw); }
-            }
-          },
-          datalabels: {
-            anchor: 'end',
-            align: 'top',
-            clip: false,
-            color: '#374151',
-            font: { size: 9, weight: '600' },
-            formatter: function(value) {
-              if (!value) return null;
-              return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : String(value);
-            }
-          }
-        },
-        scales: {
-          y: {
-            grid: { color: '#f3f4f6' },
-            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 11 } }
-          },
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
-        }
-      },
-      plugins: [ChartDataLabels]
-    });
-  } catch(e) { console.warn('GA4 daily chart error:', e); }
 }
 
 function renderGA4Sparklines() {
@@ -4298,6 +4226,76 @@ function downloadLogisticaCSV() {
   URL.revokeObjectURL(url);
 }
 
+/* ===== SHOPIFY BI — roteamento por período ===== */
+
+// Retorna true se o mês navegado é maio/2026 ou posterior
+function isShopifyPeriod(month, year) {
+  var m = (month !== undefined) ? month : navMonth;
+  var y = (year  !== undefined) ? year  : navYear;
+  return y > SHOPIFY_CUTOFF_YEAR || (y === SHOPIFY_CUTOFF_YEAR && m >= SHOPIFY_CUTOFF_MONTH);
+}
+
+// Carrega dados do Shopify BI para o mês atual
+async function loadShopifyData() {
+  var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
+  var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
+  try {
+    var r = await fetch(url);
+    var d = await r.json();
+    if (!d.ok) {
+      // Dados ainda não sincronizados — mostra aviso com botão de sync
+      setSheetsStatus(false, 'Shopify — sync necessário');
+      showShopifySyncBanner(monthKey);
+      return;
+    }
+    if (d.vendas)    applyVendasData(d.vendas, null);
+    if (d.pedidos)   applyPedidosData(d.pedidos);
+    if (d.logistica) applyLogisticaData(d.logistica);
+    setSheetsStatus(true, 'Shopify ✓');
+    updateShopifySyncTimestamp(d.synced_at);
+    hideShopifySyncBanner();
+  } catch(e) {
+    console.warn('[shopify-bi] erro:', e.message);
+    setSheetsStatus(false, 'Shopify — erro');
+  }
+}
+
+// Dispara full sync ou update incremental
+async function runShopifySync(action) {
+  var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
+  var btn = document.getElementById('shopify-sync-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sincronizando...'; }
+  try {
+    var url = SHOPIFY_SYNC_URL + '?action=' + action + '&month=' + monthKey + '&secret=' + SHOPIFY_SYNC_SECRET;
+    var r = await fetch(url);
+    var d = await r.json();
+    if (!d.ok) throw new Error(d.error || 'Erro no sync');
+    if (btn) btn.textContent = '✓ Sincronizado (' + (d.total || 0) + ' pedidos)';
+    setTimeout(function() { loadShopifyData(); }, 500);
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Tentar novamente'; }
+    alert('Erro ao sincronizar: ' + e.message);
+  }
+}
+
+function showShopifySyncBanner(monthKey) {
+  var el = document.getElementById('shopify-sync-banner');
+  if (el) { el.style.display = 'flex'; }
+  var lbl = document.getElementById('shopify-sync-month-label');
+  if (lbl) lbl.textContent = monthKey;
+}
+function hideShopifySyncBanner() {
+  var el = document.getElementById('shopify-sync-banner');
+  if (el) el.style.display = 'none';
+}
+function updateShopifySyncTimestamp(syncedAt) {
+  var el = document.getElementById('shopify-sync-ts');
+  if (!el || !syncedAt) return;
+  var d = new Date(syncedAt);
+  el.textContent = 'Última sincronização: ' + d.toLocaleString('pt-BR');
+  el.style.display = 'inline';
+}
+
 /* ===== SHEETS API (Apps Script) ===== */
 function getSheetsUrl() {
   return localStorage.getItem('sheets_script_url') || SHEETS_SCRIPT_URL;
@@ -4469,6 +4467,12 @@ function setSheetsStatus(connected, label) {
 }
 
 async function loadAllSheetsData() {
+  // Maio/2026 em diante → Shopify BI (não usa Sheets)
+  if (isShopifyPeriod()) {
+    await loadShopifyData();
+    return;
+  }
+
   var url = getSheetsUrl();
   if (!url) { setSheetsStatus(false); return; }
   var anyOk = false;
@@ -5784,27 +5788,7 @@ async function fetchMonthData(m, y) {
     var totalSpend     = metaTotalSpend > 0 ? metaTotalSpend
                        : (mktKpis ? (mktKpis.spend || 0) : 0);
 
-    var enriched = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
-
-    // Adiciona entradas sintéticas para dias com sessões GA4 ou spend Meta mas sem venda no Sheets
-    var diasComVenda = {};
-    enriched.forEach(function(e) { diasComVenda[e.dia] = true; });
-    var allExtraDays = {};
-    Object.keys(sessoesByDay).forEach(function(d) { allExtraDays[d] = true; });
-    Object.keys(spendByDay).forEach(function(d)   { allExtraDays[d] = true; });
-    Object.keys(allExtraDays).forEach(function(iso) {
-      if (!diasComVenda[iso]) {
-        enriched.push({
-          dia: iso, receita: 0, pedidos: 0, ticket: 0,
-          custoMkt: spendByDay[iso] || 0, roas: 0,
-          sessoes: sessoesByDay[iso] || 0,
-          taxaConv: 0, cac: 0, novosClientes: 0
-        });
-      }
-    });
-    enriched.sort(function(a, b) { return a.dia < b.dia ? -1 : a.dia > b.dia ? 1 : 0; });
-
-    _metasDiarioCache[cacheKey] = enriched;
+    _metasDiarioCache[cacheKey] = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
   } catch(e) {
     console.warn('fetchMonthData error:', e.message);
     _metasDiarioCache[cacheKey] = null;
