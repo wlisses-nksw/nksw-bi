@@ -4336,10 +4336,95 @@ async function loadShopifyData() {
       showShopifySyncBanner(monthKey);
       return;
     }
-    if (d.vendas)    { _lastVendasData = d.vendas; applyVendasData(d.vendas, null); }
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
     if (d.clientes)  applyClientesData(d.clientes);
+
+    // ── Evolução Mensal: busca histórico dos meses anteriores ──────────────
+    var MES_PT    = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    var curNavMon = navMonth + 1; // 1-indexed (ex: 5 = Maio)
+    var prevYear  = navYear - 1;
+
+    // Monta lista de (chave, mês, ano) para buscar nos JSONs estáticos
+    var fetchPairs = [];
+    // Meses anteriores do ano atual (Jan … mês-1)
+    for (var i = 1; i < curNavMon; i++) {
+      fetchPairs.push({ key: navYear + '-' + String(i).padStart(2,'0'), mes: i, year: navYear });
+    }
+    // Mesmo período do ano anterior (Jan … mês atual inclusive)
+    for (var j = 1; j <= curNavMon; j++) {
+      fetchPairs.push({ key: prevYear + '-' + String(j).padStart(2,'0'), mes: j, year: prevYear });
+    }
+
+    var histResults = await Promise.all(fetchPairs.map(function(p) {
+      return fetchStaticJSON('vendas', p.key).then(function(data) {
+        // Aceita estrutura { vendas: { kpis } } (GitHub Actions) ou { kpis } (legado)
+        var kpis = (data && data.vendas && data.vendas.kpis) ? data.vendas.kpis
+                 : (data && data.kpis)                       ? data.kpis
+                 : null;
+        if (!kpis) return null;
+        return {
+          mes:     p.mes,
+          label:   MES_PT[p.mes - 1],
+          receita: kpis.receita  || 0,
+          pedidos: kpis.pedidos  || 0,
+          ticket:  kpis.ticket   || (kpis.pedidos > 0 ? kpis.receita / kpis.pedidos : 0),
+          year:    p.year,
+        };
+      }).catch(function(){ return null; });
+    }));
+
+    var curYearMes          = [];
+    var prevYearMes         = [];
+    var prevYearSameMon     = null; // para badge YoY nos KPIs
+
+    histResults.forEach(function(e) {
+      if (!e) return;
+      if (e.year === navYear) curYearMes.push(e);
+      else {
+        prevYearMes.push(e);
+        if (e.mes === curNavMon) prevYearSameMon = e;
+      }
+    });
+
+    // Adiciona mês atual (Shopify) ao ano corrente
+    if (d.vendas && d.vendas.kpis) {
+      curYearMes.push({
+        mes:     curNavMon,
+        label:   MES_PT[curNavMon - 1],
+        receita: d.vendas.kpis.receita  || 0,
+        pedidos: d.vendas.kpis.pedidos  || 0,
+        ticket:  d.vendas.kpis.ticket   || 0,
+        year:    navYear,
+      });
+    }
+
+    curYearMes.sort(function(a, b) { return a.mes - b.mes; });
+    prevYearMes.sort(function(a, b) { return a.mes - b.mes; });
+
+    // Injeta porMes completo no objeto de vendas antes de aplicar
+    if (d.vendas) d.vendas.porMes = curYearMes;
+
+    // prevD simulado para badges YoY (vs mesmo mês do ano anterior)
+    var prevDForBadges = prevYearSameMon
+      ? { kpis: { receita: prevYearSameMon.receita, pedidos: prevYearSameMon.pedidos,
+                  ticket: prevYearSameMon.ticket, receitaSemFrete: null } }
+      : null;
+
+    if (d.vendas) {
+      _lastVendasData = d.vendas;
+      applyVendasData(d.vendas, prevDForBadges);
+    }
+
+    // Renderiza gráficos YoY com todo o histórico (sobrescreve o que applyVendasData desenhou)
+    if (curYearMes.length) {
+      renderYoYChart('salesChart',   curYearMes, prevYearMes, 'receita', 'R$', true);
+      renderYoYChart('pedidosChart', curYearMes, prevYearMes, 'pedidos', '',   false);
+    }
+
+    // Atualiza tab Metas com dados reais (pedidos e ticket agora vêm de _indVendasPedidos/_indVendasTicket)
+    if (typeof renderGoals === 'function') renderGoals();
+
     setSheetsStatus(true, 'Shopify ✓');
     updateShopifySyncTimestamp(d.synced_at);
     hideShopifySyncBanner();
@@ -4705,7 +4790,7 @@ function applyStatusFilter(d) {
   mKpis.pctSemFrete   = mKpis.pedidos > 0 ? mKpis.pedidosSemFrete / mKpis.pedidos  * 100 : 0;
 
   // Se API antiga (sem breakdowns), usa gráficos totais — só KPIs são filtrados
-  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes.localeCompare(b.mes); }) : (d.porMes || []);
+  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes - b.mes; }) : (d.porMes || []);
   var fVendedor = hasFullBreakdowns ? Object.values(mVendedor).sort(function(a,b){ return b.receita - a.receita; }) : (d.porVendedor || []);
   var fEstado   = hasFullBreakdowns ? Object.values(mEstado).sort(function(a,b){ return b.receita - a.receita; }).slice(0,10) : (d.porEstado || []);
 
@@ -5961,8 +6046,8 @@ function _getCohortClientes(m, y) {
 var GOAL_DEFS = {
   receita:      {icon:'💰',name:'Receita',           desc:'Receita total do período',       prefix:'R$',suffix:'',  required:true,  step:1000, lowerIsBetter:false, realized:function(){return _indRealizadoReceita !== null ? _indRealizadoReceita : MOCK.realizado;},  fmt:function(v){return fmtBRL(v);}},
   roas:         {icon:'📈',name:'ROAS',               desc:'Retorno sobre investimento',     prefix:'',  suffix:'x', required:true,  step:0.1,  lowerIsBetter:false, realized:function(){return _indRoasAtual       !== null ? _indRoasAtual        : MOCK.roas;},         fmt:function(v){return v.toFixed(2)+'x';}},
-  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return 533;},                                               fmt:function(v){return fmtNum(v);}},
-  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return MOCK.ticketMedio;},                                  fmt:function(v){return fmtBRL(v);}},
+  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasPedidos !== null ? _indVendasPedidos : 533;},          fmt:function(v){return fmtNum(v);}},
+  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasTicket  !== null ? _indVendasTicket  : MOCK.ticketMedio;}, fmt:function(v){return fmtBRL(v);}},
   cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){return MOCK.cac;},                                          fmt:function(v){return fmtBRL(v);}},
   custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return MOCK.custoMarketing;},                              fmt:function(v){return fmtBRL(v);}},
   sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.sessions:50296;},                  fmt:function(v){return fmtNum(v);}},
