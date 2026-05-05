@@ -1,9 +1,7 @@
 name: Atualizar Dados do Dashboard
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'   # A cada 15 minutos
-  workflow_dispatch:           # Permite rodar manualmente
+  workflow_dispatch:           # Rodar manualmente quando necessário
 
 permissions:
   contents: write

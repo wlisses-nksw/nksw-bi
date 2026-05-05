@@ -1,4 +1,0 @@
-[build]
-  # Ignora rebuild quando o commit é do GitHub Actions (mensagem começa com "data: ")
-  # Reconstrói para qualquer outro commit (código, CSS, configuração, etc.)
-  ignore = "git log -1 --pretty=%B | grep -q '^data: '"
