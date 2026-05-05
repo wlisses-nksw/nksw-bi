@@ -7032,4 +7032,112 @@ async function submitChangePwd() {
     if (!checkData.ok) throw new Error('Senha atual incorreta.');
 
     // Aplicar nova senha
-    var hashNova = a
+    var hashNova = await sha256Client(nova);
+    var resetData = await authCall({ action: 'resetPassword', token: auth.token, id: auth.id, senhaHash: hashNova });
+    if (!resetData.ok) throw new Error(resetData.msg || 'Erro ao alterar senha.');
+
+    _showCpwdMsg('Senha alterada com sucesso!', false);
+    btn.textContent = 'Salvo!';
+    setTimeout(closeChangePwdModal, 1800);
+  } catch(e) {
+    _showCpwdMsg(e.message || 'Erro ao alterar senha.', true);
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
+  }
+}
+
+async function promptResetPassword(id, nome) {
+  var nova = prompt('Nova senha para ' + nome + ' (mínimo 6 caracteres):');
+  if (nova === null) return;
+  if (nova.length < 6) { alert('Senha muito curta (mínimo 6 caracteres).'); return; }
+
+  var auth = getAuthState();
+  var hash = await sha256Client(nova);
+  authCall({ action: 'resetPassword', token: auth.token, id: id, senhaHash: hash })
+    .then(function(d) { alert(d.ok ? 'Senha alterada com sucesso!' : 'Erro: ' + (d.msg || 'Falha')); });
+}
+
+window.addEventListener('DOMContentLoaded', authInit);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
+</script>
+
+<!-- ===== MODAL ALTERAR SENHA (viewer self-service) ===== -->
+<div id="change-pwd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:20px">🔑 Alterar Senha</div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Senha Atual</label>
+      <input id="cpwd-atual" type="password" placeholder="Sua senha atual" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Nova Senha</label>
+      <input id="cpwd-nova" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Confirmar Nova Senha</label>
+      <input id="cpwd-confirm" type="password" placeholder="Repita a nova senha" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
+    </div>
+    <div id="cpwd-msg" style="display:none;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="closeChangePwdModal()" style="padding:9px 18px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#374151">Cancelar</button>
+      <button id="cpwd-btn" onclick="submitChangePwd()" style="padding:9px 18px;border:none;border-radius:8px;background:#c20000;color:#fff;font-size:13px;font-weight:700;cursor:pointer">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== USER MODAL ===== -->
+<div id="user-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Novo Usuário</div>
+    <input type="hidden" id="modal-user-id"/>
+    <div class="modal-field">
+      <label>Nome completo</label>
+      <input type="text" id="modal-nome" placeholder="Ex: João Silva"/>
+    </div>
+    <div class="modal-field">
+      <label>Email</label>
+      <input type="email" id="modal-email" placeholder="joao@email.com"/>
+    </div>
+    <div class="modal-field" id="modal-senha-field">
+      <label id="modal-senha-label">Senha</label>
+      <input type="password" id="modal-senha" placeholder="Mínimo 6 caracteres"/>
+    </div>
+    <div class="modal-field">
+      <label>Perfil</label>
+      <select id="modal-role">
+        <option value="viewer">Visualizador</option>
+        <option value="admin">Administrador (acesso total)</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Telas permitidas</label>
+      <div class="tabs-grid" id="tabs-grid">
+        <button type="button" class="tab-toggle tab-toggle-all" onclick="toggleAllTabs(this)">Todas as telas</button>
+        <button type="button" class="tab-toggle" data-tab="indicadores" onclick="toggleTab(this)">📊 Indicadores</button>
+        <button type="button" class="tab-toggle" data-tab="marketing" onclick="toggleTab(this)">📣 Marketing</button>
+        <button type="button" class="tab-toggle" data-tab="webanalytics" onclick="toggleTab(this)">🌐 Web Analytics</button>
+        <button type="button" class="tab-toggle" data-tab="vendas" onclick="toggleTab(this)">💰 Vendas</button>
+        <button type="button" class="tab-toggle" data-tab="produtos" onclick="toggleTab(this)">📦 Produtos</button>
+        <button type="button" class="tab-toggle" data-tab="pedidos" onclick="toggleTab(this)">🛒 Pedidos</button>
+        <button type="button" class="tab-toggle" data-tab="clientes" onclick="toggleTab(this)">👥 Clientes</button>
+        <button type="button" class="tab-toggle" data-tab="logistica" onclick="toggleTab(this)">🚚 Logística</button>
+        <button type="button" class="tab-toggle" data-tab="metas" onclick="toggleTab(this)">🎯 Metas</button>
+      </div>
+    </div>
+    <div class="modal-field" id="modal-ativo-field" style="display:none">
+      <label>Status</label>
+      <select id="modal-ativo">
+        <option value="true">Ativo</option>
+        <option value="false">Inativo</option>
+      </select>
+    </div>
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeUserModal()">Cancelar</button>
+      <button class="modal-btn primary" id="modal-save-btn" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
