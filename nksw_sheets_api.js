@@ -942,9 +942,13 @@ function readSheet(tabName, altId) {
 }
 
 function findCol(headers, options) {
-  var lc = headers.map(function (h) { return String(h).toLowerCase().trim(); });
+  // Normaliza: lowercase, remove espaços e quebras de linha extras
+  var lc = headers.map(function (h) {
+    return String(h).toLowerCase().replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+  });
   for (var i = 0; i < options.length; i++) {
-    var idx = lc.indexOf(options[i].toLowerCase().trim());
+    var opt = options[i].toLowerCase().replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+    var idx = lc.indexOf(opt);
     if (idx >= 0) return idx;
   }
   return -1;
@@ -1051,13 +1055,14 @@ function getRankData(ss) {
     var headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
 
     // ── Colunas fixas: detecção por nome ──────────────────────────────
-    var I_COD  = findCol(headerRow, ['Código','codigo','SKU','sku','Cod','cod','Chave','ID','id','Key','código do produto','Ref']);
-    var I_NOME = findCol(headerRow, ['Nome','nome','Produto','produto','Descrição','descricao','name','Product']);
+    // Nomes baseados na planilha real "Base Produto Cor"
+    var I_COD  = findCol(headerRow, ['Código','Codigo','codigo','SKU','sku','Cod','cod','ID','Key','Ref']);
+    var I_NOME = findCol(headerRow, ['Produto','produto','Nome','nome','Descrição','descricao','name','Product']);
     var I_COL  = findCol(headerRow, ['Coleção','colecao','Collection','collection','Coleção do produto']);
     var I_TEC  = findCol(headerRow, ['Tecido','tecido','Material','material','Fabric','fabric']);
-    var I_TIPO = findCol(headerRow, ['Tipo','tipo','Categoria','categoria','Category','Type','type']);
-    var I_TOT  = findCol(headerRow, ['Total Vendas','total_vendas','Vendas Total','TotalVendas','Total','Qtd Total','total vendas']);
-    var I_V6M  = findCol(headerRow, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);
+    var I_TIPO = findCol(headerRow, ['Categoria','categoria','Tipo','tipo','Category','Type','type']);
+    var I_TOT  = findCol(headerRow, ['Total de Vendas','Total Vendas','total_vendas','TotalVendas','Total','total vendas']);
+    var I_V6M  = findCol(headerRow, ['Total Vendas 6 Meses','Total 6 meses','Vendas 6m','vendas_6m','V6M','Últimos 6m','6 meses']);
     var I_CURVA= findCol(headerRow, ['Curva','curva','Classe','classe','ABC','abc','Classificação','classificacao']);
 
     // Fallbacks por posição se cabeçalho não encontrado
@@ -1179,19 +1184,20 @@ function getEstoque() {
 
     // Detecção dinâmica por nome — robusto a mudanças de posição de coluna.
     // Fallbacks (índices fixos) preservados caso o cabeçalho não exista.
-    var I_CHAVE = findCol(header, ['Chave','chave','ID','id','Key']) ;                                                         if (I_CHAVE  < 0) I_CHAVE  = 0;
-    var I_COD   = findCol(header, ['SKU','sku','Código','codigo','Cod','cod','Código do produto','Ref']);                       if (I_COD    < 0) I_COD    = 2;
-    var I_NOME  = findCol(header, ['Nome','nome','Produto','produto','Descrição','descricao','name','Product']);                if (I_NOME   < 0) I_NOME   = 3;
-    var I_COR   = findCol(header, ['Cor','cor','Color','color','Variante','variante','Variant']);                               if (I_COR    < 0) I_COR    = 4;
-    var I_TAM   = findCol(header, ['Tamanho','tamanho','Size','size','Tam','tam','Grade','grade']);                             if (I_TAM    < 0) I_TAM    = 5;
-    var I_TIPO  = findCol(header, ['Tipo','tipo','Categoria','categoria','Category','Type','type']);                            if (I_TIPO   < 0) I_TIPO   = 9;
-    var I_COL   = findCol(header, ['Coleção','colecao','Coleção','Collection','collection']);                                   if (I_COL    < 0) I_COL    = 10;
-    var I_PRECO = findCol(header, ['Preço de Venda','preco_venda','Preço','preco','Price','price','Valor','valor','Custo','custo']); if (I_PRECO < 0) I_PRECO  = 12;
-    var I_TEC   = findCol(header, ['Tecido','tecido','Material','material','Fabric','fabric']);                                 if (I_TEC    < 0) I_TEC    = 13;
-    var I_CURVA = findCol(header, ['Curva','curva','Classe','classe','ABC','abc','Classificação','classificacao']);              if (I_CURVA  < 0) I_CURVA  = 15;
-    var I_EST   = findCol(header, ['Estoque','estoque','Saldo','saldo','Quantidade','quantidade','Qtd','qtd','Stock','stock','Inventory']); if (I_EST < 0) I_EST = 16;
-    var I_TVEND = findCol(header, ['Total Vendas','total_vendas','Vendas Total','Qtd Vendida','vendas_total','TotalVendas']);
-    var I_V6M   = findCol(header, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);
+    // Detecção dinâmica — nomes baseados na planilha real "Base SKU Estoque"
+    var I_CHAVE = findCol(header, ['Produto Cor Tamanho','chave','Chave','ID','Key']);
+    var I_COD   = findCol(header, ['Codigo','Código','SKU','sku','Cod','cod','Código do produto','Ref']);              if (I_COD   < 0) I_COD   = 2;
+    var I_NOME  = findCol(header, ['Descricao','Descrição','Nome','nome','Produto','produto','name','Product']);        if (I_NOME  < 0) I_NOME  = 3;
+    var I_COR   = findCol(header, ['Desc_Cor','Cor','cor','Color','color','Variante','variante','Variant']);            if (I_COR   < 0) I_COR   = 4;
+    var I_TAM   = findCol(header, ['Tamanho','tamanho','Size','size','Tam','tam','Grade','grade']);                     if (I_TAM   < 0) I_TAM   = 5;
+    var I_TIPO  = findCol(header, ['Desc_Grupo','Desc_Tipo_Prod','Tipo','tipo','Categoria','categoria','Type','type']); if (I_TIPO  < 0) I_TIPO  = 9;
+    var I_COL   = findCol(header, ['Desc_Colecao','Desc_Coleção','Coleção','colecao','Collection','collection']);       if (I_COL   < 0) I_COL   = 10;
+    var I_PRECO = findCol(header, ['Valor','valor','Preço de Venda','preco_venda','Preço','Price','price','Custo']);    if (I_PRECO < 0) I_PRECO = 12;
+    var I_TEC   = findCol(header, ['Tecido','tecido','Material','material','Fabric','fabric']);
+    var I_CURVA = findCol(header, ['Curva','curva','Classe','classe','ABC','abc','Classificação']);                     if (I_CURVA < 0) I_CURVA = 15;
+    var I_EST   = findCol(header, ['Estoque','estoque','Saldo','saldo','Stock','stock','Inventory','Quantidade']);      if (I_EST   < 0) I_EST   = 16;
+    var I_TVEND = findCol(header, ['Total de Vendas','Total Vendas','total_vendas','TotalVendas','Total','total vendas']);
+    var I_V6M   = findCol(header, ['Total 6 meses','Total Vendas 6 Meses','Vendas 6m','vendas_6m','V6M','Últimos 6m','6 meses']);
 
     var LIMITE = CONFIG.ESTOQUE_BAIXO;
 
