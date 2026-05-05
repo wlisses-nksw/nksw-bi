@@ -1211,22 +1211,19 @@ tbody tr:hover{background:#fafafa}
           </div>
         </div>
 
-        <!-- Filtros multi-select -->
-        <div id="conf-filtros" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-start"></div>
-
         <!-- Resumo -->
-        <div id="conf-resumo" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap"></div>
+        <div id="conf-resumo" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px"></div>
 
-        <!-- Tabela -->
+        <!-- Tabela com filtros nos cabeçalhos -->
         <div class="table-wrap" style="max-height:600px;overflow-y:auto">
           <table id="confTable">
             <thead>
               <tr>
-                <th>Cód.</th>
-                <th>Descrição</th>
-                <th>Cor</th>
-                <th>Tam.</th>
-                <th>Curva</th>
+                <th><div style="display:flex;align-items:center;gap:4px;justify-content:space-between">Cód.<button onclick="_toggleConFiltroMenu(this)" data-campo="codigo"   style="background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0">▾</button></div><div class="conf-menu" data-campo="codigo"   style="display:none;position:absolute;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:180px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th><div style="display:flex;align-items:center;gap:4px;justify-content:space-between">Descrição<button onclick="_toggleConFiltroMenu(this)" data-campo="descricao" style="background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0">▾</button></div><div class="conf-menu" data-campo="descricao" style="display:none;position:absolute;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:220px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th><div style="display:flex;align-items:center;gap:4px;justify-content:space-between">Cor<button onclick="_toggleConFiltroMenu(this)" data-campo="cor"       style="background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0">▾</button></div><div class="conf-menu" data-campo="cor"       style="display:none;position:absolute;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:180px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th><div style="display:flex;align-items:center;gap:4px;justify-content:space-between">Tam.<button onclick="_toggleConFiltroMenu(this)" data-campo="tamanho"   style="background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0">▾</button></div><div class="conf-menu" data-campo="tamanho"   style="display:none;position:absolute;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:140px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th><div style="display:flex;align-items:center;gap:4px;justify-content:space-between">Curva<button onclick="_toggleConFiltroMenu(this)" data-campo="curva"     style="background:none;border:none;cursor:pointer;font-size:11px;color:#9ca3af;padding:0">▾</button></div><div class="conf-menu" data-campo="curva"     style="display:none;position:absolute;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
                 <th style="text-align:right">Est. Sisplan</th>
                 <th style="text-align:right">Est. Shopify</th>
                 <th style="text-align:right">Diferença</th>
@@ -7262,44 +7259,28 @@ async function loadConferenciaEstoque() {
 }
 
 function _buildConferenciaFiltros() {
-  var campos = [
-    { key: 'codigo',   label: 'Cód.' },
-    { key: 'descricao',label: 'Descrição' },
-    { key: 'cor',      label: 'Cor' },
-    { key: 'tamanho',  label: 'Tam.' },
-    { key: 'curva',    label: 'Curva' },
-  ];
-
-  var container = document.getElementById('conf-filtros');
-  if (!container) return;
-
-  container.innerHTML = campos.map(function(c) {
-    var values = [...new Set(_confData.map(function(p){ return p[c.key] || '—'; }))].sort();
+  var campos = ['codigo','descricao','cor','tamanho','curva'];
+  campos.forEach(function(campo) {
+    var menu = document.querySelector('.conf-menu[data-campo="' + campo + '"]');
+    if (!menu) return;
+    var values = Array.from(new Set(_confData.map(function(p){ return p[campo] || '—'; }))).sort();
     var opts = values.map(function(v) {
-      return '<label style="display:flex;align-items:center;gap:5px;padding:3px 0;cursor:pointer;font-size:12px">' +
-        '<input type="checkbox" checked data-campo="' + c.key + '" data-val="' + v.replace(/"/g,'&quot;') + '" onchange="_onConfFiltro()">' +
+      return '<label style="display:flex;align-items:center;gap:5px;padding:3px 0;cursor:pointer;font-size:12px;white-space:nowrap">' +
+        '<input type="checkbox" checked data-campo="' + campo + '" data-val="' + v.replace(/"/g,'&quot;') + '" onchange="_onConfFiltro()">' +
         v + '</label>';
     }).join('');
-
-    return '<div style="position:relative">' +
-      '<button onclick="_toggleConFiltroMenu(this)" style="padding:5px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">' +
-        c.label + ' ▾' +
-      '</button>' +
-      '<div class="conf-menu" style="display:none;position:absolute;top:100%;left:0;z-index:100;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:160px;max-height:240px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.1)">' +
-        '<div style="display:flex;gap:6px;margin-bottom:6px">' +
-          '<button onclick="_confSelAll(this.parentNode.parentNode,true)"  style="font-size:10px;padding:2px 6px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Todos</button>' +
-          '<button onclick="_confSelAll(this.parentNode.parentNode,false)" style="font-size:10px;padding:2px 6px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Nenhum</button>' +
-        '</div>' +
-        opts +
-      '</div>' +
-    '</div>';
-  }).join('');
+    menu.innerHTML =
+      '<div style="display:flex;gap:6px;margin-bottom:8px">' +
+        '<button onclick="_confSelAll(this.parentNode.parentNode,true)"  style="font-size:10px;padding:2px 8px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Todos</button>' +
+        '<button onclick="_confSelAll(this.parentNode.parentNode,false)" style="font-size:10px;padding:2px 8px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Nenhum</button>' +
+      '</div>' + opts;
+  });
 }
 
 function _toggleConFiltroMenu(btn) {
-  var menu = btn.nextElementSibling;
+  var campo = btn.dataset.campo;
+  var menu  = btn.parentNode.nextElementSibling;
   var isOpen = menu.style.display !== 'none';
-  // Fecha todos os outros
   document.querySelectorAll('.conf-menu').forEach(function(m){ m.style.display='none'; });
   menu.style.display = isOpen ? 'none' : 'block';
 }
@@ -7311,14 +7292,14 @@ function _confSelAll(menu, sel) {
 
 // Fecha menus ao clicar fora
 document.addEventListener('click', function(e) {
-  if (!e.target.closest || !e.target.closest('#conf-filtros')) {
+  if (!e.target.closest || !e.target.closest('.conf-menu') && !e.target.closest('button[data-campo]')) {
     document.querySelectorAll('.conf-menu').forEach(function(m){ m.style.display='none'; });
   }
 });
 
 function _onConfFiltro() {
   _confFiltros = {};
-  document.querySelectorAll('#conf-filtros input[type=checkbox]').forEach(function(cb) {
+  document.querySelectorAll('.conf-menu input[type=checkbox]').forEach(function(cb) {
     var campo = cb.dataset.campo;
     var val   = cb.dataset.val;
     if (!_confFiltros[campo]) _confFiltros[campo] = new Set();
@@ -7378,18 +7359,19 @@ function _renderConferenciaResumo() {
   var menor   = _confData.filter(function(p){ return p.diff !== null && p.diff < 0; }).length;
   var semMatch= _confData.filter(function(p){ return p.shopify === null; }).length;
 
-  function card(label, val, color) {
-    return '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 18px;text-align:center">' +
-      '<div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
-      '<div style="font-size:22px;font-weight:700;color:' + color + ';font-family:Bodoni Moda,serif;margin-top:4px">' + val + '</div>' +
+  function card(label, sub, val, color) {
+    return '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)">' +
+      '<div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">' + label + '</div>' +
+      (sub ? '<div style="font-size:10px;color:#9ca3af;margin-top:2px">' + sub + '</div>' : '') +
+      '<div style="font-size:32px;font-weight:700;color:' + color + ';font-family:Bodoni Moda,serif;margin-top:8px;line-height:1">' + val + '</div>' +
     '</div>';
   }
   el.innerHTML =
-    card('Total SKUs', total, '#374151') +
-    card('Iguais ✓', ok, '#16a34a') +
-    card('Sisplan > Shopify', maior, '#ca8a04') +
-    card('Sisplan < Shopify', menor, '#dc2626') +
-    card('Sem match Shopify', semMatch, '#9ca3af');
+    card('Total SKUs',        '',                     total,    '#374151') +
+    card('Iguais',            'Sisplan = Shopify',    ok,       '#16a34a') +
+    card('Sisplan Maior',     'Sisplan > Shopify',    maior,    '#ca8a04') +
+    card('Sisplan Menor',     'Sisplan < Shopify',    menor,    '#dc2626') +
+    card('Sem match',         'Variante não encontrada', semMatch, '#9ca3af');
 }
 
 function downloadConferenciaCSV() {
