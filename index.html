@@ -5628,9 +5628,7 @@ function downloadPedidosCSV() {
       esc(p.metodo_envio), esc(p.valor), esc(p.data)
     ].join(',');
   });
-  var csv = '﻿' + header.join(',') + '
-' + rows.join('
-');
+  var csv = '\uFEFF' + header.join(',') + '\n' + rows.join('\n');
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
