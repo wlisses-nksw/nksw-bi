@@ -1,0 +1,16 @@
+{
+  "name": "nksw-api",
+  "version": "1.0.0",
+  "description": "API de conhecimento e integração Shopify para o agente de atendimento da Naked Swimwear",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@vercel/blob": "^0.27.0"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  }
+}
