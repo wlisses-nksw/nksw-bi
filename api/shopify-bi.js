@@ -195,14 +195,23 @@ function buildPedidos(orders) {
   yesterday.setHours(23, 59, 59, 999);
   const ordersD1 = orders.filter(o => new Date(o.created_at) <= yesterday);
 
-  const contadores = { aprovados: 0, pendentes: 0, em_transito: 0, cancelados: 0, entregues: 0 };
+  // Contadores baseados em STATUS DE PAGAMENTO (financial_status)
+  const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0 };
 
   for (const o of ordersD1) {
-    if (o.cancelled_at)                            contadores.cancelados++;
-    else if (o.fulfillment_status === 'fulfilled') contadores.entregues++;
-    else if (o.fulfillment_status === 'partial')   contadores.em_transito++;
-    else if (o.financial_status   === 'paid')      contadores.aprovados++;
-    else                                           contadores.pendentes++;
+    const fs = o.financial_status;
+    if (o.cancelled_at || fs === 'voided' || fs === 'refunded' || fs === 'partially_refunded') {
+      contadores.cancelados++;
+    } else if (fs === 'paid') {
+      contadores.pagos++;
+      // Também conta entregues (fulfillment) dentro dos pagos
+      if (o.fulfillment_status === 'fulfilled') contadores.entregues++;
+    } else if (fs === 'partially_paid') {
+      contadores.parciais++;
+    } else {
+      // pending, authorized
+      contadores.pendentes++;
+    }
   }
 
   const lista = ordersD1.map(o => ({

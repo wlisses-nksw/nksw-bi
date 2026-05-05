@@ -1198,9 +1198,9 @@ tbody tr:hover{background:#fafafa}
     <div class="page" id="page-pedidos">
 
       <div class="five-col" style="margin-bottom:24px">
-        <div class="status-card"><div class="sc-label">Aprovados</div><div class="sc-num green" id="cnt-aprovados">—</div></div>
+        <div class="status-card"><div class="sc-label">Pagos</div><div class="sc-num green" id="cnt-pagos">—</div></div>
         <div class="status-card"><div class="sc-label">Entregues</div><div class="sc-num green" id="cnt-entregues">—</div></div>
-        <div class="status-card"><div class="sc-label">Em Trânsito</div><div class="sc-num blue" id="cnt-em-transito">—</div></div>
+        <div class="status-card"><div class="sc-label">Pag. Parcial</div><div class="sc-num blue" id="cnt-parciais">—</div></div>
         <div class="status-card"><div class="sc-label">Pendentes</div><div class="sc-num yellow" id="cnt-pendentes">—</div></div>
         <div class="status-card"><div class="sc-label">Cancelados</div><div class="sc-num red" id="cnt-cancelados">—</div></div>
       </div>
@@ -1638,7 +1638,7 @@ const PAGE_INFO = {
   webanalytics:{title:'🌐 Web Analytics',sub:'Google Analytics 4 · Taxa de conversão'},
   vendas:{title:'💰 Vendas',sub:'Faturamento por canal · Todos os canais'},
   produtos:{title:'📦 Produtos',sub:''},
-  pedidos:{title:'🛒 Pedidos',sub:'Monitoramento em tempo real dos pedidos'},
+  pedidos:{title:'🛒 Pedidos',sub:'Pedidos por cliente — dados até ontem'},
   clientes:{title:'👥 Clientes',sub:'Base · LTV · RFM · Cohort'},
   logistica:{title:'🚚 Logística',sub:'Entregas · SLA · Devoluções'},
   metas:{title:'🎯 Metas',sub:'Configure e acompanhe suas metas mensais'},
@@ -5527,13 +5527,15 @@ function exportarEstoqueCSV() {
 function applyPedidosData(d) {
   if (!d) return;
 
-  // Contadores
+  // Contadores por status de pagamento
   if (d.contadores) {
-    setElText('cnt-aprovados',   d.contadores.aprovados   || 0);
-    setElText('cnt-entregues',   d.contadores.entregues   || 0);
-    setElText('cnt-em-transito', d.contadores.em_transito || 0);
-    setElText('cnt-pendentes',   d.contadores.pendentes   || 0);
-    setElText('cnt-cancelados',  d.contadores.cancelados  || 0);
+    var c = d.contadores;
+    // Suporte a contadores novos (Shopify) e antigos (GAS — usa 'aprovados' como 'pagos')
+    setElText('cnt-pagos',      c.pagos     !== undefined ? c.pagos     : (c.aprovados   || 0));
+    setElText('cnt-entregues',  c.entregues || 0);
+    setElText('cnt-parciais',   c.parciais  || 0);
+    setElText('cnt-pendentes',  c.pendentes || 0);
+    setElText('cnt-cancelados', c.cancelados || 0);
   }
 
   // Subtítulo D-1
