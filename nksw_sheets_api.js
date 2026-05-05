@@ -1186,6 +1186,7 @@ function getEstoque() {
     // Fallbacks (índices fixos) preservados caso o cabeçalho não exista.
     // Detecção dinâmica — nomes baseados na planilha real "Base SKU Estoque"
     var I_CHAVE = findCol(header, ['Produto Cor Tamanho','chave','Chave','ID','Key']);
+    var I_VAR   = findCol(header, ['Variante','variante','Variant','variant','BarCode','barcode','Barcode']); if (I_VAR < 0) I_VAR = 1;
     var I_COD   = findCol(header, ['Codigo','Código','SKU','sku','Cod','cod','Código do produto','Ref']);              if (I_COD   < 0) I_COD   = 2;
     var I_NOME  = findCol(header, ['Descricao','Descrição','Nome','nome','Produto','produto','name','Product']);        if (I_NOME  < 0) I_NOME  = 3;
     var I_COR   = findCol(header, ['Desc_Cor','Cor','cor','Color','color','Variante','variante','Variant']);            if (I_COR   < 0) I_COR   = 4;
@@ -1215,6 +1216,7 @@ function getEstoque() {
 
       produtos.push({
         chave:   trim(String(r[I_CHAVE] || '')),
+        variante: trim(String(r[I_VAR]   || '')),
         codigo:  cod,
         nome:    nome,
         cor:     trim(String(r[I_COR]  || '')),
