@@ -605,8 +605,8 @@ tbody tr:hover{background:#fafafa}
       </div>
     </div>
     <button id="topbar-new-user-btn" onclick="openUserModal()" style="display:none;padding:8px 18px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">+ Novo Usuário</button>
-    <div id="shopify-topbar-sync" style="display:none;flex-direction:column;align-items:flex-end;gap:2px">
-      <button onclick="runShopifySync('update')" style="padding:6px 12px;background:#ea580c;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">↻ Atualizar Shopify</button>
+    <div id="shopify-topbar-sync" style="display:none;flex-direction:column;align-items:center;gap:2px;margin:0 auto">
+      <button onclick="runShopifySync('update')" style="padding:8px 20px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:.3px">↻ Atualizar Shopify</button>
       <span id="shopify-sync-ts" style="display:none;font-size:10px;color:#9ca3af"></span>
     </div>
     <div class="tb-status">
@@ -618,7 +618,7 @@ tbody tr:hover{background:#fafafa}
   <!-- SHOPIFY SYNC BANNER — visível apenas quando dados não estão sincronizados -->
   <div id="shopify-sync-banner" style="display:none;align-items:center;gap:12px;padding:10px 20px;background:#fff7ed;border-bottom:1px solid #fed7aa;font-size:13px;color:#92400e;flex-wrap:wrap">
     <span>⚡ Dados Shopify de <strong id="shopify-sync-month-label"></strong> ainda não sincronizados.</span>
-    <button id="shopify-sync-btn" onclick="runShopifySync('full')" style="padding:5px 14px;background:#ea580c;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">↻ Sincronizar agora</button>
+    <button id="shopify-sync-btn" onclick="runShopifySync('full')" style="padding:7px 18px;background:#111827;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">↻ Sincronizar agora</button>
   </div>
 
   <!-- CONTENT -->
@@ -941,20 +941,6 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
-      <!-- GRÁFICO: Sessões por Dia -->
-      <div class="section-header">
-        <div>
-          <div class="section-title">Sessões por Dia</div>
-          <div class="section-sub">Acessos diários no período</div>
-        </div>
-        <div class="chart-legend">
-          <div class="cl-item"><div class="cl-dot" style="background:#111827"></div>Sessões</div>
-        </div>
-      </div>
-      <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:24px">
-        <div style="height:300px;position:relative"><canvas id="ga4DailyComboChart"></canvas></div>
-      </div>
-
       <!-- ORIGEM / MÍDIAS -->
       <div class="section-header">
         <div>
@@ -1023,7 +1009,6 @@ tbody tr:hover{background:#fafafa}
           <tbody id="ga4FunnelBody"></tbody>
         </table>
       </div>
-
     </div>
 
     <!-- ============================================================ -->
@@ -1499,9 +1484,11 @@ const SHEET_PEDIDOS  = SHEETS_SCRIPT_URL;
 const SHEET_CLIENTES = SHEETS_SCRIPT_URL;
 
 // ── Shopify BI — dados de maio/2026 em diante ──
-const SHOPIFY_BI_URL      = 'https://nksw-api.vercel.app/api/shopify-bi';
-const SHOPIFY_SYNC_URL    = 'https://nksw-api.vercel.app/api/shopify-sync';
+const SHOPIFY_BI_URL   = 'https://nksw-api.vercel.app/api/shopify-bi';
+const SHOPIFY_SYNC_URL = 'https://nksw-api.vercel.app/api/shopify-sync';
 const SHOPIFY_SYNC_SECRET = 'nksw2025';
+// Corte: navMonth >= SHOPIFY_CUTOFF_MONTH && navYear >= SHOPIFY_CUTOFF_YEAR
+// navMonth é 0-indexado (0=Jan ... 4=Mai)
 const SHOPIFY_CUTOFF_YEAR  = 2026;
 const SHOPIFY_CUTOFF_MONTH = 4; // 0-indexed → maio
 
@@ -1723,7 +1710,6 @@ function goTo(page, el) {
   if (page === 'metas')    renderGoals();
   if (page === 'admin')    loadUsersTable();
   if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
-  if (page === 'webanalytics') setTimeout(renderGA4DailyComboChart, 50);
 }
 
 function updateTopbar(page) {
@@ -1786,6 +1772,7 @@ function updateNavPeriodLabel() {
   _navLabel = GOAL_MONTHS_NAMES[navMonth] + ' de ' + navYear;
   var lbl = document.getElementById('nav-period-label');
   if (lbl) lbl.textContent = _navLabel;
+  // Mostra botão Shopify no topbar apenas para mai/2026 em diante
   var shopifyBtn = document.getElementById('shopify-topbar-sync');
   if (shopifyBtn) shopifyBtn.style.display = isShopifyPeriod() ? 'flex' : 'none';
 }
@@ -1992,7 +1979,7 @@ function calcDailyTarget(meta, realizado, m, y) {
   var diasNoMes = new Date(selY, selM + 1, 0).getDate();
   // Mês atual: quanto falta ÷ dias restantes
   if (selY === hoje.getFullYear() && selM === hoje.getMonth()) {
-    var diasRestantes = diasNoMes - hoje.getDate() + 1;
+    var diasRestantes = diasNoMes - hoje.getDate(); // exclui hoje (dados do dia corrente chegam só no próximo dia)
     return diasRestantes > 0 ? (meta - realizado) / diasRestantes : 0;
   }
   // Mês futuro: meta ÷ total de dias
@@ -2171,19 +2158,14 @@ function initDailyChart() {
             }
           },
           datalabels: {
+            display: function(ctx) { return ctx.datasetIndex === 0 && ctx.parsed.y > 0; },
             anchor: 'end',
             align: 'top',
-            clip: false,
             color: '#374151',
             font: { size: 9, weight: '600' },
-            formatter: function(value, ctx) {
-              if (ctx.datasetIndex !== 0) return null;
-              if (!value) return null;
-              return 'R$' + (value / 1000).toFixed(1) + 'k';
-            }
+            formatter: function(value) { return 'R$' + (value / 1000).toFixed(1) + 'k'; }
           }
         },
-        layout: { padding: { top: 35 } },
         scales: {
           y: {
             position:'left',
@@ -2192,8 +2174,7 @@ function initDailyChart() {
           },
           x: {grid:{display:false}, ticks:{font:{size:10}}}
         }
-      },
-      plugins: [ChartDataLabels]
+      }
     });
   } catch(e) { console.warn('Daily chart error:', e); }
 }
@@ -3050,7 +3031,6 @@ async function loadGA4Data() {
     renderGA4GeoCharts(data.geo || null);
     // Funil por produto — usa productFunnel (pós-reimplante) ou landingPages como aproximação
     renderGA4FunnelTable(data.productFunnel || null, data.landingPages || null, data.funnel || null);
-    renderGA4DailyComboChart();
   } catch(e) {
     console.warn('GA4 fallback:', e.message);
     _indGA4FunilData  = null;
@@ -3087,77 +3067,6 @@ function applyMockGA4() {
   renderGA4DeviceCards(null);
   renderGA4GeoCharts(null);
   renderGA4FunnelTable(null);
-  renderGA4DailyComboChart();
-}
-
-function renderGA4DailyComboChart() {
-  destroyChart('ga4DailyComboChart');
-  var ctx = document.getElementById('ga4DailyComboChart');
-  if (!ctx) return;
-
-  var cacheKey = navYear + '_' + String(navMonth + 1).padStart(2, '0');
-  var cached   = (typeof _metasDiarioCache !== 'undefined') ? _metasDiarioCache[cacheKey] : null;
-  var rawArr   = (cached && cached.length > 0) ? cached
-               : (_indDiarioFull && _indDiarioFull.length > 0) ? _indDiarioFull
-               : MOCK.diario;
-
-  var d = rawArr.map(function(item) {
-    var lbl = item.dia || '';
-    if (lbl.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      var p = lbl.split('-');
-      lbl = p[2] + '/' + p[1];
-    }
-    return { lbl: lbl, sessoes: item.sessoes || 0 };
-  });
-
-  try {
-    charts['ga4DailyComboChart'] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: d.map(function(x) { return x.lbl; }),
-        datasets: [{
-          label: 'Sessões',
-          data: d.map(function(x) { return x.sessoes; }),
-          backgroundColor: '#111827',
-          borderRadius: 4,
-          maxBarThickness: 16,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        layout: { padding: { top: 22 } },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(ctx) { return ' Sessões: ' + fmtNum(ctx.raw); }
-            }
-          },
-          datalabels: {
-            anchor: 'end',
-            align: 'top',
-            clip: false,
-            color: '#374151',
-            font: { size: 9, weight: '600' },
-            formatter: function(value) {
-              if (!value) return null;
-              return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : String(value);
-            }
-          }
-        },
-        scales: {
-          y: {
-            grid: { color: '#f3f4f6' },
-            ticks: { callback: function(v) { return fmtNum(v); }, font: { size: 11 } }
-          },
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
-        }
-      },
-      plugins: [ChartDataLabels]
-    });
-  } catch(e) { console.warn('GA4 daily chart error:', e); }
 }
 
 function renderGA4Sparklines() {
@@ -4319,12 +4228,116 @@ function downloadLogisticaCSV() {
 
 /* ===== SHOPIFY BI — roteamento por período ===== */
 
+// Retorna true se o mês navegado é maio/2026 ou posterior
 function isShopifyPeriod(month, year) {
   var m = (month !== undefined) ? month : navMonth;
   var y = (year  !== undefined) ? year  : navYear;
   return y > SHOPIFY_CUTOFF_YEAR || (y === SHOPIFY_CUTOFF_YEAR && m >= SHOPIFY_CUTOFF_MONTH);
 }
 
+// Popula _metasDiarioCache com dados básicos do Shopify (receita, pedidos, ticket)
+// Exclui o dia atual para que getMonthRealized use apenas dados completos (até ontem)
+function _populateShopifyDiarioCache(m, y, vendasData) {
+  var cacheKey = y + '_' + String(m+1).padStart(2,'0');
+  if (!vendasData || !vendasData.diario || !vendasData.diario.length) {
+    _metasDiarioCache[cacheKey] = null;
+    return;
+  }
+  var today = new Date();
+  var isCurMon = (m === today.getMonth() && y === today.getFullYear());
+  var pad2 = function(n){ return String(n).padStart(2,'0'); };
+  var todayStr = today.getFullYear() + '-' + pad2(today.getMonth()+1) + '-' + pad2(today.getDate());
+
+  var entries = vendasData.diario
+    .filter(function(e) { return !isCurMon || e.dia < todayStr; }) // exclui hoje no mês atual
+    .map(function(e) {
+      var rec = e.receita || 0;
+      var ped = e.pedidos || 0;
+      return {
+        dia:          e.dia,
+        receita:      rec,
+        pedidos:      ped,
+        ticket:       ped > 0 ? rec / ped : 0,
+        custoMkt:     0,
+        roas:         0,
+        cac:          0,
+        sessoes:      0,
+        taxaConv:     0,
+        novosClientes: 0,
+      };
+    });
+  _metasDiarioCache[cacheKey] = entries;
+  renderVisaoGeral();
+  renderIndicadores();
+}
+
+// Enriquece _metasDiarioCache com spend diário (Meta Ads) e sessões diárias (GA4) em background
+async function _enrichShopifyCacheAsync(m, y) {
+  var cacheKey = y + '_' + String(m+1).padStart(2,'0');
+  var cache = _metasDiarioCache[cacheKey];
+  if (!cache || !cache.length) return;
+
+  var pad2 = function(n){ return String(n).padStart(2,'0'); };
+  var today = new Date();
+  var isCurMon = (m === today.getMonth() && y === today.getFullYear());
+  var endDay = isCurMon ? today.getDate() - 1 : new Date(y, m+1, 0).getDate();
+  if (endDay < 1) return;
+
+  try {
+    var metaTimeRange = 'time_range={"since":"'+y+'-'+pad2(m+1)+'-01","until":"'+y+'-'+pad2(m+1)+'-'+pad2(endDay)+'"}';
+    var metaDailyPath = '/' + META_ACCOUNT + '/insights?fields=spend&time_increment=1&' + metaTimeRange;
+    var dateOverride  = 'period=custom&startDate='+y+'-'+pad2(m+1)+'-01&endDate='+y+'-'+pad2(m+1)+'-'+pad2(endDay);
+
+    var results = await Promise.all([
+      metaFetch(metaDailyPath).catch(function(){ return null; }),
+      fetch(getGA4ActiveUrl() + '?' + dateOverride).then(function(r){ return r.json(); }).catch(function(){ return null; })
+    ]);
+    var metaResp = results[0];
+    var ga4Resp  = results[1];
+
+    var spendByDay = {};
+    if (metaResp && metaResp.data) {
+      metaResp.data.forEach(function(d) {
+        if (d.date_start) spendByDay[d.date_start] = parseFloat(d.spend || 0);
+      });
+    }
+    var sessoesByDay = {};
+    if (ga4Resp && ga4Resp.daily && ga4Resp.daily.length) {
+      ga4Resp.daily.forEach(function(d) {
+        if (d.dateRaw && d.dateRaw.length === 8) {
+          var iso = d.dateRaw.substring(0,4)+'-'+d.dateRaw.substring(4,6)+'-'+d.dateRaw.substring(6,8);
+          sessoesByDay[iso] = d.sessions || 0;
+        }
+      });
+    }
+
+    _metasDiarioCache[cacheKey] = cache.map(function(e) {
+      var daySpend = spendByDay[e.dia] || 0;
+      var daySess  = sessoesByDay[e.dia] || 0;
+      var dayPed   = e.pedidos || 0;
+      var dayRec   = e.receita || 0;
+      return {
+        dia:          e.dia,
+        receita:      dayRec,
+        pedidos:      dayPed,
+        ticket:       dayPed > 0 ? dayRec / dayPed : 0,
+        custoMkt:     daySpend,
+        roas:         daySpend > 0 ? dayRec / daySpend : 0,
+        cac:          dayPed > 0 && daySpend > 0 ? daySpend / dayPed : 0,
+        sessoes:      daySess,
+        taxaConv:     daySess > 0 ? (dayPed / daySess) * 100 : 0,
+        novosClientes: e.novosClientes || 0,
+      };
+    });
+    renderVisaoGeral();
+    renderIndicadores();
+    renderGoals();
+  } catch(e) {
+    console.warn('[enrichShopifyCache] erro:', e.message);
+  }
+}
+
+// Carrega dados do Shopify BI para o mês atual
 async function loadShopifyData() {
   var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
   var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
@@ -4332,108 +4345,42 @@ async function loadShopifyData() {
     var r = await fetch(url);
     var d = await r.json();
     if (!d.ok) {
+      // Dados ainda não sincronizados — mostra aviso com botão de sync
       setSheetsStatus(false, 'Shopify — sync necessário');
       showShopifySyncBanner(monthKey);
       return;
     }
+
+    // Busca ano anterior para comparação YoY (pode estar no Shopify BI se já sincronizado)
+    var prevVendas = null;
+    try {
+      var prevMonthKey = (navYear - 1) + '-' + String(navMonth + 1).padStart(2, '0');
+      var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
+      var prevR = await fetch(prevUrl);
+      var prevDat = await prevR.json();
+      if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
+    } catch(e2) { /* ano anterior pode não estar disponível */ }
+
+    if (d.vendas)    applyVendasData(d.vendas, prevVendas);
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
-    if (d.clientes)  applyClientesData(d.clientes);
 
-    // ── Evolução Mensal: busca histórico dos meses anteriores ──────────────
-    var MES_PT    = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    var curNavMon = navMonth + 1; // 1-indexed (ex: 5 = Maio)
-    var prevYear  = navYear - 1;
-
-    // Monta lista de (chave, mês, ano) para buscar nos JSONs estáticos
-    var fetchPairs = [];
-    // Meses anteriores do ano atual (Jan … mês-1)
-    for (var i = 1; i < curNavMon; i++) {
-      fetchPairs.push({ key: navYear + '-' + String(i).padStart(2,'0'), mes: i, year: navYear });
-    }
-    // Mesmo período do ano anterior (Jan … mês atual inclusive)
-    for (var j = 1; j <= curNavMon; j++) {
-      fetchPairs.push({ key: prevYear + '-' + String(j).padStart(2,'0'), mes: j, year: prevYear });
-    }
-
-    var histResults = await Promise.all(fetchPairs.map(function(p) {
-      return fetchStaticJSON('vendas', p.key).then(function(data) {
-        // Aceita estrutura { vendas: { kpis } } (GitHub Actions) ou { kpis } (legado)
-        var kpis = (data && data.vendas && data.vendas.kpis) ? data.vendas.kpis
-                 : (data && data.kpis)                       ? data.kpis
-                 : null;
-        if (!kpis) return null;
-        return {
-          mes:     p.mes,
-          label:   MES_PT[p.mes - 1],
-          receita: kpis.receita  || 0,
-          pedidos: kpis.pedidos  || 0,
-          ticket:  kpis.ticket   || (kpis.pedidos > 0 ? kpis.receita / kpis.pedidos : 0),
-          year:    p.year,
-        };
-      }).catch(function(){ return null; });
-    }));
-
-    var curYearMes          = [];
-    var prevYearMes         = [];
-    var prevYearSameMon     = null; // para badge YoY nos KPIs
-
-    histResults.forEach(function(e) {
-      if (!e) return;
-      if (e.year === navYear) curYearMes.push(e);
-      else {
-        prevYearMes.push(e);
-        if (e.mes === curNavMon) prevYearSameMon = e;
-      }
-    });
-
-    // Adiciona mês atual (Shopify) ao ano corrente
-    if (d.vendas && d.vendas.kpis) {
-      curYearMes.push({
-        mes:     curNavMon,
-        label:   MES_PT[curNavMon - 1],
-        receita: d.vendas.kpis.receita  || 0,
-        pedidos: d.vendas.kpis.pedidos  || 0,
-        ticket:  d.vendas.kpis.ticket   || 0,
-        year:    navYear,
-      });
-    }
-
-    curYearMes.sort(function(a, b) { return a.mes - b.mes; });
-    prevYearMes.sort(function(a, b) { return a.mes - b.mes; });
-
-    // Injeta porMes completo no objeto de vendas antes de aplicar
-    if (d.vendas) d.vendas.porMes = curYearMes;
-
-    // prevD simulado para badges YoY (vs mesmo mês do ano anterior)
-    var prevDForBadges = prevYearSameMon
-      ? { kpis: { receita: prevYearSameMon.receita, pedidos: prevYearSameMon.pedidos,
-                  ticket: prevYearSameMon.ticket, receitaSemFrete: null } }
-      : null;
-
-    if (d.vendas) {
-      _lastVendasData = d.vendas;
-      applyVendasData(d.vendas, prevDForBadges);
-    }
-
-    // Renderiza gráficos YoY com todo o histórico (sobrescreve o que applyVendasData desenhou)
-    if (curYearMes.length) {
-      renderYoYChart('salesChart',   curYearMes, prevYearMes, 'receita', 'R$', true);
-      renderYoYChart('pedidosChart', curYearMes, prevYearMes, 'pedidos', '',   false);
-    }
-
-    // Atualiza tab Metas com dados reais (pedidos e ticket agora vêm de _indVendasPedidos/_indVendasTicket)
-    if (typeof renderGoals === 'function') renderGoals();
+    // Popula cache diário (excluindo hoje) para que getMonthRealized / getDayRealized funcionem corretamente
+    _populateShopifyDiarioCache(navMonth, navYear, d.vendas);
 
     setSheetsStatus(true, 'Shopify ✓');
     updateShopifySyncTimestamp(d.synced_at);
     hideShopifySyncBanner();
+
+    // Enriquece cache com spend diário (Meta Ads) + sessões (GA4) em background
+    _enrichShopifyCacheAsync(navMonth, navYear).catch(function(){});
   } catch(e) {
     console.warn('[shopify-bi] erro:', e.message);
     setSheetsStatus(false, 'Shopify — erro');
   }
 }
 
+// Dispara full sync ou update incremental
 async function runShopifySync(action) {
   var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
   var btn = document.getElementById('shopify-sync-btn');
@@ -4453,7 +4400,7 @@ async function runShopifySync(action) {
 
 function showShopifySyncBanner(monthKey) {
   var el = document.getElementById('shopify-sync-banner');
-  if (el) el.style.display = 'flex';
+  if (el) { el.style.display = 'flex'; }
   var lbl = document.getElementById('shopify-sync-month-label');
   if (lbl) lbl.textContent = monthKey;
 }
@@ -4464,7 +4411,8 @@ function hideShopifySyncBanner() {
 function updateShopifySyncTimestamp(syncedAt) {
   var el = document.getElementById('shopify-sync-ts');
   if (!el || !syncedAt) return;
-  el.textContent = 'Última sync: ' + new Date(syncedAt).toLocaleString('pt-BR');
+  var d = new Date(syncedAt);
+  el.textContent = 'Última sincronização: ' + d.toLocaleString('pt-BR');
   el.style.display = 'inline';
 }
 
@@ -4639,7 +4587,12 @@ function setSheetsStatus(connected, label) {
 }
 
 async function loadAllSheetsData() {
-  if (isShopifyPeriod()) { await loadShopifyData(); return; }
+  // Maio/2026 em diante → Shopify BI (não usa Sheets)
+  if (isShopifyPeriod()) {
+    await loadShopifyData();
+    return;
+  }
+
   var url = getSheetsUrl();
   if (!url) { setSheetsStatus(false); return; }
   var anyOk = false;
@@ -4790,7 +4743,7 @@ function applyStatusFilter(d) {
   mKpis.pctSemFrete   = mKpis.pedidos > 0 ? mKpis.pedidosSemFrete / mKpis.pedidos  * 100 : 0;
 
   // Se API antiga (sem breakdowns), usa gráficos totais — só KPIs são filtrados
-  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes - b.mes; }) : (d.porMes || []);
+  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes.localeCompare(b.mes); }) : (d.porMes || []);
   var fVendedor = hasFullBreakdowns ? Object.values(mVendedor).sort(function(a,b){ return b.receita - a.receita; }) : (d.porVendedor || []);
   var fEstado   = hasFullBreakdowns ? Object.values(mEstado).sort(function(a,b){ return b.receita - a.receita; }).slice(0,10) : (d.porEstado || []);
 
@@ -5955,27 +5908,7 @@ async function fetchMonthData(m, y) {
     var totalSpend     = metaTotalSpend > 0 ? metaTotalSpend
                        : (mktKpis ? (mktKpis.spend || 0) : 0);
 
-    var enriched = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
-
-    // Adiciona entradas sintéticas para dias com sessões GA4 ou spend Meta mas sem venda no Sheets
-    var diasComVenda = {};
-    enriched.forEach(function(e) { diasComVenda[e.dia] = true; });
-    var allExtraDays = {};
-    Object.keys(sessoesByDay).forEach(function(d) { allExtraDays[d] = true; });
-    Object.keys(spendByDay).forEach(function(d)   { allExtraDays[d] = true; });
-    Object.keys(allExtraDays).forEach(function(iso) {
-      if (!diasComVenda[iso]) {
-        enriched.push({
-          dia: iso, receita: 0, pedidos: 0, ticket: 0,
-          custoMkt: spendByDay[iso] || 0, roas: 0,
-          sessoes: sessoesByDay[iso] || 0,
-          taxaConv: 0, cac: 0, novosClientes: 0
-        });
-      }
-    });
-    enriched.sort(function(a, b) { return a.dia < b.dia ? -1 : a.dia > b.dia ? 1 : 0; });
-
-    _metasDiarioCache[cacheKey] = enriched;
+    _metasDiarioCache[cacheKey] = _enrichDiario(diario, totalSpend, sessoesByDay, totalPed, spendByDay);
   } catch(e) {
     console.warn('fetchMonthData error:', e.message);
     _metasDiarioCache[cacheKey] = null;
@@ -6046,8 +5979,8 @@ function _getCohortClientes(m, y) {
 var GOAL_DEFS = {
   receita:      {icon:'💰',name:'Receita',           desc:'Receita total do período',       prefix:'R$',suffix:'',  required:true,  step:1000, lowerIsBetter:false, realized:function(){return _indRealizadoReceita !== null ? _indRealizadoReceita : MOCK.realizado;},  fmt:function(v){return fmtBRL(v);}},
   roas:         {icon:'📈',name:'ROAS',               desc:'Retorno sobre investimento',     prefix:'',  suffix:'x', required:true,  step:0.1,  lowerIsBetter:false, realized:function(){return _indRoasAtual       !== null ? _indRoasAtual        : MOCK.roas;},         fmt:function(v){return v.toFixed(2)+'x';}},
-  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasPedidos !== null ? _indVendasPedidos : 533;},          fmt:function(v){return fmtNum(v);}},
-  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return _indVendasTicket  !== null ? _indVendasTicket  : MOCK.ticketMedio;}, fmt:function(v){return fmtBRL(v);}},
+  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return 533;},                                               fmt:function(v){return fmtNum(v);}},
+  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return MOCK.ticketMedio;},                                  fmt:function(v){return fmtBRL(v);}},
   cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){return MOCK.cac;},                                          fmt:function(v){return fmtBRL(v);}},
   custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return MOCK.custoMarketing;},                              fmt:function(v){return fmtBRL(v);}},
   sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.sessions:50296;},                  fmt:function(v){return fmtNum(v);}},
@@ -6101,6 +6034,9 @@ function getDailyTarget(metricData, key, dayNum, m, y) {
   if (metricData.diasCustom && metricData.diasCustom[dayNum]) {
     return Number(metricData.diasCustom[dayNum]);
   }
+  // Métricas de média/ratio: meta diária = meta mensal (não divide por dias)
+  var _avgMetrics = { ticket: 1, cac: 1, roas: 1, taxaConv: 1 };
+  if (_avgMetrics[key]) return metricData.meta;
   var daysInMonth = new Date(y, m + 1, 0).getDate();
   if (metricData.tipo === 'ponderado') {
     var weights = 0;
@@ -6417,14 +6353,16 @@ function renderGoalsResume() {
     html += '<td style="padding:10px 14px;border-bottom:1px solid #f3f4f6;text-align:right;white-space:nowrap"><strong style="color:'+realColor+'">' + realDisplay + '</strong><br><span style="font-size:10px;color:#9ca3af">' + (real !== null ? pct.toFixed(1) + '%' : 'Carregando...') + '</span></td>';
     for (var d2 = 1; d2 <= daysInMonth; d2++) {
       var dayTarget = getDailyTarget(md, k, d2, goalMonth, goalYear);
-      var isToday2 = d2 === todayDay;
+      // Hoje e dias futuros = projeção (dados do dia corrente chegam só no próximo dia)
       var isPast   = isCurMon ? d2 < todayDay : (goalYear < today.getFullYear() || (goalYear === today.getFullYear() && goalMonth < today.getMonth()));
-      var isFuture = isCurMon ? d2 > todayDay : !isPast;
+      var isFuture = !isPast; // hoje também entra como futuro/projeção
+      var isToday2 = d2 === todayDay; // apenas para destaque visual no header
       var bg='#fff', fg='#374151', txt='';
       var actualVal = getDayRealized(k, d2, goalMonth, goalYear);
-      if (isToday2) {
-        bg='#fef3c7'; fg='#92400e';
-        txt = actualVal !== null ? fmtGoalCell(actualVal, def) : fmtGoalCell(dayTarget, def);
+      if (isFuture && isToday2) {
+        // Hoje: mostra como projeção mas com destaque amarelo leve
+        bg='#fef9ec'; fg='#78350f';
+        txt = fmtGoalCell(dayTarget, def);
       } else if (isFuture) {
         bg='#eff6ff'; fg='#1d4ed8';
         txt = fmtGoalCell(dayTarget, def);
@@ -6511,8 +6449,8 @@ var VG_KPIS = [
   {icon:'🛒', label:'Vendas Aprovadas', val:function(){ var v=getMonthRealized('pedidos',navMonth,navYear); return fmtNum(v!==null?v:533); },                                                                   varPct:function(){ return varPctYoY('pedidos'); },  downGood:false},
   {icon:'🛍️', label:'Ticket Médio',     val:function(){ var v=getMonthRealized('ticket',navMonth,navYear); return fmtBRL(v!==null?v:MOCK.ticketMedio); },                                                      varPct:function(){ return varPctYoY('ticket'); },   downGood:false},
   // GA4
-  {icon:'🌐', label:'Sessões',          val:function(){ return fmtNum(_indGA4Sessions !== null ? _indGA4Sessions : MOCK.ga4.sessions); },                                                                       varPct:null,                                        downGood:false},
-  {icon:'🎯', label:'Taxa de Conversão',val:function(){ var ped=getMonthRealized('pedidos',navMonth,navYear)||0, ses=_indGA4Sessions||MOCK.ga4.sessions; return ses>0?(ped/ses*100).toFixed(2)+'%':'—'; },    varPct:null,                                        downGood:false},
+  {icon:'🌐', label:'Sessões',          val:function(){ var v=getMonthRealized('sessoes',navMonth,navYear); return fmtNum(v!==null&&v>0?v:(_indGA4Sessions!==null?_indGA4Sessions:MOCK.ga4.sessions)); },         varPct:null,                                        downGood:false},
+  {icon:'🎯', label:'Taxa de Conversão',val:function(){ var ped=getMonthRealized('pedidos',navMonth,navYear)||0, sv=getMonthRealized('sessoes',navMonth,navYear), ses=sv!==null&&sv>0?sv:(_indGA4Sessions||MOCK.ga4.sessions); return ses>0?(ped/ses*100).toFixed(2)+'%':'—'; }, varPct:null, downGood:false},
 ];
 
 function renderVisaoGeral() {
@@ -7121,90 +7059,4 @@ async function promptResetPassword(id, nome) {
   var auth = getAuthState();
   var hash = await sha256Client(nova);
   authCall({ action: 'resetPassword', token: auth.token, id: id, senhaHash: hash })
-    .then(function(d) { alert(d.ok ? 'Senha alterada com sucesso!' : 'Erro: ' + (d.msg || 'Falha')); });
-}
-
-window.addEventListener('DOMContentLoaded', authInit);
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
-</script>
-
-<!-- ===== MODAL ALTERAR SENHA (viewer self-service) ===== -->
-<div id="change-pwd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
-    <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:20px">🔑 Alterar Senha</div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Senha Atual</label>
-      <input id="cpwd-atual" type="password" placeholder="Sua senha atual" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Nova Senha</label>
-      <input id="cpwd-nova" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div style="margin-bottom:20px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Confirmar Nova Senha</label>
-      <input id="cpwd-confirm" type="password" placeholder="Repita a nova senha" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div id="cpwd-msg" style="display:none;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button onclick="closeChangePwdModal()" style="padding:9px 18px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#374151">Cancelar</button>
-      <button id="cpwd-btn" onclick="submitChangePwd()" style="padding:9px 18px;border:none;border-radius:8px;background:#c20000;color:#fff;font-size:13px;font-weight:700;cursor:pointer">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== USER MODAL ===== -->
-<div id="user-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modal-title">Novo Usuário</div>
-    <input type="hidden" id="modal-user-id"/>
-    <div class="modal-field">
-      <label>Nome completo</label>
-      <input type="text" id="modal-nome" placeholder="Ex: João Silva"/>
-    </div>
-    <div class="modal-field">
-      <label>Email</label>
-      <input type="email" id="modal-email" placeholder="joao@email.com"/>
-    </div>
-    <div class="modal-field" id="modal-senha-field">
-      <label id="modal-senha-label">Senha</label>
-      <input type="password" id="modal-senha" placeholder="Mínimo 6 caracteres"/>
-    </div>
-    <div class="modal-field">
-      <label>Perfil</label>
-      <select id="modal-role">
-        <option value="viewer">Visualizador</option>
-        <option value="admin">Administrador (acesso total)</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Telas permitidas</label>
-      <div class="tabs-grid" id="tabs-grid">
-        <button type="button" class="tab-toggle tab-toggle-all" onclick="toggleAllTabs(this)">Todas as telas</button>
-        <button type="button" class="tab-toggle" data-tab="indicadores" onclick="toggleTab(this)">📊 Indicadores</button>
-        <button type="button" class="tab-toggle" data-tab="marketing" onclick="toggleTab(this)">📣 Marketing</button>
-        <button type="button" class="tab-toggle" data-tab="webanalytics" onclick="toggleTab(this)">🌐 Web Analytics</button>
-        <button type="button" class="tab-toggle" data-tab="vendas" onclick="toggleTab(this)">💰 Vendas</button>
-        <button type="button" class="tab-toggle" data-tab="produtos" onclick="toggleTab(this)">📦 Produtos</button>
-        <button type="button" class="tab-toggle" data-tab="pedidos" onclick="toggleTab(this)">🛒 Pedidos</button>
-        <button type="button" class="tab-toggle" data-tab="clientes" onclick="toggleTab(this)">👥 Clientes</button>
-        <button type="button" class="tab-toggle" data-tab="logistica" onclick="toggleTab(this)">🚚 Logística</button>
-        <button type="button" class="tab-toggle" data-tab="metas" onclick="toggleTab(this)">🎯 Metas</button>
-      </div>
-    </div>
-    <div class="modal-field" id="modal-ativo-field" style="display:none">
-      <label>Status</label>
-      <select id="modal-ativo">
-        <option value="true">Ativo</option>
-        <option value="false">Inativo</option>
-      </select>
-    </div>
-    <div class="modal-error" id="modal-error"></div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeUserModal()">Cancelar</button>
-      <button class="modal-btn primary" id="modal-save-btn" onclick="saveUser()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+    .then(function(d) { alert(d.ok ? 'Senh
