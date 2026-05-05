@@ -1038,47 +1038,80 @@ function jsonOut(data) {
 
 /* ===== ESTOQUE — Base SKU Estoque ===== */
 // Lê aba "Base Produto Cor" para rankings de mais vendidos
-// Colunas: A=código B=nome C=coleção D=tecido E=categoria H–V=meses W=total X=vendas6m
+// Detecção dinâmica de colunas — robusto a adição/remoção/reordenação de colunas
 function getRankData(ss) {
   try {
     var sheet = ss.getSheetByName(CONFIG.ABA_RANK);
     if (!sheet) return { rankData: [], mesesKeys: [] };
     var lastRow = sheet.getLastRow();
-    if (lastRow < 2) return { rankData: [], mesesKeys: [] };
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2 || lastCol < 1) return { rankData: [], mesesKeys: [] };
 
-    var NCOLS = 24; // A até X
-    var headerRow = sheet.getRange(1, 1, 1, NCOLS).getValues()[0];
+    var tz        = ss.getSpreadsheetTimeZone();
+    var headerRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
 
-    // Colunas H–V = índices 7–21 (0-based) → 15 meses
-    // Usa fuso da planilha para evitar bug UTC (datas armazenadas como Date object)
-    var tz = ss.getSpreadsheetTimeZone();
+    // ── Colunas fixas: detecção por nome ──────────────────────────────
+    var I_COD  = findCol(headerRow, ['Código','codigo','SKU','sku','Cod','cod','Chave','ID','id','Key','código do produto','Ref']);
+    var I_NOME = findCol(headerRow, ['Nome','nome','Produto','produto','Descrição','descricao','name','Product']);
+    var I_COL  = findCol(headerRow, ['Coleção','colecao','Collection','collection','Coleção do produto']);
+    var I_TEC  = findCol(headerRow, ['Tecido','tecido','Material','material','Fabric','fabric']);
+    var I_TIPO = findCol(headerRow, ['Tipo','tipo','Categoria','categoria','Category','Type','type']);
+    var I_TOT  = findCol(headerRow, ['Total Vendas','total_vendas','Vendas Total','TotalVendas','Total','Qtd Total','total vendas']);
+    var I_V6M  = findCol(headerRow, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);
+    var I_CURVA= findCol(headerRow, ['Curva','curva','Classe','classe','ABC','abc','Classificação','classificacao']);
+
+    // Fallbacks por posição se cabeçalho não encontrado
+    if (I_COD  < 0) I_COD  = 0;
+    if (I_NOME < 0) I_NOME = 1;
+    if (I_COL  < 0) I_COL  = 2;
+    if (I_TEC  < 0) I_TEC  = 3;
+    if (I_TIPO < 0) I_TIPO = 4;
+
+    // ── Colunas mensais: detectadas dinamicamente por valor de data ───
+    // Qualquer coluna cujo cabeçalho seja parseável como mês (YYYY-MM) é incluída
+    var mesesIdx  = [];
     var mesesKeys = [];
-    for (var ci = 7; ci <= 21; ci++) {
-      mesesKeys.push(parseMonthKey(headerRow[ci], tz) || '');
+    for (var ci = 0; ci < headerRow.length; ci++) {
+      var mk = parseMonthKey(headerRow[ci], tz);
+      if (mk) {
+        mesesIdx.push(ci);
+        mesesKeys.push(mk);
+      }
     }
 
-    var rows = sheet.getRange(2, 1, lastRow - 1, NCOLS).getValues();
+    // Se não encontrou meses por data, tenta heurística: colunas entre tipo e total
+    if (!mesesIdx.length && I_TIPO >= 0) {
+      var iStart = Math.max(I_TIPO + 1, 7);
+      var iEnd   = (I_TOT > iStart) ? I_TOT - 1 : Math.min(iStart + 14, lastCol - 1);
+      for (var ci2 = iStart; ci2 <= iEnd; ci2++) {
+        mesesIdx.push(ci2);
+        mesesKeys.push('');
+      }
+    }
+
+    // ── Lê os dados ───────────────────────────────────────────────────
+    var rows     = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
     var rankData = [];
 
     rows.forEach(function(r) {
-      var cod  = trim(String(r[0] || ''));
-      var nome = trim(String(r[1] || ''));
+      var cod  = trim(String(r[I_COD]  || ''));
+      var nome = trim(String(r[I_NOME] || ''));
       if (!cod && !nome) return;
 
-      var vm = [];
-      for (var i = 7; i <= 21; i++) {
-        vm.push(Math.round(parseNum(r[i]) || 0));
-      }
+      var vm = mesesIdx.map(function(i) {
+        return Math.round(parseNum(r[i]) || 0);
+      });
 
       rankData.push({
-        codigo:     cod,
-        nome:       nome,
-        colecao:    trim(String(r[2] || '')),
-        tecido:     trim(String(r[3] || '')),
-        tipo:       trim(String(r[4] || '')),  // categoria
-        vm:         vm,
-        totalVendas: Math.round(parseNum(r[22]) || 0),
-        vendas6m:    Math.round(parseNum(r[23]) || 0),
+        codigo:      cod,
+        nome:        nome,
+        colecao:     I_COL   >= 0 ? trim(String(r[I_COL]  || '')) : '',
+        tecido:      I_TEC   >= 0 ? trim(String(r[I_TEC]  || '')) : '',
+        tipo:        I_TIPO  >= 0 ? trim(String(r[I_TIPO] || '')) : '',
+        curva:       I_CURVA >= 0 ? trim(String(r[I_CURVA]|| '')).toUpperCase() : '',
+        vm:          vm,
+        totalVendas: I_TOT >= 0 ? Math.round(parseNum(r[I_TOT]) || 0) : vm.reduce(function(s,v){return s+v;},0),
+        vendas6m:    I_V6M >= 0 ? Math.round(parseNum(r[I_V6M]) || 0) : vm.slice(-6).reduce(function(s,v){return s+v;},0),
       });
     });
 
@@ -1157,8 +1190,8 @@ function getEstoque() {
     var I_TEC   = findCol(header, ['Tecido','tecido','Material','material','Fabric','fabric']);                                 if (I_TEC    < 0) I_TEC    = 13;
     var I_CURVA = findCol(header, ['Curva','curva','Classe','classe','ABC','abc','Classificação','classificacao']);              if (I_CURVA  < 0) I_CURVA  = 15;
     var I_EST   = findCol(header, ['Estoque','estoque','Saldo','saldo','Quantidade','quantidade','Qtd','qtd','Stock','stock','Inventory']); if (I_EST < 0) I_EST = 16;
-    var I_TVEND = findCol(header, ['Total Vendas','total_vendas','Vendas Total','Qtd Vendida','vendas_total','TotalVendas']);   if (I_TVEND  < 0) I_TVEND  = 32;
-    var I_V6M   = findCol(header, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);   if (I_V6M    < 0) I_V6M    = 33;
+    var I_TVEND = findCol(header, ['Total Vendas','total_vendas','Vendas Total','Qtd Vendida','vendas_total','TotalVendas']);
+    var I_V6M   = findCol(header, ['Vendas 6m','vendas_6m','V6M','v6m','Últimos 6m','6 meses','Vendas6m','Vendas 6 meses']);
 
     var LIMITE = CONFIG.ESTOQUE_BAIXO;
 
