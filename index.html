@@ -1219,7 +1219,7 @@ tbody tr:hover{background:#fafafa}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Status Pagamento</th><th>Status Entrega</th><th>Valor</th><th>Data</th></tr></thead>
+          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Entrega</th><th>Método de Envio</th><th>Valor</th><th>Data</th></tr></thead>
           <tbody id="pedidosBody"></tbody>
         </table>
       </div>
@@ -5536,49 +5536,67 @@ function applyPedidosData(d) {
     setElText('cnt-cancelados',  d.contadores.cancelados  || 0);
   }
 
-  // Subtítulo com data de corte
+  // Subtítulo D-1
   var ontem = new Date();
   ontem.setDate(ontem.getDate() - 1);
   var subEl = document.getElementById('pedidos-sub');
   if (subEl) subEl.textContent = 'Dados até ' + ontem.toLocaleDateString('pt-BR');
 
   // Tabela
-  if (d.lista) {
-    var tbody = document.getElementById('pedidosBody');
-    if (!tbody) return;
+  if (!d.lista || !d.lista.length) return;
+  var tbody = document.getElementById('pedidosBody');
+  if (!tbody) return;
 
-    // Mapas de estilo para badges
-    var pagMap = {
-      'Pago': 'green', 'Pendente': 'yellow', 'Autorizado': 'blue',
-      'Cancelado': 'red', 'Parcialmente pago': 'yellow',
-      'Reembolsado': 'red', 'Parcialmente reembolsado': 'yellow',
-      'Voided': 'red', 'Desconhecido': 'gray'
-    };
-    var entMap = {
-      'Enviado': 'green', 'Entregue': 'green', 'Em Trânsito': 'blue',
-      'Envio parcial': 'blue', 'Aguardando envio': 'yellow',
-      'Cancelado': 'red', 'Devolvido': 'red'
-    };
+  // Badges de pagamento
+  var pagMap = {
+    'Pago': 'green', 'Pendente': 'yellow', 'Autorizado': 'blue',
+    'Cancelado': 'red', 'Parcialmente pago': 'yellow', 'Aprovado': 'green',
+    'Reembolsado': 'red', 'Parcialmente reembolsado': 'yellow', 'Voided': 'red'
+  };
+  // Badges de entrega
+  var entMap = {
+    'Enviado': 'green', 'Entregue': 'green', 'Em Trânsito': 'blue',
+    'Envio parcial': 'blue', 'Aguardando envio': 'yellow',
+    'Aguardando Envio': 'yellow', 'Em trânsito': 'blue',
+    'Cancelado': 'red', 'Devolvido': 'red'
+  };
 
-    tbody.innerHTML = d.lista.map(function(p) {
-      var pagClasse  = pagMap[p.pagamento] || pagMap[p.status] || 'gray';
-      var entClasse  = entMap[p.entrega]   || entMap[p.status] || 'gray';
-      var pagLabel   = p.pagamento || p.status || '—';
-      var entLabel   = p.entrega   || '—';
-      var cliente    = p.cliente   || '—';
-      var email      = p.email     || '—';
+  // D-1 client-side: para dados históricos do GAS, filtra pelo dia anterior
+  var today = new Date(); today.setHours(0,0,0,0);
+  var cutoff = new Date(today); cutoff.setDate(cutoff.getDate() - 1);
 
-      return '<tr>' +
-        '<td><strong>#' + p.id + '</strong></td>' +
-        '<td>' + cliente + '</td>' +
-        '<td style="color:#6b7280;font-size:12px">' + email + '</td>' +
-        '<td><span class="badge ' + pagClasse + '">' + pagLabel + '</span></td>' +
-        '<td><span class="badge ' + entClasse + '">' + entLabel + '</span></td>' +
-        '<td><strong>' + fmtBRL(p.valor) + '</strong></td>' +
-        '<td style="color:#6b7280">' + p.data + '</td>' +
-        '</tr>';
-    }).join('');
-  }
+  // Ordenar por data decrescente
+  var lista = d.lista.slice().sort(function(a, b) {
+    var da = a.data ? a.data.split('/').reverse().join('-') : '';
+    var db = b.data ? b.data.split('/').reverse().join('-') : '';
+    return db.localeCompare(da);
+  });
+
+  tbody.innerHTML = lista.map(function(p) {
+    // Pagamento: usa campo 'pagamento' (Shopify) ou 'status' (GAS)
+    var pagLabel  = p.pagamento || p.status || '—';
+    var pagClasse = pagMap[pagLabel] || 'gray';
+
+    // Entrega: usa campo 'entrega' (Shopify); para GAS usa status se não houver
+    var entLabel  = p.entrega || (p.pagamento ? '—' : p.status) || '—';
+    var entClasse = entMap[entLabel] || 'gray';
+
+    var cliente  = (p.cliente  && p.cliente  !== '') ? p.cliente  : '—';
+    var email    = (p.email    && p.email    !== '') ? p.email    : '—';
+    var envio    = p.metodo_envio || '—';
+    var pedidoId = (p.id && p.id !== '') ? '#' + p.id : '—';
+
+    return '<tr>' +
+      '<td><strong>' + pedidoId + '</strong></td>' +
+      '<td>' + cliente + '</td>' +
+      '<td style="color:#6b7280;font-size:12px">' + email + '</td>' +
+      '<td><span class="badge ' + pagClasse + '">' + pagLabel + '</span></td>' +
+      '<td><span class="badge ' + entClasse + '">' + entLabel + '</span></td>' +
+      '<td style="color:#374151;font-size:12px">' + envio + '</td>' +
+      '<td><strong>' + fmtBRL(p.valor) + '</strong></td>' +
+      '<td style="color:#6b7280">' + p.data + '</td>' +
+      '</tr>';
+  }).join('');
 }
 
 /* ===== APPLY — CLIENTES ===== */

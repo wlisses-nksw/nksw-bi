@@ -206,17 +206,18 @@ function buildPedidos(orders) {
   }
 
   const lista = ordersD1.map(o => ({
-    id:       String(o.order_number),
-    produto:  o.line_items?.[0]?.title || '',
-    pagamento: FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido',
-    entrega:  o.cancelled_at
-                ? 'Cancelado'
-                : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
-    valor:    parseFloat(o.total_price) || 0,
-    data:     ptDate(o.created_at),
-    cliente:  customerName(o),
-    email:    o.customer?.email || o.contact_email || '',
-    rastreio: o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
+    id:          String(o.order_number),
+    produto:     o.line_items?.[0]?.title || '',
+    cliente:     customerName(o),
+    email:       o.customer?.email || o.contact_email || '',
+    pagamento:   FINANCIAL_LABELS[o.financial_status]     || o.financial_status     || 'Desconhecido',
+    entrega:     o.cancelled_at
+                   ? 'Cancelado'
+                   : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
+    metodo_envio: o.shipping_lines?.[0]?.title || '—',
+    valor:       parseFloat(o.total_price) || 0,
+    data:        ptDate(o.created_at),
+    rastreio:    o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
   }));
 
   return { contadores, lista };
