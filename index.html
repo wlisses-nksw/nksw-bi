@@ -605,21 +605,14 @@ tbody tr:hover{background:#fafafa}
       </div>
     </div>
     <button id="topbar-new-user-btn" onclick="openUserModal()" style="display:none;padding:8px 18px;background:#c20000;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px">+ Novo Usuário</button>
-    <div id="shopify-topbar-sync" style="display:none;flex-direction:column;align-items:center;gap:2px;margin:0 auto">
-      <button onclick="runShopifySync('update')" style="padding:8px 20px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:.3px">↻ Atualizar Shopify</button>
-      <span id="shopify-sync-ts" style="display:none;font-size:10px;color:#9ca3af"></span>
-    </div>
+
     <div class="tb-status">
       <span class="s-dot ok" id="statusDotTop"></span>
       <span id="statusTextTop">Conectado</span>
     </div>
   </div>
 
-  <!-- SHOPIFY SYNC BANNER — visível apenas quando dados não estão sincronizados -->
-  <div id="shopify-sync-banner" style="display:none;align-items:center;gap:12px;padding:10px 20px;background:#fff7ed;border-bottom:1px solid #fed7aa;font-size:13px;color:#92400e;flex-wrap:wrap">
-    <span>⚡ Dados Shopify de <strong id="shopify-sync-month-label"></strong> ainda não sincronizados.</span>
-    <button id="shopify-sync-btn" onclick="runShopifySync('full')" style="padding:7px 18px;background:#111827;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">↻ Sincronizar agora</button>
-  </div>
+
 
   <!-- CONTENT -->
   <div id="content">
@@ -1204,11 +1197,12 @@ tbody tr:hover{background:#fafafa}
     <!-- ============================================================ -->
     <div class="page" id="page-pedidos">
 
-      <div class="four-col" style="margin-bottom:24px">
-        <div class="status-card"><div class="sc-label">Aprovados</div><div class="sc-num green">412</div></div>
-        <div class="status-card"><div class="sc-label">Pendentes</div><div class="sc-num yellow">45</div></div>
-        <div class="status-card"><div class="sc-label">Em Trânsito</div><div class="sc-num blue">58</div></div>
-        <div class="status-card"><div class="sc-label">Cancelados</div><div class="sc-num red">18</div></div>
+      <div class="five-col" style="margin-bottom:24px">
+        <div class="status-card"><div class="sc-label">Aprovados</div><div class="sc-num green" id="cnt-aprovados">—</div></div>
+        <div class="status-card"><div class="sc-label">Entregues</div><div class="sc-num green" id="cnt-entregues">—</div></div>
+        <div class="status-card"><div class="sc-label">Em Trânsito</div><div class="sc-num blue" id="cnt-em-transito">—</div></div>
+        <div class="status-card"><div class="sc-label">Pendentes</div><div class="sc-num yellow" id="cnt-pendentes">—</div></div>
+        <div class="status-card"><div class="sc-label">Cancelados</div><div class="sc-num red" id="cnt-cancelados">—</div></div>
       </div>
 
       <div id="connectBannerPedidos" class="connect-banner" style="display:none">
@@ -1221,11 +1215,11 @@ tbody tr:hover{background:#fafafa}
       </div>
 
       <div class="section-header">
-        <div><div class="section-title">Lista de Pedidos</div><div class="section-sub">Últimos pedidos recebidos</div></div>
+        <div><div class="section-title">Pedidos por Cliente</div><div class="section-sub" id="pedidos-sub">Dados até ontem</div></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th># Pedido</th><th>Produto(s)</th><th>Status</th><th>Valor</th><th>Data/Hora</th></tr></thead>
+          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Status Pagamento</th><th>Status Entrega</th><th>Valor</th><th>Data</th></tr></thead>
           <tbody id="pedidosBody"></tbody>
         </table>
       </div>
@@ -1772,9 +1766,7 @@ function updateNavPeriodLabel() {
   _navLabel = GOAL_MONTHS_NAMES[navMonth] + ' de ' + navYear;
   var lbl = document.getElementById('nav-period-label');
   if (lbl) lbl.textContent = _navLabel;
-  // Mostra botão Shopify no topbar apenas para mai/2026 em diante
-  var shopifyBtn = document.getElementById('shopify-topbar-sync');
-  if (shopifyBtn) shopifyBtn.style.display = isShopifyPeriod() ? 'flex' : 'none';
+
 }
 
 function changeNavMonth(delta) {
@@ -3818,26 +3810,10 @@ function calcPreco() {
 
 /* ===== PEDIDOS ===== */
 function renderPedidos() {
-  if (!SHEET_PEDIDOS) {
-    var banner = document.getElementById('connectBannerPedidos');
-    if (banner) banner.style.display = 'flex';
-  }
+  // Mock/fallback — substituído por applyPedidosData quando dados reais carregam
   var tbody = document.getElementById('pedidosBody');
   if (!tbody) return;
-  var statusMap = {
-    'Aprovado':'green', 'Em Trânsito':'blue',
-    'Pendente':'yellow', 'Cancelado':'red', 'Entregue':'green',
-  };
-  tbody.innerHTML = MOCK.pedidos.map(function(p) {
-    var sc = statusMap[p.status] || 'gray';
-    return '<tr>' +
-      '<td><strong>' + p.id + '</strong></td>' +
-      '<td>' + p.produto + '</td>' +
-      '<td><span class="badge ' + sc + '">' + p.status + '</span></td>' +
-      '<td>' + fmtBRL(p.valor) + '</td>' +
-      '<td style="color:#6b7280">' + p.data + '</td>' +
-      '</tr>';
-  }).join('');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#9ca3af;padding:32px">Carregando pedidos...</td></tr>';
 }
 
 /* ===== CLIENTES ===== */
@@ -4269,7 +4245,6 @@ function _populateShopifyDiarioCache(m, y, vendasData) {
   _metasDiarioCache[cacheKey] = entries;
   renderVisaoGeral();
   renderIndicadores();
-  if (typeof renderGoals === 'function') renderGoals();
 }
 
 // Enriquece _metasDiarioCache com spend diário (Meta Ads) e sessões diárias (GA4) em background
@@ -4340,105 +4315,35 @@ async function _enrichShopifyCacheAsync(m, y) {
 
 // Carrega dados do Shopify BI para o mês atual
 async function loadShopifyData() {
-  var monthKey  = navYear + '-' + String(navMonth + 1).padStart(2, '0');
-  var url       = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
-  var MES_PT    = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  var curNavMon = navMonth + 1;   // 1-12
-  var prevYear  = navYear  - 1;
-  var pad2      = function(n){ return String(n).padStart(2,'0'); };
-
+  var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
+  var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
   try {
     var r = await fetch(url);
     var d = await r.json();
     if (!d.ok) {
-      setSheetsStatus(false, 'Shopify — sync necessário');
-      showShopifySyncBanner(monthKey);
+      // Dados ainda não sincronizados — mostra aviso com botão de sync
+      setSheetsStatus(false, 'Shopify — sem dados para este mês');
       return;
     }
 
-    // ── Busca meses históricos em paralelo ────────────────────────────────
-    // Jan..(curMon-1) do ano atual (Sheets) + Jan..curMon do ano anterior
-    var fetchPairs = [];
-    for (var i = 1; i < curNavMon; i++) {
-      fetchPairs.push({ key: navYear + '-' + pad2(i), mes: i, year: navYear });
-    }
-    for (var j = 1; j <= curNavMon; j++) {
-      fetchPairs.push({ key: prevYear + '-' + pad2(j), mes: j, year: prevYear });
-    }
+    // Busca ano anterior para comparação YoY (pode estar no Shopify BI se já sincronizado)
+    var prevVendas = null;
+    try {
+      var prevMonthKey = (navYear - 1) + '-' + String(navMonth + 1).padStart(2, '0');
+      var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
+      var prevR = await fetch(prevUrl);
+      var prevDat = await prevR.json();
+      if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
+    } catch(e2) { /* ano anterior pode não estar disponível */ }
 
-    var histResults = await Promise.all(fetchPairs.map(function(p) {
-      return fetchStaticJSON('vendas', p.key).then(function(data) {
-        var v    = (data && data.vendas) ? data.vendas : data;
-        var kpis = (v && v.kpis) ? v.kpis : null;
-        if (!kpis || (!kpis.receita && !kpis.pedidos)) return null;
-        return {
-          mes:    p.mes,
-          label:  MES_PT[p.mes - 1],
-          receita: kpis.receita || 0,
-          pedidos: kpis.pedidos || 0,
-          ticket:  kpis.ticket  || (kpis.pedidos > 0 ? kpis.receita / kpis.pedidos : 0),
-          year:    p.year,
-        };
-      }).catch(function(){ return null; });
-    }));
-
-    // ── Separa anos ───────────────────────────────────────────────────────
-    var curYearMes = [], prevYearMes = [];
-    histResults.forEach(function(e) {
-      if (!e) return;
-      if (e.year === navYear) curYearMes.push(e);
-      else                   prevYearMes.push(e);
-    });
-
-    // Adiciona mês atual (Shopify)
-    if (d.vendas && d.vendas.kpis) {
-      curYearMes.push({
-        mes:     curNavMon,
-        label:   MES_PT[curNavMon - 1],
-        receita: d.vendas.kpis.receita || 0,
-        pedidos: d.vendas.kpis.pedidos || 0,
-        ticket:  d.vendas.kpis.ticket  || 0,
-        year:    navYear,
-      });
-    }
-    curYearMes.sort(function(a, b){ return a.mes - b.mes; });
-    prevYearMes.sort(function(a, b){ return a.mes - b.mes; });
-
-    // Injeta porMes completo no objeto vendas para renderização
-    if (d.vendas) d.vendas.porMes = curYearMes;
-
-    // ── Comparação para badges: usa mês anterior (ex: abr/26) ────────────
-    // porMes do ano anterior incluído para renderizar linha YoY nos gráficos via applyVendasData
-    var prevMonEntry = curYearMes.find(function(m){ return m.mes === curNavMon - 1; });
-    var prevDForBadges = {
-      kpis: prevMonEntry ? {
-        receita:         prevMonEntry.receita,
-        pedidos:         prevMonEntry.pedidos,
-        ticket:          prevMonEntry.ticket,
-        receitaSemFrete: null,
-      } : null,
-      _label: prevMonEntry
-        ? 'vs ' + MES_PT[prevMonEntry.mes - 1].toLowerCase() + '/' + String(navYear).slice(2)
-        : null,
-      porMes: prevYearMes,
-    };
-
-    // ── Aplica dados em todas as abas ─────────────────────────────────────
+    if (d.vendas)    applyVendasData(d.vendas, prevVendas);
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
-    if (d.clientes)  applyClientesData(d.clientes);
-    if (d.vendas) {
-      _lastVendasData     = d.vendas;
-      _lastPrevVendasData = prevDForBadges;
-      applyVendasData(d.vendas, prevDForBadges);  // renderiza YoY charts + badges internamente
-    }
 
-    // ── Cache diário (base para Metas e Indicadores) ──────────────────────
+    // Popula cache diário (excluindo hoje) para que getMonthRealized / getDayRealized funcionem corretamente
     _populateShopifyDiarioCache(navMonth, navYear, d.vendas);
 
     setSheetsStatus(true, 'Shopify ✓');
-    updateShopifySyncTimestamp(d.synced_at);
-    hideShopifySyncBanner();
 
     // Enriquece cache com spend diário (Meta Ads) + sessões (GA4) em background
     _enrichShopifyCacheAsync(navMonth, navYear).catch(function(){});
@@ -4448,41 +4353,7 @@ async function loadShopifyData() {
   }
 }
 
-// Dispara full sync ou update incremental
-async function runShopifySync(action) {
-  var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
-  var btn = document.getElementById('shopify-sync-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sincronizando...'; }
-  try {
-    var url = SHOPIFY_SYNC_URL + '?action=' + action + '&month=' + monthKey + '&secret=' + SHOPIFY_SYNC_SECRET;
-    var r = await fetch(url);
-    var d = await r.json();
-    if (!d.ok) throw new Error(d.error || 'Erro no sync');
-    if (btn) btn.textContent = '✓ Sincronizado (' + (d.total || 0) + ' pedidos)';
-    setTimeout(function() { loadShopifyData(); }, 500);
-  } catch(e) {
-    if (btn) { btn.disabled = false; btn.textContent = '↻ Tentar novamente'; }
-    alert('Erro ao sincronizar: ' + e.message);
-  }
-}
 
-function showShopifySyncBanner(monthKey) {
-  var el = document.getElementById('shopify-sync-banner');
-  if (el) { el.style.display = 'flex'; }
-  var lbl = document.getElementById('shopify-sync-month-label');
-  if (lbl) lbl.textContent = monthKey;
-}
-function hideShopifySyncBanner() {
-  var el = document.getElementById('shopify-sync-banner');
-  if (el) el.style.display = 'none';
-}
-function updateShopifySyncTimestamp(syncedAt) {
-  var el = document.getElementById('shopify-sync-ts');
-  if (!el || !syncedAt) return;
-  var d = new Date(syncedAt);
-  el.textContent = 'Última sincronização: ' + d.toLocaleString('pt-BR');
-  el.style.display = 'inline';
-}
 
 /* ===== SHEETS API (Apps Script) ===== */
 function getSheetsUrl() {
@@ -4811,7 +4682,7 @@ function applyStatusFilter(d) {
   mKpis.pctSemFrete   = mKpis.pedidos > 0 ? mKpis.pedidosSemFrete / mKpis.pedidos  * 100 : 0;
 
   // Se API antiga (sem breakdowns), usa gráficos totais — só KPIs são filtrados
-  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes - b.mes; }) : (d.porMes || []);
+  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes.localeCompare(b.mes); }) : (d.porMes || []);
   var fVendedor = hasFullBreakdowns ? Object.values(mVendedor).sort(function(a,b){ return b.receita - a.receita; }) : (d.porVendedor || []);
   var fEstado   = hasFullBreakdowns ? Object.values(mEstado).sort(function(a,b){ return b.receita - a.receita; }).slice(0,10) : (d.porEstado || []);
 
@@ -4826,10 +4697,10 @@ function applyStatusFilter(d) {
 }
 
 /* ===== HELPER — YoY badge ===== */
-function setYoYBadge(badgeId, cur, prev, label) {
+function setYoYBadge(badgeId, cur, prev) {
   var el = document.getElementById(badgeId);
   if (!el) return;
-  if (prev == null || prev === 0) {
+  if (!prev || prev === 0) {
     el.textContent = '— sem dado anterior';
     el.className = 'kpi-badge neutral';
     return;
@@ -4838,7 +4709,7 @@ function setYoYBadge(badgeId, cur, prev, label) {
   var abs = Math.abs(pct);
   var sign = pct >= 0 ? '▲' : '▼';
   var cls  = pct >= 0 ? 'up' : 'down';
-  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% ' + (label || 'vs ano anterior');
+  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% vs ano anterior';
   el.className = 'kpi-badge ' + cls;
 }
 
@@ -4993,11 +4864,10 @@ function applyVendasData(d, prevD) {
   setElText('kpi-receita-sem-frete',fmtBRL(k.receitaSemFrete));
 
   // ── YoY badges ──
-  var _badgeLabel = prevD && prevD._label ? prevD._label : null;
-  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null, _badgeLabel);
-  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null, _badgeLabel);
-  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null, _badgeLabel);
-  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null, _badgeLabel);
+  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null);
+  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null);
+  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null);
+  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null);
   setElText('kpi-taxa-cancel',      (k.taxaCancel || 0).toFixed(1).replace('.',',') + '%');
   setElText('kpi-desconto-total',   fmtBRL(k.descontoTotal));
   setElText('kpi-pct-cupom',        (k.pctCupom || 0).toFixed(1).replace('.',',') + '%');
@@ -5656,25 +5526,55 @@ function exportarEstoqueCSV() {
 /* ===== APPLY — PEDIDOS ===== */
 function applyPedidosData(d) {
   if (!d) return;
+
   // Contadores
   if (d.contadores) {
-    setElText('cnt-aprovados',   d.contadores.aprovados);
-    setElText('cnt-pendentes',   d.contadores.pendentes);
-    setElText('cnt-em-transito', d.contadores.em_transito);
-    setElText('cnt-cancelados',  d.contadores.cancelados);
+    setElText('cnt-aprovados',   d.contadores.aprovados   || 0);
+    setElText('cnt-entregues',   d.contadores.entregues   || 0);
+    setElText('cnt-em-transito', d.contadores.em_transito || 0);
+    setElText('cnt-pendentes',   d.contadores.pendentes   || 0);
+    setElText('cnt-cancelados',  d.contadores.cancelados  || 0);
   }
+
+  // Subtítulo com data de corte
+  var ontem = new Date();
+  ontem.setDate(ontem.getDate() - 1);
+  var subEl = document.getElementById('pedidos-sub');
+  if (subEl) subEl.textContent = 'Dados até ' + ontem.toLocaleDateString('pt-BR');
+
   // Tabela
   if (d.lista) {
     var tbody = document.getElementById('pedidosBody');
     if (!tbody) return;
-    var statusMap = { 'Aprovado':'green', 'Em Trânsito':'blue', 'Pendente':'yellow', 'Cancelado':'red', 'Entregue':'green' };
+
+    // Mapas de estilo para badges
+    var pagMap = {
+      'Pago': 'green', 'Pendente': 'yellow', 'Autorizado': 'blue',
+      'Cancelado': 'red', 'Parcialmente pago': 'yellow',
+      'Reembolsado': 'red', 'Parcialmente reembolsado': 'yellow',
+      'Voided': 'red', 'Desconhecido': 'gray'
+    };
+    var entMap = {
+      'Enviado': 'green', 'Entregue': 'green', 'Em Trânsito': 'blue',
+      'Envio parcial': 'blue', 'Aguardando envio': 'yellow',
+      'Cancelado': 'red', 'Devolvido': 'red'
+    };
+
     tbody.innerHTML = d.lista.map(function(p) {
-      var sc = statusMap[p.status] || 'gray';
+      var pagClasse  = pagMap[p.pagamento] || pagMap[p.status] || 'gray';
+      var entClasse  = entMap[p.entrega]   || entMap[p.status] || 'gray';
+      var pagLabel   = p.pagamento || p.status || '—';
+      var entLabel   = p.entrega   || '—';
+      var cliente    = p.cliente   || '—';
+      var email      = p.email     || '—';
+
       return '<tr>' +
-        '<td><strong>' + p.id + '</strong></td>' +
-        '<td>' + p.produto + '</td>' +
-        '<td><span class="badge ' + sc + '">' + p.status + '</span></td>' +
-        '<td>' + fmtBRL(p.valor) + '</td>' +
+        '<td><strong>#' + p.id + '</strong></td>' +
+        '<td>' + cliente + '</td>' +
+        '<td style="color:#6b7280;font-size:12px">' + email + '</td>' +
+        '<td><span class="badge ' + pagClasse + '">' + pagLabel + '</span></td>' +
+        '<td><span class="badge ' + entClasse + '">' + entLabel + '</span></td>' +
+        '<td><strong>' + fmtBRL(p.valor) + '</strong></td>' +
         '<td style="color:#6b7280">' + p.data + '</td>' +
         '</tr>';
     }).join('');
@@ -6489,9 +6389,8 @@ function renderGoals() {
     if (tbSub) tbSub.textContent = 'Editando ' + GOAL_MONTHS_NAMES[goalMonth] + ' de ' + goalYear;
   } else {
     var cacheKey = goalYear + '_' + String(goalMonth+1).padStart(2,'0');
-    // Para períodos Shopify (mai/2026+), NÃO busca do Sheets — aguarda _populateShopifyDiarioCache
-    // Para demais meses: busca via API se ainda não está em cache
-    if (_metasDiarioCache[cacheKey] === undefined && getSheetsUrl() && !isShopifyPeriod(goalMonth, goalYear)) {
+    // Todos os meses: busca via API se ainda não está em cache
+    if (_metasDiarioCache[cacheKey] === undefined && getSheetsUrl()) {
       _loadGoalMonthData(goalMonth, goalYear, true);
       return;
     }
@@ -7113,112 +7012,4 @@ async function submitChangePwd() {
     if (!checkData.ok) throw new Error('Senha atual incorreta.');
 
     // Aplicar nova senha
-    var hashNova = await sha256Client(nova);
-    var resetData = await authCall({ action: 'resetPassword', token: auth.token, id: auth.id, senhaHash: hashNova });
-    if (!resetData.ok) throw new Error(resetData.msg || 'Erro ao alterar senha.');
-
-    _showCpwdMsg('Senha alterada com sucesso!', false);
-    btn.textContent = 'Salvo!';
-    setTimeout(closeChangePwdModal, 1800);
-  } catch(e) {
-    _showCpwdMsg(e.message || 'Erro ao alterar senha.', true);
-    btn.disabled = false;
-    btn.textContent = 'Salvar';
-  }
-}
-
-async function promptResetPassword(id, nome) {
-  var nova = prompt('Nova senha para ' + nome + ' (mínimo 6 caracteres):');
-  if (nova === null) return;
-  if (nova.length < 6) { alert('Senha muito curta (mínimo 6 caracteres).'); return; }
-
-  var auth = getAuthState();
-  var hash = await sha256Client(nova);
-  authCall({ action: 'resetPassword', token: auth.token, id: id, senhaHash: hash })
-    .then(function(d) { alert(d.ok ? 'Senha alterada com sucesso!' : 'Erro: ' + (d.msg || 'Falha')); });
-}
-
-window.addEventListener('DOMContentLoaded', authInit);
-document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSidebar(); });
-</script>
-
-<!-- ===== MODAL ALTERAR SENHA (viewer self-service) ===== -->
-<div id="change-pwd-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
-    <div style="font-size:16px;font-weight:700;color:#111827;margin-bottom:20px">🔑 Alterar Senha</div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Senha Atual</label>
-      <input id="cpwd-atual" type="password" placeholder="Sua senha atual" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div style="margin-bottom:14px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Nova Senha</label>
-      <input id="cpwd-nova" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div style="margin-bottom:20px">
-      <label style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Confirmar Nova Senha</label>
-      <input id="cpwd-confirm" type="password" placeholder="Repita a nova senha" style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;box-sizing:border-box">
-    </div>
-    <div id="cpwd-msg" style="display:none;font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:14px"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button onclick="closeChangePwdModal()" style="padding:9px 18px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;font-size:13px;cursor:pointer;color:#374151">Cancelar</button>
-      <button id="cpwd-btn" onclick="submitChangePwd()" style="padding:9px 18px;border:none;border-radius:8px;background:#c20000;color:#fff;font-size:13px;font-weight:700;cursor:pointer">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== USER MODAL ===== -->
-<div id="user-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modal-title">Novo Usuário</div>
-    <input type="hidden" id="modal-user-id"/>
-    <div class="modal-field">
-      <label>Nome completo</label>
-      <input type="text" id="modal-nome" placeholder="Ex: João Silva"/>
-    </div>
-    <div class="modal-field">
-      <label>Email</label>
-      <input type="email" id="modal-email" placeholder="joao@email.com"/>
-    </div>
-    <div class="modal-field" id="modal-senha-field">
-      <label id="modal-senha-label">Senha</label>
-      <input type="password" id="modal-senha" placeholder="Mínimo 6 caracteres"/>
-    </div>
-    <div class="modal-field">
-      <label>Perfil</label>
-      <select id="modal-role">
-        <option value="viewer">Visualizador</option>
-        <option value="admin">Administrador (acesso total)</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Telas permitidas</label>
-      <div class="tabs-grid" id="tabs-grid">
-        <button type="button" class="tab-toggle tab-toggle-all" onclick="toggleAllTabs(this)">Todas as telas</button>
-        <button type="button" class="tab-toggle" data-tab="indicadores" onclick="toggleTab(this)">📊 Indicadores</button>
-        <button type="button" class="tab-toggle" data-tab="marketing" onclick="toggleTab(this)">📣 Marketing</button>
-        <button type="button" class="tab-toggle" data-tab="webanalytics" onclick="toggleTab(this)">🌐 Web Analytics</button>
-        <button type="button" class="tab-toggle" data-tab="vendas" onclick="toggleTab(this)">💰 Vendas</button>
-        <button type="button" class="tab-toggle" data-tab="produtos" onclick="toggleTab(this)">📦 Produtos</button>
-        <button type="button" class="tab-toggle" data-tab="pedidos" onclick="toggleTab(this)">🛒 Pedidos</button>
-        <button type="button" class="tab-toggle" data-tab="clientes" onclick="toggleTab(this)">👥 Clientes</button>
-        <button type="button" class="tab-toggle" data-tab="logistica" onclick="toggleTab(this)">🚚 Logística</button>
-        <button type="button" class="tab-toggle" data-tab="metas" onclick="toggleTab(this)">🎯 Metas</button>
-      </div>
-    </div>
-    <div class="modal-field" id="modal-ativo-field" style="display:none">
-      <label>Status</label>
-      <select id="modal-ativo">
-        <option value="true">Ativo</option>
-        <option value="false">Inativo</option>
-      </select>
-    </div>
-    <div class="modal-error" id="modal-error"></div>
-    <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeUserModal()">Cancelar</button>
-      <button class="modal-btn primary" id="modal-save-btn" onclick="saveUser()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+    var hashNova = a

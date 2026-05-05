@@ -189,9 +189,15 @@ function buildVendas(orders) {
 }
 
 function buildPedidos(orders) {
+  // D-1: apenas pedidos criados até ontem (dados do dia corrente chegam no dia seguinte)
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(23, 59, 59, 999);
+  const ordersD1 = orders.filter(o => new Date(o.created_at) <= yesterday);
+
   const contadores = { aprovados: 0, pendentes: 0, em_transito: 0, cancelados: 0, entregues: 0 };
 
-  for (const o of orders) {
+  for (const o of ordersD1) {
     if (o.cancelled_at)                            contadores.cancelados++;
     else if (o.fulfillment_status === 'fulfilled') contadores.entregues++;
     else if (o.fulfillment_status === 'partial')   contadores.em_transito++;
@@ -199,16 +205,17 @@ function buildPedidos(orders) {
     else                                           contadores.pendentes++;
   }
 
-  const lista = orders.map(o => ({
-    id:      String(o.order_number),
-    produto: o.line_items?.[0]?.title || '',
-    status:  o.cancelled_at
-               ? 'Cancelado'
-               : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
-    valor:   parseFloat(o.total_price) || 0,
-    data:    ptDate(o.created_at),
-    cliente: customerName(o),
-    email:   o.customer?.email || o.contact_email || '',
+  const lista = ordersD1.map(o => ({
+    id:       String(o.order_number),
+    produto:  o.line_items?.[0]?.title || '',
+    pagamento: FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido',
+    entrega:  o.cancelled_at
+                ? 'Cancelado'
+                : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
+    valor:    parseFloat(o.total_price) || 0,
+    data:     ptDate(o.created_at),
+    cliente:  customerName(o),
+    email:    o.customer?.email || o.contact_email || '',
     rastreio: o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
   }));
 
