@@ -4269,6 +4269,7 @@ function _populateShopifyDiarioCache(m, y, vendasData) {
   _metasDiarioCache[cacheKey] = entries;
   renderVisaoGeral();
   renderIndicadores();
+  if (typeof renderGoals === 'function') renderGoals();
 }
 
 // Enriquece _metasDiarioCache com spend diário (Meta Ads) e sessões diárias (GA4) em background
@@ -4339,33 +4340,100 @@ async function _enrichShopifyCacheAsync(m, y) {
 
 // Carrega dados do Shopify BI para o mês atual
 async function loadShopifyData() {
-  var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
-  var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
+  var monthKey  = navYear + '-' + String(navMonth + 1).padStart(2, '0');
+  var url       = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
+  var MES_PT    = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var curNavMon = navMonth + 1;   // 1-12
+  var prevYear  = navYear  - 1;
+  var pad2      = function(n){ return String(n).padStart(2,'0'); };
+
   try {
     var r = await fetch(url);
     var d = await r.json();
     if (!d.ok) {
-      // Dados ainda não sincronizados — mostra aviso com botão de sync
       setSheetsStatus(false, 'Shopify — sync necessário');
       showShopifySyncBanner(monthKey);
       return;
     }
 
-    // Busca ano anterior para comparação YoY (pode estar no Shopify BI se já sincronizado)
-    var prevVendas = null;
-    try {
-      var prevMonthKey = (navYear - 1) + '-' + String(navMonth + 1).padStart(2, '0');
-      var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
-      var prevR = await fetch(prevUrl);
-      var prevDat = await prevR.json();
-      if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
-    } catch(e2) { /* ano anterior pode não estar disponível */ }
+    // ── Busca meses históricos em paralelo ────────────────────────────────
+    // Jan..(curMon-1) do ano atual (Sheets) + Jan..curMon do ano anterior
+    var fetchPairs = [];
+    for (var i = 1; i < curNavMon; i++) {
+      fetchPairs.push({ key: navYear + '-' + pad2(i), mes: i, year: navYear });
+    }
+    for (var j = 1; j <= curNavMon; j++) {
+      fetchPairs.push({ key: prevYear + '-' + pad2(j), mes: j, year: prevYear });
+    }
 
-    if (d.vendas)    applyVendasData(d.vendas, prevVendas);
+    var histResults = await Promise.all(fetchPairs.map(function(p) {
+      return fetchStaticJSON('vendas', p.key).then(function(data) {
+        var v    = (data && data.vendas) ? data.vendas : data;
+        var kpis = (v && v.kpis) ? v.kpis : null;
+        if (!kpis || (!kpis.receita && !kpis.pedidos)) return null;
+        return {
+          mes:    p.mes,
+          label:  MES_PT[p.mes - 1],
+          receita: kpis.receita || 0,
+          pedidos: kpis.pedidos || 0,
+          ticket:  kpis.ticket  || (kpis.pedidos > 0 ? kpis.receita / kpis.pedidos : 0),
+          year:    p.year,
+        };
+      }).catch(function(){ return null; });
+    }));
+
+    // ── Separa anos ───────────────────────────────────────────────────────
+    var curYearMes = [], prevYearMes = [];
+    histResults.forEach(function(e) {
+      if (!e) return;
+      if (e.year === navYear) curYearMes.push(e);
+      else                   prevYearMes.push(e);
+    });
+
+    // Adiciona mês atual (Shopify)
+    if (d.vendas && d.vendas.kpis) {
+      curYearMes.push({
+        mes:     curNavMon,
+        label:   MES_PT[curNavMon - 1],
+        receita: d.vendas.kpis.receita || 0,
+        pedidos: d.vendas.kpis.pedidos || 0,
+        ticket:  d.vendas.kpis.ticket  || 0,
+        year:    navYear,
+      });
+    }
+    curYearMes.sort(function(a, b){ return a.mes - b.mes; });
+    prevYearMes.sort(function(a, b){ return a.mes - b.mes; });
+
+    // Injeta porMes completo no objeto vendas para renderização
+    if (d.vendas) d.vendas.porMes = curYearMes;
+
+    // ── Comparação para badges: usa mês anterior (ex: abr/26) ────────────
+    // porMes do ano anterior incluído para renderizar linha YoY nos gráficos via applyVendasData
+    var prevMonEntry = curYearMes.find(function(m){ return m.mes === curNavMon - 1; });
+    var prevDForBadges = {
+      kpis: prevMonEntry ? {
+        receita:         prevMonEntry.receita,
+        pedidos:         prevMonEntry.pedidos,
+        ticket:          prevMonEntry.ticket,
+        receitaSemFrete: null,
+      } : null,
+      _label: prevMonEntry
+        ? 'vs ' + MES_PT[prevMonEntry.mes - 1].toLowerCase() + '/' + String(navYear).slice(2)
+        : null,
+      porMes: prevYearMes,
+    };
+
+    // ── Aplica dados em todas as abas ─────────────────────────────────────
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
+    if (d.clientes)  applyClientesData(d.clientes);
+    if (d.vendas) {
+      _lastVendasData     = d.vendas;
+      _lastPrevVendasData = prevDForBadges;
+      applyVendasData(d.vendas, prevDForBadges);  // renderiza YoY charts + badges internamente
+    }
 
-    // Popula cache diário (excluindo hoje) para que getMonthRealized / getDayRealized funcionem corretamente
+    // ── Cache diário (base para Metas e Indicadores) ──────────────────────
     _populateShopifyDiarioCache(navMonth, navYear, d.vendas);
 
     setSheetsStatus(true, 'Shopify ✓');
@@ -4743,7 +4811,7 @@ function applyStatusFilter(d) {
   mKpis.pctSemFrete   = mKpis.pedidos > 0 ? mKpis.pedidosSemFrete / mKpis.pedidos  * 100 : 0;
 
   // Se API antiga (sem breakdowns), usa gráficos totais — só KPIs são filtrados
-  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes.localeCompare(b.mes); }) : (d.porMes || []);
+  var fMes      = hasFullBreakdowns ? Object.values(mMes).sort(function(a,b){ return a.mes - b.mes; }) : (d.porMes || []);
   var fVendedor = hasFullBreakdowns ? Object.values(mVendedor).sort(function(a,b){ return b.receita - a.receita; }) : (d.porVendedor || []);
   var fEstado   = hasFullBreakdowns ? Object.values(mEstado).sort(function(a,b){ return b.receita - a.receita; }).slice(0,10) : (d.porEstado || []);
 
@@ -4758,10 +4826,10 @@ function applyStatusFilter(d) {
 }
 
 /* ===== HELPER — YoY badge ===== */
-function setYoYBadge(badgeId, cur, prev) {
+function setYoYBadge(badgeId, cur, prev, label) {
   var el = document.getElementById(badgeId);
   if (!el) return;
-  if (!prev || prev === 0) {
+  if (prev == null || prev === 0) {
     el.textContent = '— sem dado anterior';
     el.className = 'kpi-badge neutral';
     return;
@@ -4770,7 +4838,7 @@ function setYoYBadge(badgeId, cur, prev) {
   var abs = Math.abs(pct);
   var sign = pct >= 0 ? '▲' : '▼';
   var cls  = pct >= 0 ? 'up' : 'down';
-  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% vs ano anterior';
+  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% ' + (label || 'vs ano anterior');
   el.className = 'kpi-badge ' + cls;
 }
 
@@ -4925,10 +4993,11 @@ function applyVendasData(d, prevD) {
   setElText('kpi-receita-sem-frete',fmtBRL(k.receitaSemFrete));
 
   // ── YoY badges ──
-  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null);
-  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null);
-  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null);
-  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null);
+  var _badgeLabel = prevD && prevD._label ? prevD._label : null;
+  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null, _badgeLabel);
+  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null, _badgeLabel);
+  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null, _badgeLabel);
+  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null, _badgeLabel);
   setElText('kpi-taxa-cancel',      (k.taxaCancel || 0).toFixed(1).replace('.',',') + '%');
   setElText('kpi-desconto-total',   fmtBRL(k.descontoTotal));
   setElText('kpi-pct-cupom',        (k.pctCupom || 0).toFixed(1).replace('.',',') + '%');
@@ -6420,8 +6489,9 @@ function renderGoals() {
     if (tbSub) tbSub.textContent = 'Editando ' + GOAL_MONTHS_NAMES[goalMonth] + ' de ' + goalYear;
   } else {
     var cacheKey = goalYear + '_' + String(goalMonth+1).padStart(2,'0');
-    // Todos os meses: busca via API se ainda não está em cache
-    if (_metasDiarioCache[cacheKey] === undefined && getSheetsUrl()) {
+    // Para períodos Shopify (mai/2026+), NÃO busca do Sheets — aguarda _populateShopifyDiarioCache
+    // Para demais meses: busca via API se ainda não está em cache
+    if (_metasDiarioCache[cacheKey] === undefined && getSheetsUrl() && !isShopifyPeriod(goalMonth, goalYear)) {
       _loadGoalMonthData(goalMonth, goalYear, true);
       return;
     }
