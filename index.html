@@ -4336,9 +4336,10 @@ async function loadShopifyData() {
       showShopifySyncBanner(monthKey);
       return;
     }
-    if (d.vendas)    applyVendasData(d.vendas, null);
+    if (d.vendas)    { _lastVendasData = d.vendas; applyVendasData(d.vendas, null); }
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
+    if (d.clientes)  applyClientesData(d.clientes);
     setSheetsStatus(true, 'Shopify ✓');
     updateShopifySyncTimestamp(d.synced_at);
     hideShopifySyncBanner();
