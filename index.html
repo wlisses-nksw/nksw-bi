@@ -4258,11 +4258,11 @@ function _populateShopifyDiarioCache(m, y, vendasData) {
         receita:      rec,
         pedidos:      ped,
         ticket:       ped > 0 ? rec / ped : 0,
-        custoMkt:     0,
-        roas:         0,
-        cac:          0,
-        sessoes:      0,
-        taxaConv:     0,
+        custoMkt:     null, // enriquecido por _enrichShopifyCacheAsync
+        roas:         null,
+        cac:          null,
+        sessoes:      null, // enriquecido por _enrichShopifyCacheAsync
+        taxaConv:     null,
         novosClientes: 0,
       };
     });
@@ -5929,6 +5929,12 @@ function getMonthRealized(key, m, y) {
     // Métricas acumuladas (soma):
     var sumMetrics = {receita:1, pedidos:1, custoMkt:1, sessoes:1, novosClientes:1};
     if (sumMetrics[key]) {
+      // Para métricas que dependem de enriquecimento (Meta/GA4): retorna null se ainda não enriquecido
+      var needsEnrich = { custoMkt: 1, sessoes: 1 };
+      if (needsEnrich[key]) {
+        var hasEnriched = days.some(function(d){ return d[key] !== null && d[key] !== undefined && d[key] > 0; });
+        if (!hasEnriched) return null;
+      }
       var soma = days.reduce(function(s, e){ return s + (e[key] || 0); }, 0);
       // novosClientes: se o diário não tiver esse dado (soma=0), prefere o cohort
       if (key === 'novosClientes' && soma === 0) {
@@ -5979,12 +5985,12 @@ function _getCohortClientes(m, y) {
 var GOAL_DEFS = {
   receita:      {icon:'💰',name:'Receita',           desc:'Receita total do período',       prefix:'R$',suffix:'',  required:true,  step:1000, lowerIsBetter:false, realized:function(){return _indRealizadoReceita !== null ? _indRealizadoReceita : MOCK.realizado;},  fmt:function(v){return fmtBRL(v);}},
   roas:         {icon:'📈',name:'ROAS',               desc:'Retorno sobre investimento',     prefix:'',  suffix:'x', required:true,  step:0.1,  lowerIsBetter:false, realized:function(){return _indRoasAtual       !== null ? _indRoasAtual        : MOCK.roas;},         fmt:function(v){return v.toFixed(2)+'x';}},
-  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return 533;},                                               fmt:function(v){return fmtNum(v);}},
-  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){return MOCK.ticketMedio;},                                  fmt:function(v){return fmtBRL(v);}},
-  cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){return MOCK.cac;},                                          fmt:function(v){return fmtBRL(v);}},
-  custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){return MOCK.custoMarketing;},                              fmt:function(v){return fmtBRL(v);}},
-  sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.sessions:50296;},                  fmt:function(v){return fmtNum(v);}},
-  taxaConv:     {icon:'🎯',name:'Taxa de Conversão',   desc:'% de visitantes que compram',    prefix:'',  suffix:'%', required:false, step:0.1,  lowerIsBetter:false, realized:function(){return MOCK.ga4?MOCK.ga4.convRate:2.9;},                   fmt:function(v){return v.toFixed(2)+'%';}},
+  pedidos:      {icon:'🛒',name:'Pedidos',             desc:'Total de pedidos',               prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){ var v=getMonthRealized('pedidos',goalMonth,goalYear); return v!==null?v:(_indVendasPedidos||533); },                                               fmt:function(v){return fmtNum(v);}},
+  ticket:       {icon:'🛍️',name:'Ticket Médio',        desc:'Valor médio por pedido',         prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:false, realized:function(){ var v=getMonthRealized('ticket',goalMonth,goalYear); return v!==null?v:(_indVendasTicket||MOCK.ticketMedio); },                                  fmt:function(v){return fmtBRL(v);}},
+  cac:          {icon:'💸',name:'CAC',                 desc:'Custo de aquisição de cliente',  prefix:'R$',suffix:'',  required:false, step:10,   lowerIsBetter:true,  realized:function(){ var v=getMonthRealized('cac',goalMonth,goalYear); return v!==null?v:(_indMktCpp||MOCK.cac); },                                          fmt:function(v){return fmtBRL(v);}},
+  custoMkt:     {icon:'📣',name:'Custo Marketing',     desc:'Investimento total em ads',      prefix:'R$',suffix:'',  required:false, step:1000, lowerIsBetter:true,  realized:function(){ var v=getMonthRealized('custoMkt',goalMonth,goalYear); return v!==null?v:(_indMktSpend||MOCK.custoMarketing); },                              fmt:function(v){return fmtBRL(v);}},
+  sessoes:      {icon:'🌐',name:'Sessões',              desc:'Visitas ao site',                prefix:'',  suffix:'',  required:false, step:1000, lowerIsBetter:false, realized:function(){ var v=getMonthRealized('sessoes',goalMonth,goalYear); return v!==null?v:(_indGA4Sessions!==null?_indGA4Sessions:(MOCK.ga4?MOCK.ga4.sessions:50296)); }, fmt:function(v){return fmtNum(v);}},
+  taxaConv:     {icon:'🎯',name:'Taxa de Conversão',   desc:'% de visitantes que compram',    prefix:'',  suffix:'%', required:false, step:0.1,  lowerIsBetter:false, realized:function(){ var v=getMonthRealized('taxaConv',goalMonth,goalYear); return v!==null?v:(MOCK.ga4?MOCK.ga4.convRate:2.9); },                   fmt:function(v){return v.toFixed(2)+'%';}},
   novosClientes:{icon:'👤',name:'Novos Clientes',       desc:'Clientes novos no período',      prefix:'',  suffix:'',  required:false, step:10,   lowerIsBetter:false,
     realized:function(){ var c = _getCohortClientes(goalMonth, goalYear); return c !== null ? c : MOCK.novosClientes; },
     fmt:function(v){return fmtNum(v);}},
