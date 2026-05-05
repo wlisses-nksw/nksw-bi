@@ -7210,13 +7210,27 @@ async function loadConferenciaEstoque() {
     _confShopifyMap = d.inventory || {};
     if (status) status.textContent = 'Shopify: ' + Object.keys(_confShopifyMap).length + ' variants. Combinando com Sisplan...';
 
-    // 2. Combinar com _estoqueData (já carregado pelo GAS)
-    if (!_estoqueData || !_estoqueData.length) {
-      await loadEstoquePage();
+    // 2. Busca estoque direto do GAS (bypassa JSON estático que pode não ter campo variante)
+    if (status) status.textContent = 'Buscando estoque do Sisplan...';
+    var gasUrl = getSheetsUrl();
+    var estoqueRaw = [];
+    if (gasUrl) {
+      try {
+        // Passa dateOverride não-vazio para forçar fetch direto ao GAS (pula fetchStaticJSON)
+        var gasData = await fetchSheets('estoque', '', 'direct');
+        if (gasData && gasData.estoque && gasData.estoque.todos) {
+          estoqueRaw = gasData.estoque.todos;
+        }
+      } catch(e2) { console.warn('GAS estoque direto falhou, usando cache:', e2.message); }
+    }
+    // Fallback: usa _estoqueData já em memória
+    if (!estoqueRaw.length) {
+      if (!_estoqueData || !_estoqueData.length) await loadEstoquePage();
+      estoqueRaw = _estoqueData || [];
     }
 
-    _confData = _estoqueData.map(function(p) {
-      var varId    = p.variante ? String(p.variante) : '';
+    _confData = estoqueRaw.map(function(p) {
+      var varId    = p.variante ? String(p.variante).trim() : '';
       var shopify  = varId && _confShopifyMap.hasOwnProperty(varId) ? _confShopifyMap[varId] : null;
       var sisplan  = p.estoque || 0;
       var diff     = shopify !== null ? sisplan - shopify : null;
