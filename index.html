@@ -1230,7 +1230,8 @@ tbody tr:hover{background:#fafafa}
                 <th style="position:relative"><div style="display:flex;align-items:center;gap:6px;justify-content:space-between">Cor<button onclick="_toggleConFiltroMenu(this)" data-campo="cor" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="cor" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:180px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
                 <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Tam.<button onclick="_toggleConFiltroMenu(this)" data-campo="tamanho" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="tamanho" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:140px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
                 <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Curva<button onclick="_toggleConFiltroMenu(this)" data-campo="curva" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="curva" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
-                <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Est. Sisplan<button onclick="_toggleConFiltroMenu(this)" data-campo="sisplan_str" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="sisplan_str" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Est. SIG 1<button onclick="_toggleConFiltroMenu(this)" data-campo="sisplan_str" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="sisplan_str" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+                <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Pré Estoque<button onclick="_toggleConFiltroMenu(this)" data-campo="pre_str" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="pre_str" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
                 <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Est. Shopify<button onclick="_toggleConFiltroMenu(this)" data-campo="shopify_str" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="shopify_str" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:120px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
                 <th style="position:relative;text-align:center"><div style="display:flex;align-items:center;gap:6px;justify-content:center">Diferença<button onclick="_toggleConFiltroMenu(this)" data-campo="diff_str" style="background:none;border:none;cursor:pointer;font-size:15px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="conf-menu" data-campo="diff_str" style="display:none;position:absolute;top:100%;left:0;z-index:200;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:140px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
               </tr>
@@ -7414,20 +7415,23 @@ async function loadConferenciaEstoque() {
     }
 
     _confData = estoqueRaw.map(function(p) {
-      var varId    = p.variante ? String(p.variante).trim() : '';
-      var shopify  = varId && _confShopifyMap.hasOwnProperty(varId) ? _confShopifyMap[varId] : null;
-      var sisplan  = p.estoque || 0;
-      var diff     = shopify !== null ? sisplan - shopify : null;
+      var varId      = p.variante ? String(p.variante).trim() : '';
+      var shopify    = varId && _confShopifyMap.hasOwnProperty(varId) ? _confShopifyMap[varId] : null;
+      var sisplan    = p.estoque     || 0;
+      var preEstoque = p.pre_estoque || 0;
+      var totalSis   = sisplan + preEstoque;          // SIG 1 + Pré Estoque
+      var diff       = shopify !== null ? totalSis - shopify : null;
       return {
-        variante:  varId,
-        codigo:    p.codigo   || '',
-        descricao: p.nome     || '',
-        cor:       p.cor      || '',
-        tamanho:   p.tamanho  || '',
-        curva:     p.curva    || '',
-        sisplan:   sisplan,
-        shopify:   shopify,
-        diff:      diff,
+        variante:    varId,
+        codigo:      p.codigo   || '',
+        descricao:   p.nome     || '',
+        cor:         p.cor      || '',
+        tamanho:     p.tamanho  || '',
+        curva:       p.curva    || '',
+        sisplan:     sisplan,
+        pre_estoque: preEstoque,
+        shopify:     shopify,
+        diff:        diff,
       };
     }).filter(function(p) { return p.variante; });
 
@@ -7452,7 +7456,7 @@ function _buildConferenciaFiltros() {
     p.shopify_str = p.shopify !== null ? String(p.shopify) : '—';
     p.diff_str    = p.diff === null ? '—' : p.diff === 0 ? '0' : p.diff > 0 ? '+' + p.diff : String(p.diff);
   });
-  var campos = ['codigo','descricao','cor','tamanho','curva','sisplan_str','shopify_str','diff_str'];
+  var campos = ['codigo','descricao','cor','tamanho','curva','sisplan_str','pre_str','shopify_str','diff_str'];
   campos.forEach(function(campo) {
     var menu = document.querySelector('.conf-menu[data-campo="' + campo + '"]');
     if (!menu) return;
@@ -7509,6 +7513,7 @@ function _confFiltered() {
   // Garante campos string para filtros de valores numéricos
   _confData.forEach(function(p) {
     if (p.sisplan_str === undefined) p.sisplan_str = String(p.sisplan);
+    if (p.pre_str     === undefined) p.pre_str     = String(p.pre_estoque || 0);
     if (p.shopify_str === undefined) p.shopify_str = p.shopify !== null ? String(p.shopify) : '—';
     if (p.diff_str    === undefined) p.diff_str    = p.diff === null ? '—' : p.diff === 0 ? '0' : p.diff > 0 ? '+' + p.diff : String(p.diff);
   });
@@ -7555,6 +7560,7 @@ function _renderConferenciaTable() {
       '<td style="font-size:12px;text-align:center">' + (p.tamanho || '—') + '</td>' +
       '<td style="text-align:center">' + _curvaBadge(p.curva) + '</td>' +
       '<td style="text-align:center;font-weight:600">' + p.sisplan + '</td>' +
+      '<td style="text-align:center;color:#6b7280">' + (p.pre_estoque || 0) + '</td>' +
       '<td style="text-align:center">' + shopifyHtml + '</td>' +
       '<td style="text-align:center;' + diffStyle + '">' + diffStr + '</td>' +
     '</tr>';
@@ -7588,7 +7594,7 @@ function _renderConferenciaResumo() {
 function downloadConferenciaCSV() {
   var lista = _confFiltered();
   if (!lista.length) return;
-  var header = ['Variante','Código','Descrição','Cor','Tamanho','Curva','Est. Sisplan','Est. Shopify','Diferença'];
+  var header = ['Variante','Código','Descrição','Cor','Tamanho','Curva','Est. SIG 1','Pré Estoque','Est. Shopify','Diferença'];
   var rows = lista.map(function(p) {
     var esc = function(v){ return '"' + String(v===null||v===undefined?'':v).replace(/"/g,'""') + '"'; };
     return [esc(p.variante),esc(p.codigo),esc(p.descricao),esc(p.cor),esc(p.tamanho),esc(p.curva),p.sisplan,p.shopify===null?'':p.shopify,p.diff===null?'':p.diff].join(',');

@@ -1196,7 +1196,8 @@ function getEstoque() {
     var I_PRECO = findCol(header, ['Valor','valor','Preço de Venda','preco_venda','Preço','Price','price','Custo']);    if (I_PRECO < 0) I_PRECO = 12;
     var I_TEC   = findCol(header, ['Tecido','tecido','Material','material','Fabric','fabric']);
     var I_CURVA = findCol(header, ['Curva','curva','Classe','classe','ABC','abc','Classificação']);                     if (I_CURVA < 0) I_CURVA = 15;
-    var I_EST   = findCol(header, ['Estoque','estoque','Saldo','saldo','Stock','stock','Inventory','Quantidade']);      if (I_EST   < 0) I_EST   = 16;
+    var I_EST   = findCol(header, ['Estoque SIG 1','Estoque Sig 1','estoque sig 1','SIG 1','sig 1','Estoque','estoque','Saldo','saldo','Stock','Inventory','Quantidade']); if (I_EST < 0) I_EST = 16;
+    var I_PRE   = findCol(header, ['Pré Estoque','Pre Estoque','pré estoque','pre estoque','Pré-Estoque','Pre-Estoque','PreEstoque','pre_estoque']);
     var I_TVEND = findCol(header, ['Total de Vendas','Total Vendas','total_vendas','TotalVendas','Total','total vendas']);
     var I_V6M   = findCol(header, ['Total 6 meses','Total Vendas 6 Meses','Vendas 6m','vendas_6m','V6M','Últimos 6m','6 meses']);
 
@@ -1226,8 +1227,9 @@ function getEstoque() {
         tecido:  trim(String(r[I_TEC]  || '')),
         curva:   curva,
         preco:   preco,
-        estoque: estoque,
-        totalVendas: Math.round(tvend),
+        estoque:      estoque,
+        pre_estoque:  I_PRE >= 0 ? (parseInt(r[I_PRE]) || 0) : 0,
+        totalVendas:  Math.round(tvend),
         vendas6m:    Math.round(v6m),
       });
     });
