@@ -4758,27 +4758,59 @@ async function loadAllSheetsData() {
 
 /* ===== EVOLUÇÃO MENSAL — busca ano inteiro para os gráficos de evolução ===== */
 async function loadVendasEvolution() {
-  if (!getSheetsUrl()) return;
-  var pad   = function(n){ return String(n).padStart(2,'0'); };
-  var today = new Date();
-  var curY  = navYear;
-  var prevY = navYear - 1;
-  // Ano atual: Jan 1 → hoje (se ano corrente) ou Dez 31 (ano passado)
-  var curEnd = (curY === today.getFullYear())
-    ? curY + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate())
-    : curY + '-12-31';
-  var curOvr  = 'period=custom&startDate=' + curY  + '-01-01&endDate=' + curEnd;
-  var prevOvr = 'period=custom&startDate=' + prevY + '-01-01&endDate=' + prevY + '-12-31';
+  // Usa JSONs estáticos mês a mês para garantir consistência com os cards
+  // O mês atual usa o valor já carregado em _lastVendasData (mesma fonte do card)
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+  var MONTHS_SHORT_EVO = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
   try {
-    var results = await Promise.all([
-      fetchSheets('vendas', null, curOvr).catch(function(){ return null; }),
-      fetchSheets('vendas', null, prevOvr).catch(function(){ return null; })
-    ]);
-    var curR  = results[0];
-    var prevR = results[1];
-    var curMes  = (curR  && curR.vendas  && curR.vendas.porMes  && curR.vendas.porMes.length)  ? curR.vendas.porMes  : null;
-    var prevMes = (prevR && prevR.vendas && prevR.vendas.porMes && prevR.vendas.porMes.length) ? prevR.vendas.porMes : [];
-    if (curMes) {
+    // ── Ano atual: meses com JSON estático ──────────────────────────────
+    var curMes  = [];
+    var prevMes = [];
+
+    // Determina quantos meses do ano atual já temos
+    var today   = new Date();
+    var lastMon = (navYear < today.getFullYear()) ? 11 : today.getMonth(); // 0-indexed
+
+    // Busca JSONs estáticos de todos os meses disponíveis (exceto mês atual navegado)
+    var monthsToFetch = [];
+    for (var m = 0; m <= lastMon; m++) {
+      if (m !== navMonth) monthsToFetch.push(m);
+    }
+
+    var staticResults = await Promise.all(
+      monthsToFetch.map(function(m) {
+        return fetchStaticJSON('vendas', navYear + '-' + pad(m + 1)).catch(function(){ return null; });
+      })
+    );
+    monthsToFetch.forEach(function(m, i) {
+      var d = staticResults[i];
+      if (d && d.ok && d.vendas && d.vendas.kpis) {
+        curMes.push({ mes: m + 1, label: MONTHS_SHORT_EVO[m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
+      }
+    });
+
+    // Mês atual navegado: usa _lastVendasData (mesmo valor dos cards — fonte única)
+    if (_lastVendasData && _lastVendasData.kpis) {
+      curMes.push({ mes: navMonth + 1, label: MONTHS_SHORT_EVO[navMonth], receita: _lastVendasData.kpis.receita || 0, pedidos: _lastVendasData.kpis.pedidos || 0 });
+    }
+    curMes.sort(function(a, b){ return a.mes - b.mes; });
+
+    // ── Ano anterior: JSONs estáticos ──────────────────────────────────
+    var prevY = navYear - 1;
+    var prevLastMon = (prevY < today.getFullYear()) ? 11 : today.getMonth();
+    var prevStaticResults = await Promise.all(
+      Array.from({ length: prevLastMon + 1 }, function(_, m) {
+        return fetchStaticJSON('vendas', prevY + '-' + pad(m + 1)).catch(function(){ return null; });
+      })
+    );
+    prevStaticResults.forEach(function(d, m) {
+      if (d && d.ok && d.vendas && d.vendas.kpis) {
+        prevMes.push({ mes: m + 1, label: MONTHS_SHORT_EVO[m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
+      }
+    });
+
+    if (curMes.length) {
       renderYoYChart('salesChart',   curMes, prevMes, 'receita', 'R$', true);
       renderYoYChart('pedidosChart', curMes, prevMes, 'pedidos', '',   false);
     }
