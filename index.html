@@ -3724,13 +3724,28 @@ function renderYoYChart(id, curData, prevData, field, prefix, isBRL) {
     label: 'Ano anterior',
     data: prevVals,
     type: 'line',
-    borderColor: '#9ca3af',
-    backgroundColor: 'transparent',
-    pointBackgroundColor: '#9ca3af',
-    pointRadius: 4,
-    borderWidth: 2,
+    borderColor: '#f59e0b',
+    backgroundColor: 'rgba(245,158,11,0.08)',
+    pointBackgroundColor: '#f59e0b',
+    pointBorderColor: '#fff',
+    pointBorderWidth: 2,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+    borderWidth: 2.5,
+    borderDash: [6, 3],
     tension: 0.3,
+    fill: false,
     order: 1,
+    datalabels: {
+      display: true,
+      anchor: 'top',
+      align: 'top',
+      color: '#b45309',
+      font: { size: 9, weight: '600' },
+      formatter: isBRL
+        ? function(v){ return 'R$'+(v/1000).toFixed(0)+'k'; }
+        : function(v){ return v > 0 ? String(v) : ''; },
+    }
   });
   var fmtDL = isBRL
     ? function(v, ctx){ if (ctx.dataset.type === 'line') return ''; return 'R$'+(v/1000).toFixed(0).replace('.',',')+'k'; }
@@ -4796,19 +4811,48 @@ async function loadVendasEvolution() {
     }
     curMes.sort(function(a, b){ return a.mes - b.mes; });
 
-    // ── Ano anterior: JSONs estáticos ──────────────────────────────────
+    // ── Ano anterior: JSONs estáticos + GAS para meses sem estático ───
     var prevY = navYear - 1;
-    var prevLastMon = (prevY < today.getFullYear()) ? 11 : today.getMonth();
+    // Meses a buscar no ano anterior (mesmos meses disponíveis no ano atual)
+    var prevMonthsNeeded = Array.from({ length: lastMon + 1 }, function(_, m){ return m; });
+
+    // 1. Tenta JSONs estáticos para cada mês
     var prevStaticResults = await Promise.all(
-      Array.from({ length: prevLastMon + 1 }, function(_, m) {
+      prevMonthsNeeded.map(function(m) {
         return fetchStaticJSON('vendas', prevY + '-' + pad(m + 1)).catch(function(){ return null; });
       })
     );
-    prevStaticResults.forEach(function(d, m) {
+
+    var missingMonths = [];
+    prevStaticResults.forEach(function(d, i) {
+      var m = prevMonthsNeeded[i];
       if (d && d.ok && d.vendas && d.vendas.kpis) {
         prevMes.push({ mes: m + 1, label: MONTHS_SHORT_EVO[m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
+      } else {
+        missingMonths.push(m);
       }
     });
+
+    // 2. Meses sem JSON estático: busca no GAS com queries mensais individuais
+    if (missingMonths.length && getSheetsUrl()) {
+      var gasResults = await Promise.all(
+        missingMonths.map(function(m) {
+          var start = prevY + '-' + pad(m + 1) + '-01';
+          var end   = prevY + '-' + pad(m + 1) + '-' + pad(new Date(prevY, m + 1, 0).getDate());
+          return fetchSheets('vendas', null, 'period=custom&startDate=' + start + '&endDate=' + end)
+            .catch(function(){ return null; });
+        })
+      );
+      gasResults.forEach(function(d, i) {
+        var m = missingMonths[i];
+        if (d && d.ok && d.vendas && d.vendas.kpis) {
+          prevMes.push({ mes: m + 1, label: MONTHS_SHORT_EVO[m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
+        }
+      });
+    }
+
+    // Ordena por mês
+    prevMes.sort(function(a, b){ return a.mes - b.mes; });
 
     if (curMes.length) {
       renderYoYChart('salesChart',   curMes, prevMes, 'receita', 'R$', true);
