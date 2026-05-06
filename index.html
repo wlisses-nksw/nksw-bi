@@ -4379,36 +4379,72 @@ async function _enrichShopifyCacheAsync(m, y) {
 // Carrega dados do Shopify BI para o mês atual
 async function loadShopifyData() {
   var monthKey = navYear + '-' + String(navMonth + 1).padStart(2, '0');
+
+  // ── Auto-sync D-1: sincroniza dados até ontem antes de ler ─────────
+  // Só sincroniza se for o mês corrente (histórico já está completo)
+  var today = new Date();
+  var isCurMon = (navMonth === today.getMonth() && navYear === today.getFullYear());
+  if (isCurMon) {
+    setSheetsStatus(true, 'Atualizando dados...');
+    try {
+      var syncUrl = SHOPIFY_SYNC_URL + '?action=update&month=' + monthKey + '&secret=' + SHOPIFY_SYNC_SECRET;
+      await fetch(syncUrl);
+    } catch(eSy) { console.warn('[shopify-sync] auto-sync falhou:', eSy.message); }
+  }
+
+  // ── Lê dados do Blob ───────────────────────────────────────────────
   var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
   try {
     var r = await fetch(url);
     var d = await r.json();
     if (!d.ok) {
-      // Dados ainda não sincronizados — mostra aviso com botão de sync
       setSheetsStatus(false, 'Shopify — sem dados para este mês');
       return;
     }
 
-    // Busca ano anterior para comparação YoY (pode estar no Shopify BI se já sincronizado)
+    // ── Comparação com período anterior (YoY) ─────────────────────────
+    // Para meses Shopify: usa mês anterior do mesmo ano (static JSON)
+    // pois dados de mesmo mês no ano anterior não existem no Shopify
     var prevVendas = null;
     try {
-      var prevMonthKey = (navYear - 1) + '-' + String(navMonth + 1).padStart(2, '0');
-      var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
-      var prevR = await fetch(prevUrl);
-      var prevDat = await prevR.json();
-      if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
-    } catch(e2) { /* ano anterior pode não estar disponível */ }
+      var prevM = navMonth - 1;
+      var prevY = navYear;
+      if (prevM < 0) { prevM = 11; prevY--; }
+      var prevMonthKey = prevY + '-' + String(prevM + 1).padStart(2, '0');
 
+      // Tenta primeiro o Shopify BI (se o mês anterior também for Shopify)
+      if (isShopifyPeriod(prevM, prevY)) {
+        var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
+        var prevR   = await fetch(prevUrl);
+        var prevDat = await prevR.json();
+        if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
+      }
+      // Se não encontrou no Shopify, busca no JSON estático (abr/2026 e anteriores)
+      if (!prevVendas) {
+        var staticPrev = await fetchStaticJSON('vendas', prevMonthKey);
+        if (staticPrev && staticPrev.ok && staticPrev.vendas) prevVendas = staticPrev.vendas;
+      }
+    } catch(e2) { console.warn('[shopify-yoy] erro ao buscar período anterior:', e2.message); }
+
+    // Salva dados para re-renders com filtros
+    if (d.vendas) {
+      _lastVendasData     = d.vendas;
+      _lastPrevVendasData = prevVendas || null;
+    }
     if (d.vendas)    applyVendasData(d.vendas, prevVendas);
     if (d.pedidos)   applyPedidosData(d.pedidos);
     if (d.logistica) applyLogisticaData(d.logistica);
+    if (d.clientes)  applyClientesData(d.clientes);
 
-    // Popula cache diário (excluindo hoje) para que getMonthRealized / getDayRealized funcionem corretamente
+    // Popula cache diário D-1
     _populateShopifyDiarioCache(navMonth, navYear, d.vendas);
 
-    setSheetsStatus(true, 'Shopify ✓');
+    var syncLabel = d.synced_at
+      ? 'Shopify ✓ · atualizado ' + new Date(d.synced_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+      : 'Shopify ✓';
+    setSheetsStatus(true, syncLabel);
 
-    // Enriquece cache com spend diário (Meta Ads) + sessões (GA4) em background
+    // Enriquece cache com Meta Ads + GA4 em background
     _enrichShopifyCacheAsync(navMonth, navYear).catch(function(){});
   } catch(e) {
     console.warn('[shopify-bi] erro:', e.message);
@@ -4760,19 +4796,20 @@ function applyStatusFilter(d) {
 }
 
 /* ===== HELPER — YoY badge ===== */
-function setYoYBadge(badgeId, cur, prev) {
+function setYoYBadge(badgeId, cur, prev, label) {
   var el = document.getElementById(badgeId);
   if (!el) return;
-  if (!prev || prev === 0) {
+  if (prev === null || prev === undefined || prev === 0) {
     el.textContent = '— sem dado anterior';
     el.className = 'kpi-badge neutral';
     return;
   }
-  var pct = ((cur - prev) / Math.abs(prev)) * 100;
-  var abs = Math.abs(pct);
+  var pct  = ((cur - prev) / Math.abs(prev)) * 100;
+  var abs  = Math.abs(pct);
   var sign = pct >= 0 ? '▲' : '▼';
   var cls  = pct >= 0 ? 'up' : 'down';
-  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% vs ano anterior';
+  var lbl  = label || 'vs ano anterior';
+  el.textContent = sign + ' ' + abs.toFixed(1).replace('.', ',') + '% ' + lbl;
   el.className = 'kpi-badge ' + cls;
 }
 
@@ -4926,11 +4963,18 @@ function applyVendasData(d, prevD) {
   setElText('kpi-ticket-medio',     fmtBRL(k.ticket));
   setElText('kpi-receita-sem-frete',fmtBRL(k.receitaSemFrete));
 
-  // ── YoY badges ──
-  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null);
-  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null);
-  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null);
-  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null);
+  // ── YoY badges — label dinâmico (mês anterior para Shopify, ano anterior para GAS) ──
+  var _yoyLabel = (function() {
+    if (!isShopifyPeriod(navMonth, navYear)) return 'vs ano anterior';
+    var pm = navMonth - 1; var py = navYear;
+    if (pm < 0) { pm = 11; py--; }
+    var MONTHS_SHORT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    return 'vs ' + MONTHS_SHORT[pm] + '/' + String(py).slice(2);
+  })();
+  setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null, _yoyLabel);
+  setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null, _yoyLabel);
+  setYoYBadge('kpi-ticket-badge',  k.ticket,          pk ? pk.ticket          : null, _yoyLabel);
+  setYoYBadge('kpi-sfrete-badge',  k.receitaSemFrete, pk ? pk.receitaSemFrete : null, _yoyLabel);
   setElText('kpi-taxa-cancel',      (k.taxaCancel || 0).toFixed(1).replace('.',',') + '%');
   setElText('kpi-desconto-total',   fmtBRL(k.descontoTotal));
   setElText('kpi-pct-cupom',        (k.pctCupom || 0).toFixed(1).replace('.',',') + '%');
