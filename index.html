@@ -1211,6 +1211,12 @@ tbody tr:hover{background:#fafafa}
           </div>
         </div>
 
+        <!-- Busca por produto -->
+        <div style="margin-bottom:14px">
+          <input id="conf-busca" type="text" placeholder="🔍 Buscar por descrição do produto..." oninput="_onConfBusca()"
+            style="width:100%;max-width:400px;padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:#374151;box-sizing:border-box">
+        </div>
+
         <!-- Resumo -->
         <div id="conf-resumo" style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px"></div>
 
@@ -4813,24 +4819,24 @@ async function loadVendasEvolution() {
       var cacheKey = prevY + '-' + pad(pm + 1);
 
       if (_prevYearCache[cacheKey]) {
-        // Já temos em memória
         prevMes.push(_prevYearCache[cacheKey]);
       } else {
-        // Tenta JSON estático primeiro, depois GAS com mesmo padrão dos cards
-        var start = prevY + '-' + pad(pm+1) + '-01';
-        var end   = prevY + '-' + pad(pm+1) + '-' + pad(new Date(prevY, pm+1, 0).getDate());
-        fetchList.push({
-          pm: pm,
-          key: cacheKey,
-          p: fetchStaticJSON('vendas', cacheKey)
-            .then(function(sd) {
-              if (sd && sd.ok && sd.vendas && sd.vendas.kpis) return sd;
-              // Fallback: GAS com período mensal (mesmo padrão dos cards)
-              return fetchSheets('vendas', null, 'period=custom&startDate=' + start + '&endDate=' + end)
-                .catch(function(){ return null; });
-            })
-            .catch(function(){ return null; })
-        });
+        // IIFE para capturar pm, start, end corretamente dentro do loop
+        (function(month, key) {
+          var mStart = prevY + '-' + pad(month+1) + '-01';
+          var mEnd   = prevY + '-' + pad(month+1) + '-' + pad(new Date(prevY, month+1, 0).getDate());
+          fetchList.push({
+            pm:  month,
+            key: key,
+            p: fetchStaticJSON('vendas', key)
+              .then(function(sd) {
+                if (sd && sd.ok && sd.vendas && sd.vendas.kpis) return sd;
+                return fetchSheets('vendas', null, 'period=custom&startDate=' + mStart + '&endDate=' + mEnd)
+                  .catch(function(){ return null; });
+              })
+              .catch(function(){ return null; })
+          });
+        })(pm, cacheKey);
       }
     }
 
@@ -7495,6 +7501,10 @@ function _onConfFiltro() {
   _renderConferenciaTable();
 }
 
+function _onConfBusca() {
+  _renderConferenciaTable();
+}
+
 function _confFiltered() {
   // Garante campos string para filtros de valores numéricos
   _confData.forEach(function(p) {
@@ -7502,7 +7512,15 @@ function _confFiltered() {
     if (p.shopify_str === undefined) p.shopify_str = p.shopify !== null ? String(p.shopify) : '—';
     if (p.diff_str    === undefined) p.diff_str    = p.diff === null ? '—' : p.diff === 0 ? '0' : p.diff > 0 ? '+' + p.diff : String(p.diff);
   });
+
+  // Filtro de texto por descrição
+  var buscaEl = document.getElementById('conf-busca');
+  var busca   = buscaEl ? buscaEl.value.trim().toLowerCase() : '';
+
   return _confData.filter(function(p) {
+    // Filtro de texto
+    if (busca && !(p.descricao || '').toLowerCase().includes(busca)) return false;
+    // Filtros de coluna (multi-select)
     return Object.keys(_confFiltros).every(function(campo) {
       var s = _confFiltros[campo];
       if (!s || !s.size) return true;
