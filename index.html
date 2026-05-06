@@ -4402,29 +4402,34 @@ async function loadShopifyData() {
       return;
     }
 
-    // ── Comparação com período anterior (YoY) ─────────────────────────
-    // Para meses Shopify: usa mês anterior do mesmo ano (static JSON)
-    // pois dados de mesmo mês no ano anterior não existem no Shopify
+    // ── Comparação YoY: mesmo período do ano anterior ─────────────────
+    // Ex: 01/05-05/05/2026 vs 01/05-05/05/2025 (mesmo número de dias)
     var prevVendas = null;
     try {
-      var prevM = navMonth - 1;
-      var prevY = navYear;
-      if (prevM < 0) { prevM = 11; prevY--; }
-      var prevMonthKey = prevY + '-' + String(prevM + 1).padStart(2, '0');
+      // Período atual: customStart → customEnd (ou 1º do mês → ontem)
+      var today     = new Date();
+      var pad2      = function(n){ return String(n).padStart(2,'0'); };
+      var curStart  = customStart || (navYear + '-' + pad2(navMonth+1) + '-01');
+      // D-1 como fim do período
+      var yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+      var curEnd    = customEnd   || (yesterday.getFullYear()+'-'+pad2(yesterday.getMonth()+1)+'-'+pad2(yesterday.getDate()));
 
-      // Tenta primeiro o Shopify BI (se o mês anterior também for Shopify)
-      if (isShopifyPeriod(prevM, prevY)) {
-        var prevUrl = SHOPIFY_BI_URL + '?section=vendas&month=' + prevMonthKey;
-        var prevR   = await fetch(prevUrl);
-        var prevDat = await prevR.json();
-        if (prevDat.ok && prevDat.vendas) prevVendas = prevDat.vendas;
-      }
-      // Se não encontrou no Shopify, busca no JSON estático (abr/2026 e anteriores)
-      if (!prevVendas) {
-        var staticPrev = await fetchStaticJSON('vendas', prevMonthKey);
+      // Mesmo período no ano anterior
+      var prevStart = curStart.replace(String(navYear), String(navYear - 1));
+      var prevEnd   = curEnd.replace(String(navYear), String(navYear - 1));
+
+      // Busca no GAS (que tem dados históricos pré-mai/2026)
+      var prevDateOverride = 'period=custom&startDate=' + prevStart + '&endDate=' + prevEnd;
+      var prevData = await fetchSheets('vendas', null, prevDateOverride);
+      if (prevData && prevData.vendas) {
+        prevVendas = prevData.vendas;
+      } else {
+        // Fallback: JSON estático do mês anterior completo
+        var prevMonthKey = (navYear-1) + '-' + pad2(navMonth+1);
+        var staticPrev   = await fetchStaticJSON('vendas', prevMonthKey);
         if (staticPrev && staticPrev.ok && staticPrev.vendas) prevVendas = staticPrev.vendas;
       }
-    } catch(e2) { console.warn('[shopify-yoy] erro ao buscar período anterior:', e2.message); }
+    } catch(e2) { console.warn('[shopify-yoy] erro:', e2.message); }
 
     // Salva dados para re-renders com filtros
     if (d.vendas) {
@@ -4965,11 +4970,8 @@ function applyVendasData(d, prevD) {
 
   // ── YoY badges — label dinâmico (mês anterior para Shopify, ano anterior para GAS) ──
   var _yoyLabel = (function() {
-    if (!isShopifyPeriod(navMonth, navYear)) return 'vs ano anterior';
-    var pm = navMonth - 1; var py = navYear;
-    if (pm < 0) { pm = 11; py--; }
     var MONTHS_SHORT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-    return 'vs ' + MONTHS_SHORT[pm] + '/' + String(py).slice(2);
+    return 'vs ' + MONTHS_SHORT[navMonth] + '/' + String(navYear - 1).slice(2);
   })();
   setYoYBadge('kpi-receita-badge', k.receita,         pk ? pk.receita         : null, _yoyLabel);
   setYoYBadge('kpi-pedidos-badge', k.pedidos,         pk ? pk.pedidos         : null, _yoyLabel);
