@@ -4431,6 +4431,72 @@ async function loadShopifyData() {
       }
     } catch(e2) { console.warn('[shopify-yoy] erro:', e2.message); }
 
+    // ── Busca meses históricos (jan → mês anterior) do JSON estático ──
+    // e mescla no porMes para o gráfico de evolução anual
+    if (d.vendas) {
+      try {
+        var pad2x = function(n){ return String(n).padStart(2,'0'); };
+        // Meses de jan até o mês anterior ao atual
+        var historicMonths = [];
+        for (var hm = 0; hm < navMonth; hm++) {
+          var hmKey = navYear + '-' + pad2x(hm + 1);
+          historicMonths.push(hmKey);
+        }
+        var historicResults = await Promise.all(
+          historicMonths.map(function(mk) {
+            return fetchStaticJSON('vendas', mk).catch(function(){ return null; });
+          })
+        );
+        var MONTHS_SHORT_BR = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        historicResults.forEach(function(hd, idx) {
+          if (hd && hd.ok && hd.vendas && hd.vendas.kpis) {
+            var mes = idx + 1; // 1-indexed
+            // Adiciona ao porMes apenas se não existir ainda
+            var exists = d.vendas.porMes.some(function(m){ return m.mes === mes; });
+            if (!exists) {
+              d.vendas.porMes.push({
+                mes:     mes,
+                label:   MONTHS_SHORT_BR[idx],
+                receita: hd.vendas.kpis.receita || 0,
+                pedidos: hd.vendas.kpis.pedidos || 0,
+              });
+            }
+          }
+        });
+        // Ordena por mês
+        d.vendas.porMes.sort(function(a,b){ return a.mes - b.mes; });
+
+        // Busca mesmo período do ano anterior para o gráfico (meses completos)
+        if (!prevVendas) {
+          // Tenta carregar evolução do ano anterior do JSON estático
+          var prevYearMonths = [];
+          for (var pm2 = 0; pm2 <= navMonth; pm2++) {
+            var pmKey = (navYear-1) + '-' + pad2x(pm2 + 1);
+            prevYearMonths.push(pmKey);
+          }
+          var prevResults = await Promise.all(
+            prevYearMonths.map(function(mk) {
+              return fetchStaticJSON('vendas', mk).catch(function(){ return null; });
+            })
+          );
+          var prevPorMes = [];
+          prevResults.forEach(function(pd, idx) {
+            if (pd && pd.ok && pd.vendas && pd.vendas.kpis) {
+              prevPorMes.push({
+                mes:     idx + 1,
+                label:   MONTHS_SHORT_BR[idx],
+                receita: pd.vendas.kpis.receita || 0,
+                pedidos: pd.vendas.kpis.pedidos || 0,
+              });
+            }
+          });
+          if (prevPorMes.length) {
+            prevVendas = { kpis: {}, porMes: prevPorMes };
+          }
+        }
+      } catch(eHist) { console.warn('[shopify-hist] erro meses históricos:', eHist.message); }
+    }
+
     // Salva dados para re-renders com filtros
     if (d.vendas) {
       _lastVendasData     = d.vendas;

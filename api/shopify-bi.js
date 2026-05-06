@@ -165,13 +165,13 @@ function buildVendas(orders, isCurrent) {
     statusPagMap[spLabel].pedidos++;
     statusPagMap[spLabel].receita += total;
 
-    // ── Cupons ───────────────────────────────────────────────────────────
+    // ── Cupons (valor = receita sem frete do pedido, não o desconto) ────
     for (const dc of (o.discount_codes || [])) {
       if (isTroca(dc.code)) continue;
       const key = dc.code;
       if (!cupomMap[key]) cupomMap[key] = { cupom: key, pedidos: 0, valor: 0 };
       cupomMap[key].pedidos++;
-      cupomMap[key].valor += parseFloat(dc.amount) || 0;
+      cupomMap[key].valor += Math.max(0, total - frete); // receita s/ frete
     }
   }
 
