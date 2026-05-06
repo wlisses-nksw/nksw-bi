@@ -251,6 +251,7 @@ function buildPedidos(orders, isCurrent) {
                     ? 'Cancelado'
                     : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
     metodo_envio: o.shipping_lines?.[0]?.title || '—',
+    tags:         o.tags || '',
     valor:        parseFloat(o.total_price) || 0,
     data:         brDate(o.created_at),
     rastreio:     o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,

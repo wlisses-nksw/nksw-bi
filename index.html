@@ -1282,7 +1282,7 @@ tbody tr:hover{background:#fafafa}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Entrega</th><th>Método de Envio</th><th>Valor</th><th>Data</th></tr></thead>
+          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Entrega</th><th>Método de Envio</th><th>Tags</th><th>Valor</th><th>Data</th></tr></thead>
           <tbody id="pedidosBody"></tbody>
         </table>
       </div>
@@ -4802,20 +4802,23 @@ async function loadVendasEvolution() {
     curMes.push({ mes: navMonth+1, label: MO[navMonth], receita: _lastVendasData.kpis.receita||0, pedidos: _lastVendasData.kpis.pedidos||0 });
     curMes.sort(function(a,b){ return a.mes - b.mes; });
 
-    // ── Ano anterior: query GAS anual (jan–dez prevY) ────────────────────
-    // Uma única chamada garante porMes completo e evita falhas individuais
+    // ── Ano anterior: chamada direta ao GAS (bypass cache) ─────────────
     var prevMes = [];
-    if (getSheetsUrl()) {
-      var prevOvr = 'period=custom&startDate=' + prevY + '-01-01&endDate=' + prevY + '-12-31';
-      var prevRes = await fetchSheets('vendas', null, prevOvr).catch(function(){ return null; });
-      if (prevRes && prevRes.ok && prevRes.vendas && prevRes.vendas.porMes) {
-        prevRes.vendas.porMes.forEach(function(mp) {
-          if (mp.mes >= 1 && mp.mes <= lastMon + 1) {
-            prevMes.push({ mes: mp.mes, label: MO[mp.mes-1], receita: mp.receita||0, pedidos: mp.pedidos||0 });
-          }
-        });
-        prevMes.sort(function(a,b){ return a.mes - b.mes; });
-      }
+    var gasUrl  = getSheetsUrl();
+    if (gasUrl) {
+      try {
+        var prevQS  = 'section=vendas&period=custom&startDate=' + prevY + '-01-01&endDate=' + prevY + '-12-31';
+        var prevR   = await fetch(gasUrl + '?' + prevQS);
+        var prevRes = await prevR.json();
+        if (prevRes && prevRes.ok && prevRes.vendas && prevRes.vendas.porMes && prevRes.vendas.porMes.length) {
+          prevRes.vendas.porMes.forEach(function(mp) {
+            if (mp.mes >= 1 && mp.mes <= lastMon + 1) {
+              prevMes.push({ mes: mp.mes, label: MO[mp.mes-1], receita: mp.receita||0, pedidos: mp.pedidos||0 });
+            }
+          });
+          prevMes.sort(function(a,b){ return a.mes - b.mes; });
+        }
+      } catch(eGas) { console.warn('[evolution prev year GAS]', eGas.message); }
     }
 
     if (curMes.length) {
@@ -5800,6 +5803,7 @@ function renderPedidosTable() {
       '<td><span class="badge ' + pagClasse + '">' + pagLabel + '</span></td>' +
       '<td><span class="badge ' + entClasse + '">' + entLabel + '</span></td>' +
       '<td style="color:#374151;font-size:12px">' + envio + '</td>' +
+      '<td style="color:#6b7280;font-size:11px">' + (p.tags || '—') + '</td>' +
       '<td><strong>' + fmtBRL(p.valor) + '</strong></td>' +
       '<td style="color:#6b7280">' + p.data + '</td>' +
       '</tr>';
