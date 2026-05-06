@@ -4532,6 +4532,9 @@ async function loadShopifyData() {
 
     // Enriquece cache com Meta Ads + GA4 em background
     _enrichShopifyCacheAsync(navMonth, navYear).catch(function(){});
+
+    // Carrega evolução anual para gráficos (após _lastVendasData estar definido)
+    loadVendasEvolution().catch(function(e){ console.warn('evolution error:', e.message); });
   } catch(e) {
     console.warn('[shopify-bi] erro:', e.message);
     setSheetsStatus(false, 'Shopify — erro');
@@ -4776,8 +4779,10 @@ async function loadVendasEvolution() {
   var pad = function(n){ return String(n).padStart(2,'0'); };
   var MO  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var today   = new Date();
-  var lastMon = (navYear < today.getFullYear()) ? 11 : today.getMonth(); // 0-indexed
-  var prevY   = navYear - 1;
+  // lastMon = mês navegado (0-indexed); para meses futuros, cap em hoje
+  var todayMon  = (navYear === today.getFullYear()) ? today.getMonth() : 11;
+  var lastMon   = Math.min(navMonth, todayMon); // nunca ultrapassa o mês atual
+  var prevY     = navYear - 1;
 
   try {
     // ── 1. Ano atual ────────────────────────────────────────────────────
