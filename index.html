@@ -4775,51 +4775,76 @@ async function loadAllSheetsData() {
 }
 
 /* ===== EVOLUÇÃO MENSAL — busca ano inteiro para os gráficos de evolução ===== */
+// Cache em memória para evitar rebuscar meses já carregados
+var _prevYearCache = {};
+
 async function loadVendasEvolution() {
   var pad = function(n){ return String(n).padStart(2,'0'); };
   var MO  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var today    = new Date();
   var todayMon = (navYear === today.getFullYear()) ? today.getMonth() : 11;
-  var lastMon  = Math.min(navMonth, todayMon); // mês navegado, sem ultrapassar hoje
+  var lastMon  = Math.min(navMonth, todayMon);
   var prevY    = navYear - 1;
 
-  if (!_lastVendasData) return; // aguarda dados principais carregados
+  if (!_lastVendasData) return;
 
   try {
-    // ── Ano atual: JSONs estáticos + _lastVendasData para o mês navegado ──
+    // ── Ano atual ───────────────────────────────────────────────────────
     var curMes = [];
-    var staticFetches = [];
+    var curFetches = [];
     for (var m = 0; m <= lastMon; m++) {
-      if (m !== navMonth) staticFetches.push({ m: m, p: fetchStaticJSON('vendas', navYear + '-' + pad(m+1)).catch(function(){ return null; }) });
+      if (m !== navMonth) curFetches.push({ m: m, p: fetchStaticJSON('vendas', navYear + '-' + pad(m+1)).catch(function(){ return null; }) });
     }
-    var staticRes = await Promise.all(staticFetches.map(function(f){ return f.p; }));
-    staticFetches.forEach(function(f, i) {
-      var d = staticRes[i];
-      if (d && d.ok && d.vendas && d.vendas.kpis) {
+    var curRes = await Promise.all(curFetches.map(function(f){ return f.p; }));
+    curFetches.forEach(function(f, i) {
+      var d = curRes[i];
+      if (d && d.ok && d.vendas && d.vendas.kpis)
         curMes.push({ mes: f.m+1, label: MO[f.m], receita: d.vendas.kpis.receita||0, pedidos: d.vendas.kpis.pedidos||0 });
-      }
     });
     curMes.push({ mes: navMonth+1, label: MO[navMonth], receita: _lastVendasData.kpis.receita||0, pedidos: _lastVendasData.kpis.pedidos||0 });
     curMes.sort(function(a,b){ return a.mes - b.mes; });
 
-    // ── Ano anterior: chamada direta ao GAS (bypass cache) ─────────────
-    var prevMes = [];
-    var gasUrl  = getSheetsUrl();
-    if (gasUrl) {
-      try {
-        var prevQS  = 'section=vendas&period=custom&startDate=' + prevY + '-01-01&endDate=' + prevY + '-12-31';
-        var prevR   = await fetch(gasUrl + '?' + prevQS);
-        var prevRes = await prevR.json();
-        if (prevRes && prevRes.ok && prevRes.vendas && prevRes.vendas.porMes && prevRes.vendas.porMes.length) {
-          prevRes.vendas.porMes.forEach(function(mp) {
-            if (mp.mes >= 1 && mp.mes <= lastMon + 1) {
-              prevMes.push({ mes: mp.mes, label: MO[mp.mes-1], receita: mp.receita||0, pedidos: mp.pedidos||0 });
-            }
-          });
-          prevMes.sort(function(a,b){ return a.mes - b.mes; });
-        }
-      } catch(eGas) { console.warn('[evolution prev year GAS]', eGas.message); }
+    // ── Ano anterior: mesma abordagem dos cards (mês a mês via fetchSheets) ──
+    // Reutiliza cache em memória para meses já buscados
+    var prevMes   = [];
+    var fetchList = [];
+
+    for (var pm = 0; pm <= lastMon; pm++) {
+      var cacheKey = prevY + '-' + pad(pm + 1);
+
+      if (_prevYearCache[cacheKey]) {
+        // Já temos em memória
+        prevMes.push(_prevYearCache[cacheKey]);
+      } else {
+        // Tenta JSON estático primeiro, depois GAS com mesmo padrão dos cards
+        var start = prevY + '-' + pad(pm+1) + '-01';
+        var end   = prevY + '-' + pad(pm+1) + '-' + pad(new Date(prevY, pm+1, 0).getDate());
+        fetchList.push({
+          pm: pm,
+          key: cacheKey,
+          p: fetchStaticJSON('vendas', cacheKey)
+            .then(function(sd) {
+              if (sd && sd.ok && sd.vendas && sd.vendas.kpis) return sd;
+              // Fallback: GAS com período mensal (mesmo padrão dos cards)
+              return fetchSheets('vendas', null, 'period=custom&startDate=' + start + '&endDate=' + end)
+                .catch(function(){ return null; });
+            })
+            .catch(function(){ return null; })
+        });
+      }
     }
+
+    var fetchRes = await Promise.all(fetchList.map(function(f){ return f.p; }));
+    fetchList.forEach(function(f, i) {
+      var d = fetchRes[i];
+      if (d && d.ok && d.vendas && d.vendas.kpis) {
+        var entry = { mes: f.pm+1, label: MO[f.pm], receita: d.vendas.kpis.receita||0, pedidos: d.vendas.kpis.pedidos||0 };
+        _prevYearCache[f.key] = entry;
+        prevMes.push(entry);
+      }
+    });
+
+    prevMes.sort(function(a,b){ return a.mes - b.mes; });
 
     if (curMes.length) {
       renderYoYChart('salesChart',   curMes, prevMes, 'receita', 'R$', true);
