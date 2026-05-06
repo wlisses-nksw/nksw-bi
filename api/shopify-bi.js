@@ -3,11 +3,15 @@
  *
  * GET /api/shopify-bi?section=all&month=2026-05
  *
- * Retorna JSON no mesmo formato do Google Apps Script (nksw_sheets_api.js).
- * REGRA: apenas pedidos com financial_status === 'paid' entram nos cálculos de receita.
+ * REGRAS:
+ *   - Apenas pedidos com financial_status === 'paid' entram nos KPIs de receita/ticket/pedidos
+ *   - Datas sempre em fuso de Brasília (America/Sao_Paulo)
+ *   - D-1: para o mês corrente, exclui pedidos do dia atual (Brasília)
  */
 
 import { head } from '@vercel/blob';
+
+const TZ = 'America/Sao_Paulo';
 
 // ── Labels ─────────────────────────────────────────────────────────────────
 
@@ -35,12 +39,23 @@ const MONTH_LABELS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out
 const r2 = n => Math.round(n * 100) / 100;
 const r1 = n => Math.round(n * 10)  / 10;
 
-/** Retorna true para cupons de troca (não devem entrar em desconto concedido) */
-const isTroca = code => typeof code === 'string' && code.toLowerCase().includes('troca');
-
-function ptDate(isoStr) {
-  return new Date(isoStr).toLocaleDateString('pt-BR');
+/** Retorna YYYY-MM-DD no fuso de Brasília */
+function brISO(isoStr) {
+  return new Date(isoStr).toLocaleDateString('en-CA', { timeZone: TZ });
 }
+
+/** Retorna data formatada pt-BR no fuso de Brasília */
+function brDate(isoStr) {
+  return new Date(isoStr).toLocaleDateString('pt-BR', { timeZone: TZ });
+}
+
+/** Retorna YYYY-MM no fuso de Brasília */
+function brYM(isoStr) {
+  return brISO(isoStr).slice(0, 7);
+}
+
+/** Retorna true para cupons de troca */
+const isTroca = code => typeof code === 'string' && code.toLowerCase().includes('troca');
 
 function customerName(order) {
   if (order.customer) {
@@ -54,12 +69,29 @@ function shippingAmount(order) {
   return parseFloat(order.total_shipping_price_set?.shop_money?.amount ?? 0);
 }
 
+/**
+ * Retorna data D-1 em Brasília (YYYY-MM-DD).
+ * Para o mês corrente, usamos como corte o dia anterior (dados do dia atual
+ * ainda não estão completos). Para meses históricos, incluímos tudo.
+ */
+function getD1BR() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toLocaleDateString('en-CA', { timeZone: TZ });
+}
+
 // ── Builders ───────────────────────────────────────────────────────────────
 
-function buildVendas(orders) {
-  // Apenas pedidos PAGOS para todos os cálculos financeiros
-  const paid      = orders.filter(o => o.financial_status === 'paid');
-  const cancelled = orders.filter(o => o.cancelled_at);
+function buildVendas(orders, isCurrent) {
+  // D-1 apenas para o mês corrente — meses históricos incluem tudo
+  const cutoff = isCurrent ? getD1BR() : null;
+  const base   = cutoff
+    ? orders.filter(o => brISO(o.created_at) <= cutoff)
+    : orders;
+
+  // Apenas pedidos PAGOS para KPIs financeiros
+  const paid      = base.filter(o => o.financial_status === 'paid');
+  const cancelled = base.filter(o => o.cancelled_at);
 
   let receita = 0, descontoTotal = 0, valorFrete = 0;
   let pedidosComFrete = 0, pedidosSemFrete = 0, comCupom = 0;
@@ -74,10 +106,9 @@ function buildVendas(orders) {
   const cupomMap    = {};
 
   for (const o of paid) {
-    const total    = parseFloat(o.total_price)    || 0;
-    const frete    = shippingAmount(o);
+    const total  = parseFloat(o.total_price) || 0;
+    const frete  = shippingAmount(o);
 
-    // Desconto: exclui cupons de TROCA (troca de produto não é desconto comercial)
     const descontoTroca = (o.discount_codes || [])
       .filter(dc => isTroca(dc.code))
       .reduce((s, dc) => s + (parseFloat(dc.amount) || 0), 0);
@@ -88,40 +119,39 @@ function buildVendas(orders) {
     valorFrete    += frete;
 
     frete > 0 ? pedidosComFrete++ : pedidosSemFrete++;
-    // Cupom: conta apenas se há ao menos um cupom não-troca
+
     const nonTrocaCodes = (o.discount_codes || []).filter(dc => !isTroca(dc.code));
     if (nonTrocaCodes.length) comCupom++;
 
-    // ── Diário ──────────────────────────────────────────────────────────
-    const dia = o.created_at.slice(0, 10);
+    // ── Diário (data em Brasília) ────────────────────────────────────────
+    const dia = brISO(o.created_at);
     if (!diarioMap[dia]) diarioMap[dia] = { dia, receita: 0, pedidos: 0 };
     diarioMap[dia].receita += total;
     diarioMap[dia].pedidos++;
 
-    // ── Por mês (para gráfico YoY) ──────────────────────────────────────
-    const ym  = o.created_at.slice(0, 7);           // "2026-05"
-    const mon = parseInt(o.created_at.slice(5, 7), 10); // 5
+    // ── Por mês ──────────────────────────────────────────────────────────
+    const ym  = brYM(o.created_at);
+    const mon = parseInt(ym.slice(5, 7), 10);
     if (!mesMap[ym]) mesMap[ym] = { mes: mon, label: MONTH_LABELS[mon - 1], receita: 0, pedidos: 0 };
     mesMap[ym].receita += total;
     mesMap[ym].pedidos++;
 
-    // ── Canal (gateway) ─────────────────────────────────────────────────
+    // ── Canal ────────────────────────────────────────────────────────────
     const canal = o.payment_gateway || 'Outros';
     if (!canaisMap[canal]) canaisMap[canal] = { canal, receita: 0, pedidos: 0 };
     canaisMap[canal].receita += total;
     canaisMap[canal].pedidos++;
 
-    // ── Formas de pagamento ─────────────────────────────────────────────
     if (!pagMap[canal]) pagMap[canal] = { forma: canal, total: 0 };
     pagMap[canal].total++;
 
-    // ── Por estado ──────────────────────────────────────────────────────
+    // ── Por estado ───────────────────────────────────────────────────────
     const estado = o.shipping_address?.province || o.billing_address?.province || 'N/A';
     if (!estadosMap[estado]) estadosMap[estado] = { estado, receita: 0, pedidos: 0 };
     estadosMap[estado].receita += total;
     estadosMap[estado].pedidos++;
 
-    // ── Por vendedor ────────────────────────────────────────────────────
+    // ── Por vendedor ─────────────────────────────────────────────────────
     const vendedorTag = (o.tags || '').split(',').map(t => t.trim())
       .find(t => t.toLowerCase().startsWith('vendedor:'));
     const vendedor = vendedorTag ? vendedorTag.split(':')[1].trim() : 'Shopify';
@@ -129,15 +159,15 @@ function buildVendas(orders) {
     vendedorMap[vendedor].receita += total;
     vendedorMap[vendedor].pedidos++;
 
-    // ── Status de pagamento ─────────────────────────────────────────────
+    // ── Status pagamento ─────────────────────────────────────────────────
     const spLabel = FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido';
     if (!statusPagMap[spLabel]) statusPagMap[spLabel] = { status: spLabel, pedidos: 0, receita: 0 };
     statusPagMap[spLabel].pedidos++;
     statusPagMap[spLabel].receita += total;
 
-    // ── Cupons (exclui cupons de TROCA) ──────────────────────────────────
+    // ── Cupons ───────────────────────────────────────────────────────────
     for (const dc of (o.discount_codes || [])) {
-      if (isTroca(dc.code)) continue; // troca de produto — não exibir como desconto
+      if (isTroca(dc.code)) continue;
       const key = dc.code;
       if (!cupomMap[key]) cupomMap[key] = { cupom: key, pedidos: 0, valor: 0 };
       cupomMap[key].pedidos++;
@@ -145,8 +175,8 @@ function buildVendas(orders) {
     }
   }
 
-  const pedidos        = paid.length;
-  const ticket         = pedidos > 0 ? receita / pedidos : 0;
+  const pedidos         = paid.length;
+  const ticket          = pedidos > 0 ? receita / pedidos : 0;
   const receitaSemFrete = r2(receita - valorFrete);
 
   const diario = Object.values(diarioMap)
@@ -164,7 +194,7 @@ function buildVendas(orders) {
       ticket:          r2(ticket),
       lucro:           0,
       custo:           0,
-      taxaCancel:      r1(orders.length > 0 ? (cancelled.length / orders.length) * 100 : 0),
+      taxaCancel:      r1(base.length > 0 ? (cancelled.length / base.length) * 100 : 0),
       descontoTotal:   r2(descontoTotal),
       pctCupom:        r1(pedidos > 0 ? (comCupom / pedidos) * 100 : 0),
       receitaSemFrete,
@@ -181,61 +211,62 @@ function buildVendas(orders) {
     pagamentos:      Object.values(pagMap).sort((a, b) => b.total - a.total),
     porEstado:       Object.values(estadosMap).sort((a, b) => b.receita - a.receita),
     porVendedor:     Object.values(vendedorMap).sort((a, b) => b.receita - a.receita),
-    porCupom:        Object.values(cupomMap).sort((a, b) => b.valor - a.valor).map(c => ({
-                       ...c, valor: r2(c.valor)
-                     })),
+    porCupom:        Object.values(cupomMap).sort((a, b) => b.valor - a.valor)
+                       .map(c => ({ ...c, valor: r2(c.valor) })),
     statusPagamento: Object.values(statusPagMap),
   };
 }
 
-function buildPedidos(orders) {
-  // D-1: apenas pedidos criados até ontem (dados do dia corrente chegam no dia seguinte)
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(23, 59, 59, 999);
-  const ordersD1 = orders.filter(o => new Date(o.created_at) <= yesterday);
+function buildPedidos(orders, isCurrent) {
+  // D-1 em Brasília apenas para o mês corrente
+  const cutoff   = isCurrent ? getD1BR() : null;
+  const filtered = cutoff
+    ? orders.filter(o => brISO(o.created_at) <= cutoff)
+    : orders;
 
-  // Contadores baseados em STATUS DE PAGAMENTO (financial_status)
+  // Contadores por status de pagamento
   const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0 };
-
-  for (const o of ordersD1) {
+  for (const o of filtered) {
     const fs = o.financial_status;
     if (o.cancelled_at || fs === 'voided' || fs === 'refunded' || fs === 'partially_refunded') {
       contadores.cancelados++;
     } else if (fs === 'paid') {
       contadores.pagos++;
-      // Também conta entregues (fulfillment) dentro dos pagos
       if (o.fulfillment_status === 'fulfilled') contadores.entregues++;
     } else if (fs === 'partially_paid') {
       contadores.parciais++;
     } else {
-      // pending, authorized
       contadores.pendentes++;
     }
   }
 
-  const lista = ordersD1.map(o => ({
-    id:          String(o.order_number),
-    produto:     o.line_items?.[0]?.title || '',
-    cliente:     customerName(o),
-    email:       o.customer?.email || o.contact_email || '',
-    pagamento:   FINANCIAL_LABELS[o.financial_status]     || o.financial_status     || 'Desconhecido',
-    entrega:     o.cancelled_at
-                   ? 'Cancelado'
-                   : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
+  // Lista completa — TODOS os pedidos (não só pagos)
+  const lista = filtered.map(o => ({
+    id:           String(o.order_number),
+    produto:      o.line_items?.[0]?.title || '',
+    cliente:      customerName(o),
+    email:        o.customer?.email || o.contact_email || '',
+    pagamento:    FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido',
+    entrega:      o.cancelled_at
+                    ? 'Cancelado'
+                    : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
     metodo_envio: o.shipping_lines?.[0]?.title || '—',
-    valor:       parseFloat(o.total_price) || 0,
-    data:        ptDate(o.created_at),
-    rastreio:    o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
+    valor:        parseFloat(o.total_price) || 0,
+    data:         brDate(o.created_at),
+    rastreio:     o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
   }));
 
   return { contadores, lista };
 }
 
-function buildLogistica(orders) {
-  const statusCount = {};
+function buildLogistica(orders, isCurrent) {
+  const cutoff   = isCurrent ? getD1BR() : null;
+  const filtered = cutoff
+    ? orders.filter(o => brISO(o.created_at) <= cutoff)
+    : orders;
 
-  const pedidos = orders
+  const statusCount = {};
+  const pedidos = filtered
     .filter(o => !o.cancelled_at)
     .map(o => {
       let status;
@@ -245,11 +276,10 @@ function buildLogistica(orders) {
       else                                           status = 'Aguardando Envio';
 
       statusCount[status] = (statusCount[status] || 0) + 1;
-
       const tracking = o.fulfillments?.flatMap(f => f.tracking_numbers || []) || [];
       return {
         pedido:         String(o.order_number),
-        data:           ptDate(o.created_at),
+        data:           brDate(o.created_at),
         cliente:        customerName(o),
         status,
         rastreio:       tracking[0] || null,
@@ -258,59 +288,46 @@ function buildLogistica(orders) {
       };
     });
 
-  const statusList = Object.entries(statusCount)
-    .map(([status, total]) => ({ status, total }))
-    .sort((a, b) => b.total - a.total);
-
-  return { statusList, pedidos };
+  return {
+    statusList: Object.entries(statusCount)
+      .map(([status, total]) => ({ status, total }))
+      .sort((a, b) => b.total - a.total),
+    pedidos,
+  };
 }
 
-function buildClientes(orders) {
-  // Apenas pedidos pagos para análise de clientes
-  const paid = orders.filter(o => o.financial_status === 'paid');
-
+function buildClientes(orders, isCurrent) {
+  const cutoff   = isCurrent ? getD1BR() : null;
+  const base     = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  const paid     = base.filter(o => o.financial_status === 'paid');
   const clienteMap = {};
 
   for (const o of paid) {
-    const cid = o.customer?.id || o.email || o.contact_email || 'anonimo';
+    const cid   = o.customer?.id || o.email || o.contact_email || 'anonimo';
     const total = parseFloat(o.total_price) || 0;
     if (!clienteMap[cid]) {
-      clienteMap[cid] = {
-        nome:    customerName(o),
-        email:   o.customer?.email || o.contact_email || '',
-        pedidos: 0,
-        receita: 0,
-      };
+      clienteMap[cid] = { nome: customerName(o), email: o.customer?.email || o.contact_email || '', pedidos: 0, receita: 0 };
     }
     clienteMap[cid].pedidos++;
     clienteMap[cid].receita += total;
   }
 
-  const clientes   = Object.values(clienteMap);
-  const total      = clientes.length;
-  const recompras  = clientes.filter(c => c.pedidos > 1).length;
-  const totalRec   = paid.reduce((s, o) => s + (parseFloat(o.total_price) || 0), 0);
-  const ltv        = total > 0 ? totalRec / total : 0;
-
-  // Top clientes por receita
-  const topClientes = clientes
-    .sort((a, b) => b.receita - a.receita)
-    .slice(0, 20)
-    .map(c => ({ ...c, receita: r2(c.receita) }));
+  const clientes  = Object.values(clienteMap);
+  const total     = clientes.length;
+  const recompras = clientes.filter(c => c.pedidos > 1).length;
+  const totalRec  = paid.reduce((s, o) => s + (parseFloat(o.total_price) || 0), 0);
+  const ltv       = total > 0 ? totalRec / total : 0;
 
   return {
     kpis: {
-      total,
-      recompras,
+      total, recompras,
       pctRecomp:      r1(total > 0 ? recompras / total * 100 : 0),
       ltv:            r2(ltv),
       totalReceita:   r2(totalRec),
-      avgDaysBetween: 0, // histórico não disponível por mês único
+      avgDaysBetween: 0,
     },
-    topClientes,
-    // rfm e abc requerem histórico multi-mês — não disponível via sync mensal
-    rfm: [],
-    abc: [],
+    topClientes: clientes.sort((a, b) => b.receita - a.receita).slice(0, 20).map(c => ({ ...c, receita: r2(c.receita) })),
+    rfm: [], abc: [],
   };
 }
 
@@ -332,39 +349,33 @@ export default async function handler(req, res) {
 
   try {
     const blobMeta = await head(blobName);
-
     if (!blobMeta) {
       return res.status(404).json({
-        ok:    false,
+        ok: false,
         error: `Dados de ${month} ainda não sincronizados.`,
-        hint:  `/api/shopify-sync?action=full&month=${month}&secret=nksw2025`,
+        hint: `/api/shopify-sync?action=full&month=${month}&secret=nksw2025`,
       });
     }
 
     const blobRes  = await fetch(blobMeta.url);
     const { orders = [], synced_at } = await blobRes.json();
 
-    // ── Verificação de totais (log para debug) ──────────────────────────
+    // Verifica se é o mês corrente (em Brasília) para aplicar D-1
+    const nowBR      = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
+    const isCurrent  = month === nowBR.slice(0, 7);
+
     const paid = orders.filter(o => o.financial_status === 'paid');
-    console.log(`[shopify-bi] ${month}: ${orders.length} pedidos total | ${paid.length} pagos`);
-    if (paid.length > 0) {
-      const rec  = paid.reduce((s, o) => s + (parseFloat(o.total_price)    || 0), 0);
-      const fret = paid.reduce((s, o) => s + shippingAmount(o), 0);
-      const desc = paid.reduce((s, o) => s + (parseFloat(o.total_discounts) || 0), 0);
-      const last = paid.sort((a,b) => b.order_number - a.order_number)[0]?.order_number;
-      console.log(`[shopify-bi] receita=${rec.toFixed(2)} frete=${fret.toFixed(2)} desconto=${desc.toFixed(2)} último=#${last}`);
-    }
+    const cutoff = isCurrent ? getD1BR() : null;
+    console.log(`[shopify-bi] ${month} | total=${orders.length} pagos=${paid.length} cutoff=${cutoff || 'none'} TZ=Brasília`);
 
     const out = { ok: true, month, synced_at, source: 'shopify' };
 
-    if (section === 'vendas'   || section === 'all') out.vendas    = buildVendas(orders);
-    if (section === 'pedidos'  || section === 'all') out.pedidos   = buildPedidos(orders);
-    if (section === 'logistica'|| section === 'all') out.logistica = buildLogistica(orders);
-    if (section === 'clientes' || section === 'all') out.clientes  = buildClientes(orders);
+    if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent);
+    if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent);
+    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent);
+    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent);
 
-    const isCurrentMonth = month === new Date().toISOString().slice(0, 7);
-    res.setHeader('Cache-Control', isCurrentMonth ? 's-maxage=300' : 's-maxage=3600');
-
+    res.setHeader('Cache-Control', isCurrent ? 's-maxage=60' : 's-maxage=3600');
     return res.status(200).json(out);
 
   } catch (err) {
