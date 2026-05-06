@@ -4778,80 +4778,47 @@ async function loadAllSheetsData() {
 async function loadVendasEvolution() {
   var pad = function(n){ return String(n).padStart(2,'0'); };
   var MO  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  var today   = new Date();
-  // lastMon = mês navegado (0-indexed); para meses futuros, cap em hoje
-  var todayMon  = (navYear === today.getFullYear()) ? today.getMonth() : 11;
-  var lastMon   = Math.min(navMonth, todayMon); // nunca ultrapassa o mês atual
-  var prevY     = navYear - 1;
+  var today    = new Date();
+  var todayMon = (navYear === today.getFullYear()) ? today.getMonth() : 11;
+  var lastMon  = Math.min(navMonth, todayMon); // mês navegado, sem ultrapassar hoje
+  var prevY    = navYear - 1;
+
+  if (!_lastVendasData) return; // aguarda dados principais carregados
 
   try {
-    // ── 1. Ano atual ────────────────────────────────────────────────────
+    // ── Ano atual: JSONs estáticos + _lastVendasData para o mês navegado ──
     var curMes = [];
-
-    // Busca JSONs estáticos para meses históricos do ano atual (exceto o mês navegado)
-    var curFetches = [];
+    var staticFetches = [];
     for (var m = 0; m <= lastMon; m++) {
-      if (m !== navMonth) curFetches.push({ m: m, p: fetchStaticJSON('vendas', navYear + '-' + pad(m+1)).catch(function(){ return null; }) });
+      if (m !== navMonth) staticFetches.push({ m: m, p: fetchStaticJSON('vendas', navYear + '-' + pad(m+1)).catch(function(){ return null; }) });
     }
-    var curStaticRes = await Promise.all(curFetches.map(function(f){ return f.p; }));
-    curFetches.forEach(function(f, i) {
-      var d = curStaticRes[i];
+    var staticRes = await Promise.all(staticFetches.map(function(f){ return f.p; }));
+    staticFetches.forEach(function(f, i) {
+      var d = staticRes[i];
       if (d && d.ok && d.vendas && d.vendas.kpis) {
-        curMes.push({ mes: f.m + 1, label: MO[f.m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
+        curMes.push({ mes: f.m+1, label: MO[f.m], receita: d.vendas.kpis.receita||0, pedidos: d.vendas.kpis.pedidos||0 });
       }
     });
+    curMes.push({ mes: navMonth+1, label: MO[navMonth], receita: _lastVendasData.kpis.receita||0, pedidos: _lastVendasData.kpis.pedidos||0 });
+    curMes.sort(function(a,b){ return a.mes - b.mes; });
 
-    // Mês atual: usa _lastVendasData (mesma fonte do card — garante consistência)
-    if (!_lastVendasData) return; // aguarda dados principais estarem prontos
-    curMes.push({ mes: navMonth + 1, label: MO[navMonth], receita: _lastVendasData.kpis.receita || 0, pedidos: _lastVendasData.kpis.pedidos || 0 });
-    curMes.sort(function(a, b){ return a.mes - b.mes; });
-
-    // ── 2. Ano anterior ─────────────────────────────────────────────────
+    // ── Ano anterior: query GAS anual (jan–dez prevY) ────────────────────
+    // Uma única chamada garante porMes completo e evita falhas individuais
     var prevMes = [];
-
-    // 2a. Tenta JSONs estáticos primeiro
-    var prevFetches = [];
-    for (var pm = 0; pm <= lastMon; pm++) {
-      prevFetches.push({ m: pm, p: fetchStaticJSON('vendas', prevY + '-' + pad(pm+1)).catch(function(){ return null; }) });
-    }
-    var prevStaticRes = await Promise.all(prevFetches.map(function(f){ return f.p; }));
-    var missingIdx = [];
-    prevFetches.forEach(function(f, i) {
-      var d = prevStaticRes[i];
-      if (d && d.ok && d.vendas && d.vendas.kpis) {
-        prevMes.push({ mes: f.m + 1, label: MO[f.m], receita: d.vendas.kpis.receita || 0, pedidos: d.vendas.kpis.pedidos || 0 });
-      } else {
-        missingIdx.push(f.m);
-      }
-    });
-
-    // 2b. Para meses sem JSON estático: UMA única chamada ao GAS com período completo
-    if (missingIdx.length && getSheetsUrl()) {
-      var gasStart = prevY + '-' + pad(missingIdx[0] + 1) + '-01';
-      var gasEnd   = prevY + '-' + pad(missingIdx[missingIdx.length-1] + 1) + '-' + pad(new Date(prevY, missingIdx[missingIdx.length-1] + 1, 0).getDate());
-      var gasOvr   = 'period=custom&startDate=' + gasStart + '&endDate=' + gasEnd;
-      var gasRes   = await fetchSheets('vendas', null, gasOvr).catch(function(){ return null; });
-
-      if (gasRes && gasRes.ok && gasRes.vendas && gasRes.vendas.porMes && gasRes.vendas.porMes.length) {
-        // porMes do GAS tem todos os meses no range — filtra só os que faltam
-        var missingSet = new Set(missingIdx.map(function(m){ return m + 1; }));
-        gasRes.vendas.porMes.forEach(function(mp) {
-          if (missingSet.has(mp.mes)) {
-            prevMes.push({ mes: mp.mes, label: MO[mp.mes - 1], receita: mp.receita || 0, pedidos: mp.pedidos || 0 });
+    if (getSheetsUrl()) {
+      var prevOvr = 'period=custom&startDate=' + prevY + '-01-01&endDate=' + prevY + '-12-31';
+      var prevRes = await fetchSheets('vendas', null, prevOvr).catch(function(){ return null; });
+      if (prevRes && prevRes.ok && prevRes.vendas && prevRes.vendas.porMes) {
+        prevRes.vendas.porMes.forEach(function(mp) {
+          if (mp.mes >= 1 && mp.mes <= lastMon + 1) {
+            prevMes.push({ mes: mp.mes, label: MO[mp.mes-1], receita: mp.receita||0, pedidos: mp.pedidos||0 });
           }
         });
+        prevMes.sort(function(a,b){ return a.mes - b.mes; });
       }
     }
 
-    prevMes.sort(function(a, b){ return a.mes - b.mes; });
-
-    // ── 3. Renderiza SOMENTE quando ambos os conjuntos estão prontos ────
-    if (curMes.length && prevMes.length === lastMon + 1) {
-      // Linha completa — renderiza
-      renderYoYChart('salesChart',   curMes, prevMes, 'receita', 'R$', true);
-      renderYoYChart('pedidosChart', curMes, prevMes, 'pedidos', '',   false);
-    } else if (curMes.length) {
-      // Linha incompleta (ano anterior sem dados) — renderiza só barras
+    if (curMes.length) {
       renderYoYChart('salesChart',   curMes, prevMes, 'receita', 'R$', true);
       renderYoYChart('pedidosChart', curMes, prevMes, 'pedidos', '',   false);
     }
