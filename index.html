@@ -7453,6 +7453,7 @@ function _buildConferenciaFiltros() {
   // Adiciona campos string para os filtros de Est. Sisplan, Est. Shopify e Diferença
   _confData.forEach(function(p) {
     p.sisplan_str = String(p.sisplan);
+    p.pre_str     = String(p.pre_estoque || 0);
     p.shopify_str = p.shopify !== null ? String(p.shopify) : '—';
     p.diff_str    = p.diff === null ? '—' : p.diff === 0 ? '0' : p.diff > 0 ? '+' + p.diff : String(p.diff);
   });
