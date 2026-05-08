@@ -1250,56 +1250,41 @@ tbody tr:hover{background:#fafafa}
     <!-- ============================================================ -->
     <div class="page" id="page-pedidos">
 
-      <!-- Cards de status lado a lado -->
-      <!-- Cards de pagamento -->
-      <div class="five-col" style="margin-bottom:12px">
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pago')"><div class="sc-label">Pagos</div><div class="sc-num green" id="cnt-pagos">—</div></div>
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('entrega','Enviado')"><div class="sc-label">Entregues</div><div class="sc-num green" id="cnt-entregues">—</div></div>
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pag. Parcial')"><div class="sc-label">Pag. Parcial</div><div class="sc-num blue" id="cnt-parciais">—</div></div>
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pendente')"><div class="sc-label">Pendentes</div><div class="sc-num yellow" id="cnt-pendentes">—</div></div>
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Cancelado')"><div class="sc-label">Cancelados</div><div class="sc-num red" id="cnt-cancelados">—</div></div>
-      </div>
       <!-- Cards de prazo -->
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;max-width:500px">
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('status_pedido_str','No Prazo')"><div class="sc-label">✅ No Prazo</div><div class="sc-num green" id="cnt-no-prazo">—</div></div>
-        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('status_pedido_str','Atrasado')"><div class="sc-label">⚠️ Atrasados</div><div class="sc-num red" id="cnt-atrasados">—</div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;max-width:440px">
+        <div class="status-card" style="cursor:pointer" onclick="_pedFiltroQuick('status_pedido_str','No Prazo')">
+          <div class="sc-label">✅ No Prazo</div><div class="sc-num green" id="cnt-no-prazo">—</div>
+        </div>
+        <div class="status-card" style="cursor:pointer" onclick="_pedFiltroQuick('status_pedido_str','Atrasado')">
+          <div class="sc-label">⚠️ Atrasados</div><div class="sc-num red" id="cnt-atrasados">—</div>
+        </div>
       </div>
 
-      <!-- Filtros + CSV -->
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-        <select id="filtro-pagamento" onchange="renderPedidosTable()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:#374151;background:#fff;cursor:pointer">
-          <option value="">Todos os pagamentos</option>
-          <option value="Pago">Pago</option>
-          <option value="Pendente">Pendente</option>
-          <option value="Pag. Parcial">Pag. Parcial</option>
-          <option value="Cancelado">Cancelado</option>
-          <option value="Reembolsado">Reembolsado</option>
-        </select>
-        <select id="filtro-entrega" onchange="renderPedidosTable()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;color:#374151;background:#fff;cursor:pointer">
-          <option value="">Todas as entregas</option>
-          <option value="Enviado">Enviado</option>
-          <option value="Entregue">Entregue</option>
-          <option value="Em Trânsito">Em Trânsito</option>
-          <option value="Aguardando envio">Aguardando envio</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
-        <button onclick="clearPedidosFiltros()" style="padding:7px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;background:#fff;color:#6b7280;cursor:pointer">✕ Limpar</button>
-        <div style="display:flex;gap:8px;margin-left:auto">
-          <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
-          <button onclick="downloadPedidosCSV()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">⬇ Baixar CSV</button>
-        </div>
+      <!-- Barra de ações -->
+      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-bottom:10px">
+        <button onclick="_clearPedMenus()" style="padding:6px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;color:#6b7280;cursor:pointer">✕ Limpar filtros</button>
         <span id="pedidos-count" style="font-size:12px;color:#9ca3af"></span>
+        <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
+        <button onclick="downloadPedidosCSV()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">⬇ Baixar CSV</button>
       </div>
 
-      <div class="section-header" style="margin-bottom:12px">
-        <div>
-          <div class="section-title">Pedidos por Cliente</div>
-          <div class="section-sub" id="pedidos-sub">Dados até ontem</div>
-        </div>
+      <div class="section-header" style="margin-bottom:8px">
+        <div><div class="section-title">Pedidos por Cliente</div><div class="section-sub" id="pedidos-sub">Dados até ontem</div></div>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Método de Envio</th><th>Status Entrega</th><th>Status Pedido</th><th>Tags</th><th>Valor</th><th>Data</th></tr></thead>
+          <thead><tr>
+            <th># Pedido</th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Cliente<button onclick="_togglePedFiltroMenu(this)" data-campo="cliente" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="cliente" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:180px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th>E-mail</th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Pagamento<button onclick="_togglePedFiltroMenu(this)" data-campo="pagamento" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="pagamento" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:160px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Método de Envio<button onclick="_togglePedFiltroMenu(this)" data-campo="metodo_envio" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="metodo_envio" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:160px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Status Entrega<button onclick="_togglePedFiltroMenu(this)" data-campo="status_entrega" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="status_entrega" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:180px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Status Pedido<button onclick="_togglePedFiltroMenu(this)" data-campo="status_pedido_str" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="status_pedido_str" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:160px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th style="position:relative"><div style="display:flex;align-items:center;gap:5px;justify-content:space-between">Tags<button onclick="_togglePedFiltroMenu(this)" data-campo="tags" style="background:none;border:none;cursor:pointer;font-size:14px;color:#9ca3af;padding:0;line-height:1">▾</button></div><div class="ped-menu" data-campo="tags" style="display:none;position:absolute;top:100%;left:0;z-index:300;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;min-width:160px;max-height:240px;overflow-y:auto;box-shadow:0 4px 16px rgba(0,0,0,.12)"></div></th>
+            <th>Valor</th>
+            <th>Data</th>
+          </tr></thead>
           <tbody id="pedidosBody"></tbody>
         </table>
       </div>
@@ -5811,33 +5796,87 @@ var _entBadgeMap = {
   'Cancelado':'red','Devolvido':'red'
 };
 
-function filterPedidos(campo, valor) {
-  var sel = document.getElementById('filtro-' + campo);
-  if (sel) sel.value = valor;
+// ── Filtros multi-select nos headers da tabela de pedidos ─────────────
+var _pedFiltros = {}; // { campo: Set(valores) }
+
+function _togglePedFiltroMenu(btn) {
+  var campo = btn.dataset.campo;
+  var menu  = btn.parentNode.nextElementSibling;
+  var isOpen = menu.style.display !== 'none';
+  document.querySelectorAll('.ped-menu').forEach(function(m){ m.style.display='none'; });
+  if (!isOpen) {
+    _buildPedMenu(menu, campo);
+    menu.style.display = 'block';
+  }
+}
+
+function _buildPedMenu(menu, campo) {
+  var values = Array.from(new Set(_pedidosLista.map(function(p){
+    return String(p[campo] || '—');
+  }))).sort();
+  var sel = _pedFiltros[campo] || new Set(values);
+  menu.innerHTML =
+    '<div style="display:flex;gap:6px;margin-bottom:8px">' +
+      '<button onclick="_pedSelAll(this.parentNode.parentNode,campo,true)"  style="font-size:10px;padding:2px 8px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Todos</button>' +
+      '<button onclick="_pedSelAll(this.parentNode.parentNode,campo,false)" style="font-size:10px;padding:2px 8px;border:1px solid #e5e7eb;border-radius:4px;cursor:pointer;background:#f9fafb">Nenhum</button>' +
+    '</div>' +
+    values.map(function(v) {
+      var checked = sel.has(v) ? 'checked' : '';
+      return '<label style="display:flex;align-items:center;gap:5px;padding:3px 0;cursor:pointer;font-size:12px;white-space:nowrap">' +
+        '<input type="checkbox" ' + checked + ' data-campo="' + campo + '" data-val="' + v.replace(/"/g,'&quot;') + '" onchange="_onPedFiltro()">' +
+        v + '</label>';
+    }).join('');
+}
+
+function _pedSelAll(menu, campo, sel) {
+  menu.querySelectorAll('input[type=checkbox]').forEach(function(cb){ cb.checked = sel; });
+  _onPedFiltro();
+}
+
+function _onPedFiltro() {
+  _pedFiltros = {};
+  document.querySelectorAll('.ped-menu input[type=checkbox]').forEach(function(cb) {
+    var campo = cb.dataset.campo, val = cb.dataset.val;
+    if (!_pedFiltros[campo]) _pedFiltros[campo] = new Set();
+    if (cb.checked) _pedFiltros[campo].add(val);
+  });
   renderPedidosTable();
 }
 
-function clearPedidosFiltros() {
-  var fp = document.getElementById('filtro-pagamento');
-  var fe = document.getElementById('filtro-entrega');
-  if (fp) fp.value = '';
-  if (fe) fe.value = '';
+function _clearPedMenus() {
+  _pedFiltros = {};
+  document.querySelectorAll('.ped-menu').forEach(function(m){ m.style.display='none'; });
   renderPedidosTable();
 }
+
+function _pedFiltroQuick(campo, valor) {
+  // Clique no card: filtra só por esse valor
+  _pedFiltros = {};
+  _pedFiltros[campo] = new Set([valor]);
+  renderPedidosTable();
+}
+
+// Fecha menus ao clicar fora
+document.addEventListener('click', function(e) {
+  if (!e.target.closest || (!e.target.closest('.ped-menu') && !e.target.closest('button[data-campo]'))) {
+    document.querySelectorAll('.ped-menu').forEach(function(m){ m.style.display='none'; });
+  }
+});
+
+function filterPedidos(campo, valor) { _pedFiltroQuick(campo, valor); }
+function clearPedidosFiltros() { _clearPedMenus(); }
 
 function renderPedidosTable() {
   var tbody = document.getElementById('pedidosBody');
   if (!tbody || !_pedidosLista.length) return;
 
-  var filtroPag = (document.getElementById('filtro-pagamento') || {}).value || '';
-  var filtroEnt = (document.getElementById('filtro-entrega')   || {}).value || '';
-
   var lista = _pedidosLista.filter(function(p) {
-    var pagLabel = p.pagamento || p.status || '';
-    var entLabel = p.entrega   || (p.pagamento ? '' : p.status) || '';
-    if (filtroPag && pagLabel.indexOf(filtroPag) === -1) return false;
-    if (filtroEnt && entLabel.indexOf(filtroEnt) === -1) return false;
-    return true;
+    p.status_pedido_str = p.status_pedido || '—';
+    return Object.keys(_pedFiltros).every(function(campo) {
+      var s = _pedFiltros[campo];
+      if (!s || !s.size) return true;
+      return s.has(String(p[campo] || '—'));
+    });
   });
 
   var countEl = document.getElementById('pedidos-count');
@@ -5852,7 +5891,7 @@ function renderPedidosTable() {
     var pedidoId  = (p.id && p.id !== '') ? '#' + p.id : '—';
 
     var stEnt = p.status_entrega || '—';
-    var stEntCls = stEnt === 'Rastreamento adicionado' ? 'blue'
+    var stEntCls = stEnt === 'Enviado' ? 'blue'
                  : stEnt === 'Envio parcial'           ? 'blue'
                  : stEnt === 'Cancelado'               ? 'red'
                  : stEnt === 'Não Enviado'             ? 'red'
@@ -5882,14 +5921,13 @@ function renderPedidosTable() {
 
 function downloadPedidosCSV() {
   if (!_pedidosLista.length) return;
-  var filtroPag = (document.getElementById('filtro-pagamento') || {}).value || '';
-  var filtroEnt = (document.getElementById('filtro-entrega')   || {}).value || '';
   var lista = _pedidosLista.filter(function(p) {
-    var pagLabel = p.pagamento || p.status || '';
-    var entLabel = p.entrega   || (p.pagamento ? '' : p.status) || '';
-    if (filtroPag && pagLabel.indexOf(filtroPag) === -1) return false;
-    if (filtroEnt && entLabel.indexOf(filtroEnt) === -1) return false;
-    return true;
+    p.status_pedido_str = p.status_pedido || '—';
+    return Object.keys(_pedFiltros).every(function(campo) {
+      var s = _pedFiltros[campo];
+      if (!s || !s.size) return true;
+      return s.has(String(p[campo] || '—'));
+    });
   });
   var header = ['# Pedido','Cliente','E-mail','Pagamento','Entrega','Metodo de Envio','Valor','Data'];
   var rows = lista.map(function(p) {

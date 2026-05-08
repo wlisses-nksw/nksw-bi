@@ -284,7 +284,7 @@ function buildPedidos(orders, isCurrent, filterFn) {
     if (o.cancelled_at) {
       statusEntrega = 'Cancelado';
     } else if (hasTracking) {
-      statusEntrega = 'Rastreamento adicionado';
+      statusEntrega = 'Enviado';
     } else if (o.fulfillment_status === 'partial') {
       statusEntrega = 'Envio parcial';
     }
