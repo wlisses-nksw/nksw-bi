@@ -76,9 +76,9 @@ function calcStatusPedido(order) {
   if (order.cancelled_at) return 'Cancelado';
   const fulfillments = order.fulfillments || [];
   const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-  const fs = order.fulfillment_status;
-  if (fs === 'fulfilled') return 'Entregue';
-  if (hasTracking) return 'Enviado';
+  // Enviado = tem rastreamento (fulfilled ou partial com tracking)
+  if (hasTracking || order.fulfillment_status === 'fulfilled') return 'Enviado';
+  // Sem envio → verifica prazo de 7 dias úteis desde a data do pedido
   const orderDateBR    = brISO(order.created_at);
   const todayBR        = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
   const diasDecorridos = diasUteis(orderDateBR, todayBR);
@@ -279,11 +279,17 @@ function buildPedidos(orders, isCurrent, filterFn) {
     const fulfillments = o.fulfillments || [];
     const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
     const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-    let statusEntrega = 'Aguardando envio';
-    if (o.cancelled_at)                            statusEntrega = 'Cancelado';
-    else if (o.fulfillment_status === 'fulfilled') statusEntrega = 'Entregue';
-    else if (hasTracking)                          statusEntrega = 'Rastreamento adicionado';
-    else if (o.fulfillment_status === 'partial')   statusEntrega = 'Envio parcial';
+    // Status de entrega: espelha exatamente o que o Shopify Admin mostra
+    // "fulfilled" no Shopify = enviado/rastreado, NÃO entregue ao cliente
+    let statusEntrega = '';
+    if (o.cancelled_at) {
+      statusEntrega = 'Cancelado';
+    } else if (o.fulfillment_status === 'partial') {
+      statusEntrega = hasTracking ? 'Rastreamento adicionado' : 'Envio parcial';
+    } else if (o.fulfillment_status === 'fulfilled' || hasTracking) {
+      statusEntrega = 'Rastreamento adicionado';
+    }
+    // sem fulfillment_status e sem tracking → string vazia (como o Shopify mostra)
     return {
       id:             String(o.order_number),
       produto:        o.line_items?.[0]?.title || '',
