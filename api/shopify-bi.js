@@ -279,17 +279,19 @@ function buildPedidos(orders, isCurrent, filterFn) {
     const fulfillments = o.fulfillments || [];
     const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
     const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-    // Status de entrega: espelha exatamente o que o Shopify Admin mostra
-    // "fulfilled" no Shopify = enviado/rastreado, NÃO entregue ao cliente
+    // Status de entrega: espelha Shopify Admin
+    // "Rastreamento adicionado" SOMENTE quando há número de rastreio real
     let statusEntrega = '';
     if (o.cancelled_at) {
       statusEntrega = 'Cancelado';
-    } else if (o.fulfillment_status === 'partial') {
-      statusEntrega = hasTracking ? 'Rastreamento adicionado' : 'Envio parcial';
-    } else if (o.fulfillment_status === 'fulfilled' || hasTracking) {
+    } else if (hasTracking) {
       statusEntrega = 'Rastreamento adicionado';
+    } else if (o.fulfillment_status === 'fulfilled') {
+      statusEntrega = 'Enviado';          // fulfilled sem tracking
+    } else if (o.fulfillment_status === 'partial') {
+      statusEntrega = 'Envio parcial';
     }
-    // sem fulfillment_status e sem tracking → string vazia (como o Shopify mostra)
+    // null/unfulfilled sem tracking → string vazia (igual ao Shopify Admin)
     return {
       id:             String(o.order_number),
       produto:        o.line_items?.[0]?.title || '',

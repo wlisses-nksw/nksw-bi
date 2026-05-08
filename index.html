@@ -1285,7 +1285,11 @@ tbody tr:hover{background:#fafafa}
       </div>
 
       <div class="section-header" style="margin-bottom:12px">
-        <div><div class="section-title">Pedidos por Cliente</div><div class="section-sub" id="pedidos-sub">Dados até ontem</div></div>
+        <div>
+          <div class="section-title">Pedidos por Cliente</div>
+          <div class="section-sub" id="pedidos-sub">Dados até ontem</div>
+        </div>
+        <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
       </div>
       <div class="table-wrap">
         <table>
@@ -7633,6 +7637,21 @@ function downloadConferenciaCSV() {
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   var a    = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'conferencia-estoque.csv'; a.click();
+}
+
+async function atualizarPedidos() {
+  var btn = document.getElementById('btn-pedidos-atualizar');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Atualizando...'; }
+  try {
+    if (isShopifyPeriod()) {
+      await loadShopifyData();
+    } else if (getSheetsUrl()) {
+      await loadAllSheetsData();
+    }
+  } catch(e) { console.warn('atualizarPedidos erro:', e.message); }
+  finally {
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Atualizar'; }
+  }
 }
 
 window.addEventListener('DOMContentLoaded', authInit);
