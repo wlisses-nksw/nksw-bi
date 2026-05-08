@@ -82,12 +82,15 @@ function getD1BR() {
 
 // ── Builders ───────────────────────────────────────────────────────────────
 
-function buildVendas(orders, isCurrent) {
-  // D-1 apenas para o mês corrente — meses históricos incluem tudo
-  const cutoff = isCurrent ? getD1BR() : null;
-  const base   = cutoff
-    ? orders.filter(o => brISO(o.created_at) <= cutoff)
-    : orders;
+function buildVendas(orders, isCurrent, filterFn) {
+  // Filtro de data: período personalizado tem prioridade sobre D-1
+  let base;
+  if (filterFn) {
+    base = orders.filter(filterFn);
+  } else {
+    const cutoff = isCurrent ? getD1BR() : null;
+    base = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  }
 
   // Apenas pedidos PAGOS para KPIs financeiros
   const paid      = base.filter(o => o.financial_status === 'paid');
@@ -217,12 +220,14 @@ function buildVendas(orders, isCurrent) {
   };
 }
 
-function buildPedidos(orders, isCurrent) {
-  // D-1 em Brasília apenas para o mês corrente
-  const cutoff   = isCurrent ? getD1BR() : null;
-  const filtered = cutoff
-    ? orders.filter(o => brISO(o.created_at) <= cutoff)
-    : orders;
+function buildPedidos(orders, isCurrent, filterFn) {
+  let filtered;
+  if (filterFn) {
+    filtered = orders.filter(filterFn);
+  } else {
+    const cutoff = isCurrent ? getD1BR() : null;
+    filtered = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  }
 
   // Contadores por status de pagamento
   const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0 };
@@ -260,11 +265,14 @@ function buildPedidos(orders, isCurrent) {
   return { contadores, lista };
 }
 
-function buildLogistica(orders, isCurrent) {
-  const cutoff   = isCurrent ? getD1BR() : null;
-  const filtered = cutoff
-    ? orders.filter(o => brISO(o.created_at) <= cutoff)
-    : orders;
+function buildLogistica(orders, isCurrent, filterFn) {
+  let filtered;
+  if (filterFn) {
+    filtered = orders.filter(filterFn);
+  } else {
+    const cutoff = isCurrent ? getD1BR() : null;
+    filtered = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  }
 
   const statusCount = {};
   const pedidos = filtered
@@ -297,9 +305,14 @@ function buildLogistica(orders, isCurrent) {
   };
 }
 
-function buildClientes(orders, isCurrent) {
-  const cutoff   = isCurrent ? getD1BR() : null;
-  const base     = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+function buildClientes(orders, isCurrent, filterFn) {
+  let base;
+  if (filterFn) {
+    base = orders.filter(filterFn);
+  } else {
+    const cutoff = isCurrent ? getD1BR() : null;
+    base = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  }
   const paid     = base.filter(o => o.financial_status === 'paid');
   const clienteMap = {};
 
@@ -340,7 +353,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { section = 'all', month } = req.query;
+  const { section = 'all', month, startDate, endDate } = req.query;
 
   if (!month || !/^\d{4}-\d{2}$/.test(month)) {
     return res.status(400).json({ error: 'Parâmetro month obrigatório (formato: YYYY-MM)' });
@@ -364,17 +377,25 @@ export default async function handler(req, res) {
     // Verifica se é o mês corrente (em Brasília) para aplicar D-1
     const nowBR      = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
     const isCurrent  = month === nowBR.slice(0, 7);
+    // Se startDate/endDate fornecidos, filtra por período personalizado (sobrescreve D-1)
+    const hasCustomRange = startDate && endDate && /^\d{4}-\d{2}-\d{2}$/.test(startDate);
 
     const paid = orders.filter(o => o.financial_status === 'paid');
     const cutoff = isCurrent ? getD1BR() : null;
     console.log(`[shopify-bi] ${month} | total=${orders.length} pagos=${paid.length} cutoff=${cutoff || 'none'} TZ=Brasília`);
 
-    const out = { ok: true, month, synced_at, source: 'shopify' };
+    const out = { ok: true, month, synced_at, source: 'shopify', startDate, endDate };
 
-    if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent);
-    if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent);
-    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent);
-    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent);
+    // Se período personalizado: filtra pelos dias selecionados
+    // Caso contrário: aplica D-1 (mês corrente) ou sem filtro (histórico)
+    const filterFn = hasCustomRange
+      ? (o) => { const d = brISO(o.created_at); return d >= startDate && d <= endDate; }
+      : null;
+
+    if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent, filterFn);
+    if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent, filterFn);
+    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent, filterFn);
+    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent, filterFn);
 
     res.setHeader('Cache-Control', isCurrent ? 's-maxage=60' : 's-maxage=3600');
     return res.status(200).json(out);

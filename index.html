@@ -1803,7 +1803,12 @@ function changePeriod(p, el) {
   renderIndicadores();
   loadMarketing();
   loadGA4Data();
-  if (getSheetsUrl()) loadAllSheetsData();
+  _prevYearCache = {}; // reseta cache do ano anterior ao mudar período
+  if (isShopifyPeriod()) {
+    loadShopifyData().catch(function(){});
+  } else if (getSheetsUrl()) {
+    loadAllSheetsData();
+  }
 }
 
 /* ===== INDICADORES LOADING ===== */
@@ -1894,7 +1899,12 @@ function applyCustomDate() {
   renderIndicadores();
   loadMarketing();
   loadGA4Data();
-  if (getSheetsUrl()) loadAllSheetsData();
+  _prevYearCache = {}; // reseta cache do ano anterior ao mudar período
+  if (isShopifyPeriod()) {
+    loadShopifyData().catch(function(){});
+  } else if (getSheetsUrl()) {
+    loadAllSheetsData();
+  }
 }
 
 function getMetaDateParam() {
@@ -4415,7 +4425,11 @@ async function loadShopifyData() {
   }
 
   // ── Lê dados do Blob ───────────────────────────────────────────────
+  // Passa filtro de data se período personalizado estiver ativo
   var url = SHOPIFY_BI_URL + '?section=all&month=' + monthKey;
+  if (customStart && customEnd) {
+    url += '&startDate=' + customStart + '&endDate=' + customEnd;
+  }
   try {
     var r = await fetch(url);
     var d = await r.json();
