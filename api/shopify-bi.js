@@ -64,7 +64,7 @@ function diasUteis(dataInicio, dataFim) {
   let count = 0;
   const cur = new Date(start);
   while (cur <= end) {
-    const dow = cur.getDay(); // 0=dom 6=sab
+    const dow = cur.getDay();
     if (dow !== 0 && dow !== 6) count++;
     cur.setDate(cur.getDate() + 1);
   }
@@ -74,22 +74,14 @@ function diasUteis(dataInicio, dataFim) {
 /** Status do pedido baseado em fulfillment e dias úteis */
 function calcStatusPedido(order) {
   if (order.cancelled_at) return 'Cancelado';
-
   const fulfillments = order.fulfillments || [];
   const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
   const fs = order.fulfillment_status;
-
-  // Entregue
   if (fs === 'fulfilled') return 'Entregue';
-
-  // Enviado (tem rastreamento mas ainda não marcado como entregue)
   if (hasTracking) return 'Enviado';
-
-  // Sem envio — verifica prazo de 7 dias úteis
-  const orderDateBR = brISO(order.created_at);
-  const todayBR     = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
+  const orderDateBR    = brISO(order.created_at);
+  const todayBR        = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
   const diasDecorridos = diasUteis(orderDateBR, todayBR);
-
   if (diasDecorridos >= 7) return 'Atrasado';
   return 'No Prazo';
 }
@@ -287,14 +279,11 @@ function buildPedidos(orders, isCurrent, filterFn) {
     const fulfillments = o.fulfillments || [];
     const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
     const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-
-    // Status de entrega (fulfillment)
     let statusEntrega = 'Aguardando envio';
-    if (o.cancelled_at)                          statusEntrega = 'Cancelado';
+    if (o.cancelled_at)                            statusEntrega = 'Cancelado';
     else if (o.fulfillment_status === 'fulfilled') statusEntrega = 'Entregue';
     else if (hasTracking)                          statusEntrega = 'Rastreamento adicionado';
     else if (o.fulfillment_status === 'partial')   statusEntrega = 'Envio parcial';
-
     return {
       id:             String(o.order_number),
       produto:        o.line_items?.[0]?.title || '',
@@ -443,4 +432,14 @@ export default async function handler(req, res) {
 
     if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent, filterFn);
     if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent, filterFn);
-    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(or
+    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent, filterFn);
+    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent, filterFn);
+
+    res.setHeader('Cache-Control', isCurrent ? 's-maxage=60' : 's-maxage=3600');
+    return res.status(200).json(out);
+
+  } catch (err) {
+    console.error('[shopify-bi]', err);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+}
