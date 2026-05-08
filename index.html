@@ -5851,13 +5851,12 @@ function renderPedidosTable() {
     var envio     = p.metodo_envio || '—';
     var pedidoId  = (p.id && p.id !== '') ? '#' + p.id : '—';
 
-    // Status entrega (campo novo do Shopify ou campo antigo)
-    var stEnt = p.status_entrega || p.entrega || '—';
-    var stEntCls = stEnt === 'Entregue' ? 'green'
-                 : stEnt === 'Rastreamento adicionado' ? 'blue'
-                 : stEnt === 'Enviado' ? 'blue'
-                 : stEnt === 'Envio parcial' ? 'blue'
-                 : stEnt === 'Cancelado' ? 'red' : 'yellow';
+    var stEnt = p.status_entrega || '—';
+    var stEntCls = stEnt === 'Rastreamento adicionado' ? 'blue'
+                 : stEnt === 'Envio parcial'           ? 'blue'
+                 : stEnt === 'Cancelado'               ? 'red'
+                 : stEnt === 'Não Enviado'             ? 'red'
+                 : 'gray';
 
     // Status pedido (prazo)
     var stPed = p.status_pedido || '—';
