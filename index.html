@@ -1251,12 +1251,18 @@ tbody tr:hover{background:#fafafa}
     <div class="page" id="page-pedidos">
 
       <!-- Cards de status lado a lado -->
-      <div class="five-col">
+      <!-- Cards de pagamento -->
+      <div class="five-col" style="margin-bottom:12px">
         <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pago')"><div class="sc-label">Pagos</div><div class="sc-num green" id="cnt-pagos">—</div></div>
         <div class="status-card" style="cursor:pointer" onclick="filterPedidos('entrega','Enviado')"><div class="sc-label">Entregues</div><div class="sc-num green" id="cnt-entregues">—</div></div>
         <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pag. Parcial')"><div class="sc-label">Pag. Parcial</div><div class="sc-num blue" id="cnt-parciais">—</div></div>
         <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Pendente')"><div class="sc-label">Pendentes</div><div class="sc-num yellow" id="cnt-pendentes">—</div></div>
         <div class="status-card" style="cursor:pointer" onclick="filterPedidos('pagamento','Cancelado')"><div class="sc-label">Cancelados</div><div class="sc-num red" id="cnt-cancelados">—</div></div>
+      </div>
+      <!-- Cards de prazo -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;max-width:500px">
+        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('status_pedido_str','No Prazo')"><div class="sc-label">✅ No Prazo</div><div class="sc-num green" id="cnt-no-prazo">—</div></div>
+        <div class="status-card" style="cursor:pointer" onclick="filterPedidos('status_pedido_str','Atrasado')"><div class="sc-label">⚠️ Atrasados</div><div class="sc-num red" id="cnt-atrasados">—</div></div>
       </div>
 
       <!-- Filtros + CSV -->
@@ -1278,7 +1284,8 @@ tbody tr:hover{background:#fafafa}
           <option value="Cancelado">Cancelado</option>
         </select>
         <button onclick="clearPedidosFiltros()" style="padding:7px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;background:#fff;color:#6b7280;cursor:pointer">✕ Limpar</button>
-        <div style="margin-left:auto">
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
           <button onclick="downloadPedidosCSV()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">⬇ Baixar CSV</button>
         </div>
         <span id="pedidos-count" style="font-size:12px;color:#9ca3af"></span>
@@ -1289,7 +1296,6 @@ tbody tr:hover{background:#fafafa}
           <div class="section-title">Pedidos por Cliente</div>
           <div class="section-sub" id="pedidos-sub">Dados até ontem</div>
         </div>
-        <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
       </div>
       <div class="table-wrap">
         <table>
@@ -5916,6 +5922,8 @@ function applyPedidosData(d) {
     setElText('cnt-parciais',   c.parciais   || 0);
     setElText('cnt-pendentes',  c.pendentes  || 0);
     setElText('cnt-cancelados', c.cancelados || 0);
+    setElText('cnt-no-prazo',   c.no_prazo   || 0);
+    setElText('cnt-atrasados',  c.atrasados  || 0);
   }
 
   // Subtítulo D-1
@@ -5925,6 +5933,13 @@ function applyPedidosData(d) {
   if (subEl) subEl.textContent = 'Dados até ' + ontem.toLocaleDateString('pt-BR');
 
   if (!d.lista || !d.lista.length) return;
+
+  // Adiciona campo string para filtro de status pedido
+  if (d.lista) {
+    d.lista.forEach(function(p) {
+      p.status_pedido_str = p.status_pedido || '—';
+    });
+  }
 
   // Salva e ordena por data decrescente
   _pedidosLista = d.lista.slice().sort(function(a, b) {

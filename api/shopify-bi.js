@@ -74,11 +74,7 @@ function diasUteis(dataInicio, dataFim) {
 /** Status do pedido baseado em fulfillment e dias úteis */
 function calcStatusPedido(order) {
   if (order.cancelled_at) return 'Cancelado';
-  const fulfillments = order.fulfillments || [];
-  const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-  // Enviado = tem rastreamento (fulfilled ou partial com tracking)
-  if (hasTracking || order.fulfillment_status === 'fulfilled') return 'Enviado';
-  // Sem envio → verifica prazo de 7 dias úteis desde a data do pedido
+  // Conta dias úteis desde o pedido para TODOS (enviado ou não)
   const orderDateBR    = brISO(order.created_at);
   const todayBR        = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
   const diasDecorridos = diasUteis(orderDateBR, todayBR);
@@ -258,8 +254,8 @@ function buildPedidos(orders, isCurrent, filterFn) {
     filtered = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
   }
 
-  // Contadores por status de pagamento
-  const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0 };
+  // Contadores por status de pagamento + prazo
+  const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0, no_prazo: 0, atrasados: 0 };
   for (const o of filtered) {
     const fs = o.financial_status;
     if (o.cancelled_at || fs === 'voided' || fs === 'refunded' || fs === 'partially_refunded') {
@@ -272,6 +268,9 @@ function buildPedidos(orders, isCurrent, filterFn) {
     } else {
       contadores.pendentes++;
     }
+    const sp = calcStatusPedido(o);
+    if (sp === 'No Prazo')  contadores.no_prazo++;
+    else if (sp === 'Atrasado') contadores.atrasados++;
   }
 
   // Lista completa — TODOS os pedidos (não só pagos)
@@ -280,18 +279,16 @@ function buildPedidos(orders, isCurrent, filterFn) {
     const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
     const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
     // Status de entrega: espelha Shopify Admin
-    // "Rastreamento adicionado" SOMENTE quando há número de rastreio real
-    let statusEntrega = '';
+    let statusEntrega = 'Não Enviado';
     if (o.cancelled_at) {
       statusEntrega = 'Cancelado';
     } else if (hasTracking) {
       statusEntrega = 'Rastreamento adicionado';
     } else if (o.fulfillment_status === 'fulfilled') {
-      statusEntrega = 'Enviado';          // fulfilled sem tracking
+      statusEntrega = 'Enviado';
     } else if (o.fulfillment_status === 'partial') {
       statusEntrega = 'Envio parcial';
     }
-    // null/unfulfilled sem tracking → string vazia (igual ao Shopify Admin)
     return {
       id:             String(o.order_number),
       produto:        o.line_items?.[0]?.title || '',
