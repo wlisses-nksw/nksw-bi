@@ -28,7 +28,7 @@ const FIELDS = [
   'total_shipping_price_set',
   'line_items', 'customer',
   'billing_address', 'shipping_address',
-  'fulfillments', 'discount_codes',
+  'fulfillments', 'discount_codes', 'shipping_lines',
   'payment_gateway', 'tags', 'note',
 ].join(',');
 

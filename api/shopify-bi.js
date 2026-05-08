@@ -57,6 +57,43 @@ function brYM(isoStr) {
 /** Retorna true para cupons de troca */
 const isTroca = code => typeof code === 'string' && code.toLowerCase().includes('troca');
 
+/** Calcula dias úteis entre duas datas (exclui sáb e dom) */
+function diasUteis(dataInicio, dataFim) {
+  const start = new Date(dataInicio + 'T00:00:00-03:00');
+  const end   = new Date(dataFim   + 'T23:59:59-03:00');
+  let count = 0;
+  const cur = new Date(start);
+  while (cur <= end) {
+    const dow = cur.getDay(); // 0=dom 6=sab
+    if (dow !== 0 && dow !== 6) count++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return count;
+}
+
+/** Status do pedido baseado em fulfillment e dias úteis */
+function calcStatusPedido(order) {
+  if (order.cancelled_at) return 'Cancelado';
+
+  const fulfillments = order.fulfillments || [];
+  const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
+  const fs = order.fulfillment_status;
+
+  // Entregue
+  if (fs === 'fulfilled') return 'Entregue';
+
+  // Enviado (tem rastreamento mas ainda não marcado como entregue)
+  if (hasTracking) return 'Enviado';
+
+  // Sem envio — verifica prazo de 7 dias úteis
+  const orderDateBR = brISO(order.created_at);
+  const todayBR     = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
+  const diasDecorridos = diasUteis(orderDateBR, todayBR);
+
+  if (diasDecorridos >= 7) return 'Atrasado';
+  return 'No Prazo';
+}
+
 function customerName(order) {
   if (order.customer) {
     const n = `${order.customer.first_name || ''} ${order.customer.last_name || ''}`.trim();
@@ -246,21 +283,33 @@ function buildPedidos(orders, isCurrent, filterFn) {
   }
 
   // Lista completa — TODOS os pedidos (não só pagos)
-  const lista = filtered.map(o => ({
-    id:           String(o.order_number),
-    produto:      o.line_items?.[0]?.title || '',
-    cliente:      customerName(o),
-    email:        o.customer?.email || o.contact_email || '',
-    pagamento:    FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido',
-    entrega:      o.cancelled_at
-                    ? 'Cancelado'
-                    : (FULFILLMENT_LABELS[o.fulfillment_status] || 'Aguardando envio'),
-    metodo_envio: o.shipping_lines?.[0]?.title || '—',
-    tags:         o.tags || '',
-    valor:        parseFloat(o.total_price) || 0,
-    data:         brDate(o.created_at),
-    rastreio:     o.fulfillments?.flatMap(f => f.tracking_numbers || [])[0] || null,
-  }));
+  const lista = filtered.map(o => {
+    const fulfillments = o.fulfillments || [];
+    const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
+    const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
+
+    // Status de entrega (fulfillment)
+    let statusEntrega = 'Aguardando envio';
+    if (o.cancelled_at)                          statusEntrega = 'Cancelado';
+    else if (o.fulfillment_status === 'fulfilled') statusEntrega = 'Entregue';
+    else if (hasTracking)                          statusEntrega = 'Rastreamento adicionado';
+    else if (o.fulfillment_status === 'partial')   statusEntrega = 'Envio parcial';
+
+    return {
+      id:             String(o.order_number),
+      produto:        o.line_items?.[0]?.title || '',
+      cliente:        customerName(o),
+      email:          o.customer?.email || o.contact_email || '',
+      pagamento:      FINANCIAL_LABELS[o.financial_status] || o.financial_status || 'Desconhecido',
+      metodo_envio:   o.shipping_lines?.[0]?.title || '—',
+      status_entrega: statusEntrega,
+      status_pedido:  calcStatusPedido(o),
+      tags:           o.tags || '',
+      valor:          parseFloat(o.total_price) || 0,
+      data:           brDate(o.created_at),
+      rastreio:       tracking,
+    };
+  });
 
   return { contadores, lista };
 }
@@ -394,14 +443,4 @@ export default async function handler(req, res) {
 
     if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent, filterFn);
     if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent, filterFn);
-    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent, filterFn);
-    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent, filterFn);
-
-    res.setHeader('Cache-Control', isCurrent ? 's-maxage=60' : 's-maxage=3600');
-    return res.status(200).json(out);
-
-  } catch (err) {
-    console.error('[shopify-bi]', err);
-    return res.status(500).json({ ok: false, error: err.message });
-  }
-}
+    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(or

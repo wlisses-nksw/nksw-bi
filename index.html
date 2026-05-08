@@ -1289,7 +1289,7 @@ tbody tr:hover{background:#fafafa}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Entrega</th><th>Método de Envio</th><th>Tags</th><th>Valor</th><th>Data</th></tr></thead>
+          <thead><tr><th># Pedido</th><th>Cliente</th><th>E-mail</th><th>Pagamento</th><th>Método de Envio</th><th>Status Entrega</th><th>Status Pedido</th><th>Tags</th><th>Valor</th><th>Data</th></tr></thead>
           <tbody id="pedidosBody"></tbody>
         </table>
       </div>
@@ -5836,24 +5836,39 @@ function renderPedidosTable() {
   tbody.innerHTML = lista.map(function(p) {
     var pagLabel  = p.pagamento || p.status || '—';
     var pagClasse = _pagBadgeMap[pagLabel] || 'gray';
-    var entLabel  = p.entrega   || (p.pagamento ? '—' : p.status) || '—';
-    var entClasse = _entBadgeMap[entLabel] || 'gray';
     var cliente   = (p.cliente && p.cliente !== '') ? p.cliente : '—';
     var email     = (p.email   && p.email   !== '') ? p.email   : '—';
     var envio     = p.metodo_envio || '—';
     var pedidoId  = (p.id && p.id !== '') ? '#' + p.id : '—';
+
+    // Status entrega (campo novo do Shopify ou campo antigo)
+    var stEnt = p.status_entrega || p.entrega || '—';
+    var stEntCls = stEnt === 'Entregue' ? 'green'
+                 : stEnt === 'Rastreamento adicionado' ? 'blue'
+                 : stEnt === 'Enviado' ? 'blue'
+                 : stEnt === 'Envio parcial' ? 'blue'
+                 : stEnt === 'Cancelado' ? 'red' : 'yellow';
+
+    // Status pedido (prazo)
+    var stPed = p.status_pedido || '—';
+    var stPedCls = stPed === 'Entregue' ? 'green'
+                 : stPed === 'Enviado'  ? 'blue'
+                 : stPed === 'No Prazo' ? 'yellow'
+                 : stPed === 'Atrasado' ? 'red' : 'gray';
+
     return '<tr>' +
       '<td><strong>' + pedidoId + '</strong></td>' +
       '<td>' + cliente + '</td>' +
       '<td style="color:#6b7280;font-size:12px">' + email + '</td>' +
       '<td><span class="badge ' + pagClasse + '">' + pagLabel + '</span></td>' +
-      '<td><span class="badge ' + entClasse + '">' + entLabel + '</span></td>' +
       '<td style="color:#374151;font-size:12px">' + envio + '</td>' +
+      '<td><span class="badge ' + stEntCls + '">' + stEnt + '</span></td>' +
+      '<td><span class="badge ' + stPedCls + '">' + stPed + '</span></td>' +
       '<td style="color:#6b7280;font-size:11px">' + (p.tags || '—') + '</td>' +
       '<td><strong>' + fmtBRL(p.valor) + '</strong></td>' +
       '<td style="color:#6b7280">' + p.data + '</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="8" style="text-align:center;color:#9ca3af;padding:24px">Nenhum pedido encontrado com os filtros selecionados.</td></tr>';
+  }).join('') || '<tr><td colspan="10" style="text-align:center;color:#9ca3af;padding:24px">Nenhum pedido encontrado com os filtros selecionados.</td></tr>';
 }
 
 function downloadPedidosCSV() {
