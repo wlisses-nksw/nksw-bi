@@ -117,6 +117,7 @@ function doGet(e) {
     if (section === 'produtos'  || section === 'all') result.produtos  = getProdutos();
     if (section === 'pedidos'   || section === 'all') result.pedidos   = getPedidos(dates);
     if (section === 'clientes'  || section === 'all') result.clientes  = getClientes(p);
+    if (section === 'clientes_export') result.clientes_export = getClientesExport();
     if (section === 'logistica' || section === 'all') result.logistica = getLogistica(dates);
     if (section === 'estoque')                        result.estoque   = getEstoque();
 
@@ -777,6 +778,56 @@ function getClientes(params) {
 
   } catch (err) {
     return { kpis: {}, rfm: [], cohort: [], abc: [], erro: 'Erro em getClientes: ' + err.message };
+  }
+}
+
+/* ===== CLIENTES EXPORT ===== */
+function getClientesExport() {
+  try {
+    var rows = readSheet(CONFIG.ABA_VENDAS, CONFIG.ID_VENDAS);
+    if (rows.length < 2) return { clientes: [] };
+    var h = rows[0];
+    var iEmail   = findCol(h, ['email','e-mail','email_cliente','cliente_email','email_comprador']);
+    var iData    = findCol(h, ['data','data_pedido','data_criacao','dt_pedido','date','created_at']);
+    var iStatus  = findCol(h, ['status','status_pagamento','situacao','payment_status']);
+    var iNome    = findCol(h, ['nome','name','nome_cliente','cliente','comprador','nome_comprador','nome do comprador']);
+    var iTel     = findCol(h, ['telefone','celular','fone','phone','tel']);
+    if (iEmail < 0) return { clientes: [], erro: 'Email nao encontrado' };
+
+    var map = {};
+    rows.slice(1).forEach(function(r) {
+      var email = trim(r[iEmail]).toLowerCase();
+      if (!email || email.indexOf('@') < 0) return;
+      if (iStatus >= 0) {
+        var st = trim(r[iStatus]).toLowerCase();
+        if (st.indexOf('cancel') >= 0 || st.indexOf('estorn') >= 0 || st.indexOf('reembol') >= 0) return;
+      }
+      var d = parseDate(r[iData]);
+      if (!d) return;
+      var nome = iNome >= 0 ? trim(r[iNome]) : '';
+      var tel  = iTel  >= 0 ? trim(r[iTel])  : '';
+      if (!map[email]) {
+        map[email] = { email: email, nome: nome, telefone: tel, ultima_compra: d };
+      } else if (d > map[email].ultima_compra) {
+        map[email].ultima_compra = d;
+        if (nome) map[email].nome = nome;
+        if (tel)  map[email].telefone = tel;
+      }
+    });
+
+    var lista = Object.values(map).map(function(c) {
+      return {
+        nome:          c.nome,
+        email:         c.email,
+        telefone:      c.telefone,
+        ultima_compra: Utilities.formatDate(c.ultima_compra, 'America/Sao_Paulo', 'yyyy-MM-dd'),
+        plataforma:    'NuvemShop'
+      };
+    });
+    lista.sort(function(a, b) { return b.ultima_compra.localeCompare(a.ultima_compra); });
+    return { total: lista.length, clientes: lista };
+  } catch(e) {
+    return { clientes: [], erro: e.message };
   }
 }
 
