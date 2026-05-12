@@ -4021,20 +4021,17 @@ async function fetchMetaMonthlySpend() {
 }
 
 async function loadClientesPage() {
-  if (!getSheetsUrl()) return;
   try {
     var d = null;
 
-    // 1. Cache estático GitHub Actions (~20ms) — tem 24 meses completos
-    if (isCurrentMonth()) {
-      var staticData = await fetchStaticJSON('clientes');
-      if (staticData && staticData.clientes) {
-        d = JSON.parse(JSON.stringify(staticData.clientes));
-      }
+    // 1. JSON estático (~20ms) — base completa histórica com RFM/cohort
+    var staticData = await fetchStaticJSON('clientes', null);
+    if (staticData && staticData.clientes) {
+      d = JSON.parse(JSON.stringify(staticData.clientes));
     }
 
-    // 2. Fallback: Apps Script sempre com 24 meses, fatia client-side
-    if (!d) {
+    // 2. Fallback: Apps Script (requer URL configurada)
+    if (!d && getSheetsUrl()) {
       var data = await fetchSheets('clientes', 'cohortMonths=23');
       if (data && data.clientes) d = data.clientes;
     }
@@ -4551,6 +4548,9 @@ async function loadShopifyData() {
 
     // Carrega evolução anual para gráficos (após _lastVendasData estar definido)
     loadVendasEvolution().catch(function(e){ console.warn('evolution error:', e.message); });
+
+    // Carrega base completa de clientes (histórico JSON estático — 23k+ clientes)
+    loadClientesPage().catch(function(e){ console.warn('clientes error:', e.message); });
   } catch(e) {
     console.warn('[shopify-bi] erro:', e.message);
     setSheetsStatus(false, 'Shopify — erro');
