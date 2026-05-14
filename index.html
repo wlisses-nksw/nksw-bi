@@ -1261,11 +1261,17 @@ tbody tr:hover{background:#fafafa}
       </div>
 
       <!-- Barra de ações -->
-      <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-bottom:10px">
-        <button onclick="_clearPedMenus()" style="padding:6px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;color:#6b7280;cursor:pointer">✕ Limpar filtros</button>
-        <span id="pedidos-count" style="font-size:12px;color:#9ca3af"></span>
-        <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
-        <button onclick="downloadPedidosCSV()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">⬇ Baixar CSV</button>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <label style="font-size:12px;color:#6b7280;font-weight:600">De:</label>
+        <input type="date" id="ped-data-inicio" onchange="_onPedDataFiltro()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;color:#374151">
+        <label style="font-size:12px;color:#6b7280;font-weight:600">Até:</label>
+        <input type="date" id="ped-data-fim" onchange="_onPedDataFiltro()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;color:#374151">
+        <button onclick="_clearPedMenus()" style="padding:6px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;color:#6b7280;cursor:pointer">✕ Limpar</button>
+        <span id="pedidos-count" style="font-size:12px;color:#9ca3af;margin-left:4px"></span>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button id="btn-pedidos-atualizar" onclick="atualizarPedidos()" style="padding:7px 16px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Atualizar</button>
+          <button onclick="downloadPedidosCSV()" style="padding:7px 16px;background:#111827;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">⬇ Baixar CSV</button>
+        </div>
       </div>
 
       <div class="section-header" style="margin-bottom:8px">
@@ -5845,6 +5851,10 @@ function _onPedFiltro() {
 
 function _clearPedMenus() {
   _pedFiltros = {};
+  var di = document.getElementById('ped-data-inicio');
+  var df = document.getElementById('ped-data-fim');
+  if (di) di.value = '';
+  if (df) df.value = '';
   document.querySelectorAll('.ped-menu').forEach(function(m){ m.style.display='none'; });
   renderPedidosTable();
 }
@@ -5863,6 +5873,8 @@ document.addEventListener('click', function(e) {
   }
 });
 
+function _onPedDataFiltro() { renderPedidosTable(); }
+
 function filterPedidos(campo, valor) { _pedFiltroQuick(campo, valor); }
 function clearPedidosFiltros() { _clearPedMenus(); }
 
@@ -5870,8 +5882,18 @@ function renderPedidosTable() {
   var tbody = document.getElementById('pedidosBody');
   if (!tbody || !_pedidosLista.length) return;
 
+  var dataInicio = (document.getElementById('ped-data-inicio') || {}).value || '';
+  var dataFim    = (document.getElementById('ped-data-fim')    || {}).value || '';
+
   var lista = _pedidosLista.filter(function(p) {
     p.status_pedido_str = p.status_pedido || '—';
+    // Filtro de data (converte dd/mm/yyyy → yyyy-mm-dd para comparar)
+    if (dataInicio || dataFim) {
+      var raw = p.data || '';
+      var iso = raw.includes('/') ? raw.split('/').reverse().join('-') : raw;
+      if (dataInicio && iso < dataInicio) return false;
+      if (dataFim    && iso > dataFim)    return false;
+    }
     return Object.keys(_pedFiltros).every(function(campo) {
       var s = _pedFiltros[campo];
       if (!s || !s.size) return true;
@@ -5900,7 +5922,6 @@ function renderPedidosTable() {
     // Status pedido (prazo)
     var stPed = p.status_pedido || '—';
     var stPedCls = stPed === 'Entregue' ? 'green'
-                 : stPed === 'Enviado'  ? 'blue'
                  : stPed === 'No Prazo' ? 'yellow'
                  : stPed === 'Atrasado' ? 'red' : 'gray';
 
@@ -5921,8 +5942,18 @@ function renderPedidosTable() {
 
 function downloadPedidosCSV() {
   if (!_pedidosLista.length) return;
+  var dataInicio = (document.getElementById('ped-data-inicio') || {}).value || '';
+  var dataFim    = (document.getElementById('ped-data-fim')    || {}).value || '';
+
   var lista = _pedidosLista.filter(function(p) {
     p.status_pedido_str = p.status_pedido || '—';
+    // Filtro de data (converte dd/mm/yyyy → yyyy-mm-dd para comparar)
+    if (dataInicio || dataFim) {
+      var raw = p.data || '';
+      var iso = raw.includes('/') ? raw.split('/').reverse().join('-') : raw;
+      if (dataInicio && iso < dataInicio) return false;
+      if (dataFim    && iso > dataFim)    return false;
+    }
     return Object.keys(_pedFiltros).every(function(campo) {
       var s = _pedFiltros[campo];
       if (!s || !s.size) return true;

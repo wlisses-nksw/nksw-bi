@@ -74,7 +74,11 @@ function diasUteis(dataInicio, dataFim) {
 /** Status do pedido baseado em fulfillment e dias úteis */
 function calcStatusPedido(order) {
   if (order.cancelled_at) return 'Cancelado';
-  // Conta dias úteis desde o pedido para TODOS (enviado ou não)
+  const fulfillments = order.fulfillments || [];
+  const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
+  // Se tem rastreamento = Enviado → consideramos Entregue
+  if (hasTracking || order.fulfillment_status === 'fulfilled') return 'Entregue';
+  // Sem envio → verifica prazo de 7 dias úteis
   const orderDateBR    = brISO(order.created_at);
   const todayBR        = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
   const diasDecorridos = diasUteis(orderDateBR, todayBR);
@@ -254,27 +258,20 @@ function buildPedidos(orders, isCurrent, filterFn) {
     filtered = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
   }
 
-  // Contadores por status de pagamento + prazo
+  // Apenas pedidos PAGOS — listagem e contadores
+  const filteredPaid = filtered.filter(o => o.financial_status === 'paid' && !o.cancelled_at);
+
   const contadores = { pagos: 0, pendentes: 0, parciais: 0, cancelados: 0, entregues: 0, no_prazo: 0, atrasados: 0 };
-  for (const o of filtered) {
-    const fs = o.financial_status;
-    if (o.cancelled_at || fs === 'voided' || fs === 'refunded' || fs === 'partially_refunded') {
-      contadores.cancelados++;
-    } else if (fs === 'paid') {
-      contadores.pagos++;
-      if (o.fulfillment_status === 'fulfilled') contadores.entregues++;
-    } else if (fs === 'partially_paid') {
-      contadores.parciais++;
-    } else {
-      contadores.pendentes++;
-    }
+  for (const o of filteredPaid) {
+    contadores.pagos++;
     const sp = calcStatusPedido(o);
-    if (sp === 'No Prazo')  contadores.no_prazo++;
+    if (sp === 'Entregue')  contadores.entregues++;
+    else if (sp === 'No Prazo')  contadores.no_prazo++;
     else if (sp === 'Atrasado') contadores.atrasados++;
   }
 
-  // Lista completa — TODOS os pedidos (não só pagos)
-  const lista = filtered.map(o => {
+  // Lista apenas pedidos pagos
+  const lista = filteredPaid.map(o => {
     const fulfillments = o.fulfillments || [];
     const tracking     = fulfillments.flatMap(f => f.tracking_numbers || [])[0] || null;
     const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
