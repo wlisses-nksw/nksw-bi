@@ -76,9 +76,11 @@ function calcStatusPedido(order) {
   if (order.cancelled_at) return 'Cancelado';
   const fulfillments = order.fulfillments || [];
   const hasTracking  = fulfillments.some(f => f.tracking_number && f.tracking_number.trim());
-  // Se tem rastreamento = Enviado → consideramos Entregue
-  if (hasTracking || order.fulfillment_status === 'fulfilled') return 'Entregue';
-  // Sem envio → verifica prazo de 7 dias úteis
+
+  // "Enviado" (tem rastreamento) → Entregue
+  if (hasTracking) return 'Entregue';
+
+  // "Não Enviado" (sem rastreamento) → regra dos 7 dias úteis
   const orderDateBR    = brISO(order.created_at);
   const todayBR        = new Date().toLocaleDateString('en-CA', { timeZone: TZ });
   const diasDecorridos = diasUteis(orderDateBR, todayBR);
