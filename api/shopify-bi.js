@@ -470,6 +470,40 @@ function buildAtribuicao(orders, isCurrent, filterFn) {
   const totalPed = paid.length;
   const totalRec = paid.reduce((s,o) => s + (parseFloat(o.total_price)||0), 0);
 
+  // ── Jornada do cliente por canal ──────────────────────────────────
+  // Ticket médio e taxa de recompra por canal
+  const journeyMap = {}; // canal → { pedidos, receita, clientes: Set, recompras }
+  const clientOrderCount = {}; // customer_id → count para detectar recompra
+  for (const o of paid) {
+    const cid = o.customer?.id || o.email || o.contact_email || 'anon';
+    clientOrderCount[cid] = (clientOrderCount[cid] || 0) + 1;
+  }
+  for (const o of paid) {
+    const { canal } = parseUTM(o);
+    const total = parseFloat(o.total_price) || 0;
+    const cid   = o.customer?.id || o.email || o.contact_email || 'anon';
+    const isRecomp = clientOrderCount[cid] > 1;
+    if (!journeyMap[canal]) journeyMap[canal] = { canal, pedidos: 0, receita: 0, recompras: 0 };
+    journeyMap[canal].pedidos++;
+    journeyMap[canal].receita += total;
+    if (isRecomp) journeyMap[canal].recompras++;
+  }
+  const jornada = Object.values(journeyMap)
+    .sort((a,b) => b.receita - a.receita)
+    .map(j => ({
+      canal:       j.canal,
+      pedidos:     j.pedidos,
+      receita:     r2(j.receita),
+      ticket:      r2(j.pedidos > 0 ? j.receita / j.pedidos : 0),
+      pctRecomp:   r1(j.pedidos > 0 ? j.recompras / j.pedidos * 100 : 0),
+    }));
+
+  // ── Meta Ads — pedidos atribuídos via UTM ─────────────────────────
+  const metaCanais = ['Meta Ads', 'Meta Orgânico'];
+  const metaShopify = Object.values(canalMap)
+    .filter(c => metaCanais.includes(c.canal))
+    .reduce((s, c) => ({ pedidos: s.pedidos + c.pedidos, receita: s.receita + c.receita }), { pedidos: 0, receita: 0 });
+
   return {
     totalPedidos: totalPed,
     totalReceita: r2(totalRec),
@@ -481,6 +515,8 @@ function buildAtribuicao(orders, isCurrent, filterFn) {
       .map(c => ({ ...c, receita: r2(c.receita) })),
     diario: Object.values(diarMap).sort((a,b) => a.dia.localeCompare(b.dia))
       .map(d => ({ ...d, receita: r2(d.receita) })),
+    jornada,
+    metaShopify: { pedidos: metaShopify.pedidos, receita: r2(metaShopify.receita) },
   };
 }
 

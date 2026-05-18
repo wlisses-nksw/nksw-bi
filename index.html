@@ -1271,6 +1271,68 @@ tbody tr:hover{background:#fafafa}
         </div>
       </div>
 
+      <!-- ══ 2. COMPARATIVO META REPORTADO vs REAL ══ -->
+      <div class="section-header" style="margin-top:32px;margin-bottom:14px">
+        <div><div class="section-title">⚡ Meta Ads: Reportado vs Real (Shopify)</div><div class="section-sub">Diferença entre o que a Meta reporta e o que o Shopify confirma via UTM</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+        <div class="kpi-card" style="border-left:4px solid #1877f2">
+          <div class="kpi-header"><span class="kpi-icon">📊</span><span class="kpi-label">Meta Reporta</span></div>
+          <div class="kpi-value" id="meta-rep-pedidos">—</div>
+          <div class="kpi-badge neutral">compras no Meta Ads Manager</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #16a34a">
+          <div class="kpi-header"><span class="kpi-icon">🛒</span><span class="kpi-label">Shopify Confirma</span></div>
+          <div class="kpi-value" id="shopify-meta-pedidos">—</div>
+          <div class="kpi-badge neutral" id="shopify-meta-sub">pedidos com UTM Meta</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #dc2626">
+          <div class="kpi-header"><span class="kpi-icon">🔍</span><span class="kpi-label">Gap (CAPI resolve)</span></div>
+          <div class="kpi-value" id="meta-gap">—</div>
+          <div class="kpi-badge neutral" id="meta-gap-badge">pedidos que a Meta não via</div>
+        </div>
+      </div>
+
+      <!-- ══ 3. MAPA DE JORNADA DO CLIENTE ══ -->
+      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
+        <div><div class="section-title">🗺️ Jornada do Cliente por Canal</div><div class="section-sub">Ticket médio e taxa de recompra por origem de tráfego</div></div>
+      </div>
+      <div class="table-wrap" style="margin-bottom:24px">
+        <table><thead><tr>
+          <th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">Receita</th>
+          <th style="text-align:right">Ticket Médio</th><th style="text-align:right">% Recompra</th><th style="text-align:right">% Receita</th>
+        </tr></thead>
+          <tbody id="jornadaBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px">Carregar dados Shopify para ver jornada</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ══ 4. MATCH QUALITY CAPI ══ -->
+      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
+        <div><div class="section-title">🎯 CAPI — Match Quality & Eventos Server-Side</div><div class="section-sub">Qualidade do sinal enviado ao algoritmo Andromeda da Meta</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
+        <div class="kpi-card" style="border-left:4px solid #dc2626">
+          <div class="kpi-header"><span class="kpi-icon">📉</span><span class="kpi-label">Match Quality Antes</span></div>
+          <div class="kpi-value" style="color:#dc2626">4.4/10</div>
+          <div class="kpi-badge down">apenas pixel browser</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #16a34a">
+          <div class="kpi-header"><span class="kpi-icon">🎯</span><span class="kpi-label">Match Quality Alvo</span></div>
+          <div class="kpi-value" style="color:#16a34a">9.0+</div>
+          <div class="kpi-badge up">com CAPI ativo</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #1877f2">
+          <div class="kpi-header"><span class="kpi-icon">⚡</span><span class="kpi-label">CAPI Ativo desde</span></div>
+          <div class="kpi-value" style="font-size:20px">18/05/26</div>
+          <div class="kpi-badge neutral">Purchase server-side</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #7c3aed">
+          <div class="kpi-header"><span class="kpi-icon">🔐</span><span class="kpi-label">Campos de Matching</span></div>
+          <div class="kpi-value" style="font-size:20px">8 campos</div>
+          <div class="kpi-badge up">email · tel · nome · endereço</div>
+        </div>
+      </div>
+
       <!-- ══ INSTAGRAM — Painel Completo ══ -->
       <div class="section-header" style="margin-top:36px;margin-bottom:16px">
         <div><div class="section-title">📸 Instagram @nakedswimwear</div><div class="section-sub" id="ig-status">Carregando...</div></div>
@@ -7819,14 +7881,15 @@ function applyAtribuicao(d) {
   var status = document.getElementById('utm-status');
   if (status) status.textContent = d.totalPedidos + ' pedidos · R$' + fmtNum(d.totalReceita);
 
+  var COR_CANAL = {
+    'Meta Ads':'#1877f2','Meta Orgânico':'#e91e8c','Google Ads':'#ea4335',
+    'Google Shopping':'#fbbc04','Google Orgânico':'#34a853','LinkTree':'#43e55e',
+    'TikTok':'#010101','Direto':'#6b7280','Outros':'#9ca3af'
+  };
+
   // Tabela por canal
   var canalBody = document.getElementById('utmCanalBody');
   if (canalBody && d.porCanal && d.porCanal.length) {
-    var COR_CANAL = {
-      'Meta Ads':'#1877f2','Meta Orgânico':'#e91e8c','Google Ads':'#ea4335',
-      'Google Shopping':'#fbbc04','Google Orgânico':'#34a853','LinkTree':'#43e55e',
-      'TikTok':'#010101','Direto':'#6b7280','Outros':'#9ca3af'
-    };
     canalBody.innerHTML = d.porCanal.map(function(c) {
       var cor = COR_CANAL[c.canal] || '#9ca3af';
       var dot = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + cor + ';margin-right:6px"></span>';
@@ -7852,6 +7915,47 @@ function applyAtribuicao(d) {
     }).join('');
   } else if (campBody) {
     campBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:16px;font-size:12px">Sem dados de campanha UTM neste período</td></tr>';
+  }
+
+  // ── 2. Comparativo Meta Reportado vs Real ────────────────────────
+  if (d.metaShopify) {
+    var metaShop = d.metaShopify.pedidos || 0;
+    var metaRep  = parseInt((document.getElementById('m8-purchases') || {}).textContent) || 0;
+    var gap      = Math.max(0, metaRep - metaShop);
+    var gapPct   = metaRep > 0 ? Math.round((gap / metaRep) * 100) : 0;
+    setElText('meta-rep-pedidos',    metaRep || '—');
+    setElText('shopify-meta-pedidos', metaShop);
+    setElText('meta-gap',            gap > 0 ? gap : '0');
+    var gapBadge = document.getElementById('meta-gap-badge');
+    if (gapBadge) {
+      gapBadge.textContent  = gap > 0 ? gapPct + '% sem rastreio (CAPI resolve)' : '✓ rastreio completo com CAPI';
+      gapBadge.className    = 'kpi-badge ' + (gap > 0 ? 'down' : 'up');
+    }
+    var shopSub = document.getElementById('shopify-meta-sub');
+    if (shopSub) shopSub.textContent = fmtBRL(d.metaShopify.receita || 0) + ' confirmados';
+  }
+
+  // ── 3. Jornada do Cliente ────────────────────────────────────────
+  var jornadaBody = document.getElementById('jornadaBody');
+  if (jornadaBody && d.jornada && d.jornada.length) {
+    var totalRec = d.totalReceita || 1;
+    jornadaBody.innerHTML = d.jornada.map(function(j, i) {
+      var cor = COR_CANAL[j.canal] || '#9ca3af';
+      var dot = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + cor + ';margin-right:6px"></span>';
+      var pct = ((j.receita / totalRec) * 100).toFixed(1);
+      var alt = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+      return '<tr style="background:' + alt + '">' +
+        '<td>' + dot + '<strong>' + j.canal + '</strong></td>' +
+        '<td style="text-align:right">' + j.pedidos + '</td>' +
+        '<td style="text-align:right;font-weight:600">' + fmtBRL(j.receita) + '</td>' +
+        '<td style="text-align:right;color:#1d4ed8;font-weight:700">' + fmtBRL(j.ticket) + '</td>' +
+        '<td style="text-align:right">' +
+          '<span class="kpi-badge ' + (j.pctRecomp >= 20 ? 'up' : j.pctRecomp >= 10 ? 'neutral' : 'down') + '">' +
+          j.pctRecomp.toFixed(1) + '%</span>' +
+        '</td>' +
+        '<td style="text-align:right;color:#6b7280">' + pct + '%</td>' +
+      '</tr>';
+    }).join('');
   }
 }
 
