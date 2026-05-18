@@ -6499,10 +6499,23 @@ function getMonthRealized(key, m, y) {
   }
 
   // Sem cache: para o mês atual usa os valores globais já carregados
+  // NÃO chama GOAL_DEFS.realized() para evitar recursão infinita
   var todayObj = new Date();
   if (m === todayObj.getMonth() && y === todayObj.getFullYear()) {
-    var def = GOAL_DEFS[key];
-    return def ? def.realized() : null;
+    var directMap = {
+      receita:      _indRealizadoReceita,
+      pedidos:      _indVendasPedidos,
+      ticket:       _indVendasTicket,
+      roas:         _indRoasAtual,
+      cac:          _indMktCpp,
+      custoMkt:     _indMktSpend,
+      sessoes:      _indGA4Sessions,
+    };
+    if (key in directMap) {
+      var v = directMap[key];
+      return (v !== null && v !== undefined) ? v : null;
+    }
+    return null;
   }
   return null;
 }
