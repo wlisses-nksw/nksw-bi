@@ -837,7 +837,140 @@ tbody tr:hover{background:#fafafa}
       <div id="adsContainer" style="margin-bottom:28px"></div>
     </div>
 
-    <!-- ============================================================ -->
+<!-- ══ ATRIBUIÇÃO UTM — Pedidos por Canal ══ -->
+      <div class="section-header" style="margin-top:32px;margin-bottom:14px">
+        <div><div class="section-title">🔗 Atribuição por Canal (UTM Shopify)</div><div class="section-sub">Receita e pedidos por origem — dados reais dos pedidos pagos</div></div>
+        <span id="utm-status" style="font-size:11px;color:#9ca3af"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <!-- Tabela canais -->
+        <div class="chart-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">POR CANAL</div>
+          <div class="table-wrap" style="max-height:260px;overflow-y:auto">
+            <table id="utmCanalTable">
+              <thead><tr><th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">% Ped.</th><th style="text-align:right">Receita</th></tr></thead>
+              <tbody id="utmCanalBody"><tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">Carregar dados Shopify para ver atribuição</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Tabela campanhas -->
+        <div class="chart-card" style="padding:0;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">POR CAMPANHA / UTM</div>
+          <div class="table-wrap" style="max-height:260px;overflow-y:auto">
+            <table id="utmCampTable">
+              <thead><tr><th>Campanha / UTM</th><th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">Receita</th></tr></thead>
+              <tbody id="utmCampBody"><tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">—</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ 2. COMPARATIVO META REPORTADO vs REAL ══ -->
+      <div class="section-header" style="margin-top:32px;margin-bottom:14px">
+        <div><div class="section-title">⚡ Meta Ads: Reportado vs Real (Shopify)</div><div class="section-sub">Diferença entre o que a Meta reporta e o que o Shopify confirma via UTM</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+        <div class="kpi-card" style="border-left:4px solid #1877f2">
+          <div class="kpi-header"><span class="kpi-icon">📊</span><span class="kpi-label">Meta Reporta</span></div>
+          <div class="kpi-value" id="meta-rep-pedidos">—</div>
+          <div class="kpi-badge neutral">compras no Meta Ads Manager</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #16a34a">
+          <div class="kpi-header"><span class="kpi-icon">🛒</span><span class="kpi-label">Shopify Confirma</span></div>
+          <div class="kpi-value" id="shopify-meta-pedidos">—</div>
+          <div class="kpi-badge neutral" id="shopify-meta-sub">pedidos com UTM Meta</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #dc2626">
+          <div class="kpi-header"><span class="kpi-icon">🔍</span><span class="kpi-label">Gap (CAPI resolve)</span></div>
+          <div class="kpi-value" id="meta-gap">—</div>
+          <div class="kpi-badge neutral" id="meta-gap-badge">pedidos que a Meta não via</div>
+        </div>
+      </div>
+
+      <!-- ══ 3. MAPA DE JORNADA DO CLIENTE ══ -->
+      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
+        <div><div class="section-title">🗺️ Jornada do Cliente por Canal</div><div class="section-sub">Ticket médio e taxa de recompra por origem de tráfego</div></div>
+      </div>
+      <div class="table-wrap" style="margin-bottom:24px">
+        <table><thead><tr>
+          <th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">Receita</th>
+          <th style="text-align:right">Ticket Médio</th><th style="text-align:right">% Recompra</th><th style="text-align:right">% Receita</th>
+        </tr></thead>
+          <tbody id="jornadaBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px">Carregar dados Shopify para ver jornada</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ══ 4. MATCH QUALITY CAPI ══ -->
+      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
+        <div><div class="section-title">🎯 CAPI — Match Quality & Eventos Server-Side</div><div class="section-sub">Qualidade do sinal enviado ao algoritmo Andromeda da Meta</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
+        <div class="kpi-card" style="border-left:4px solid #dc2626">
+          <div class="kpi-header"><span class="kpi-icon">📉</span><span class="kpi-label">Match Quality Antes</span></div>
+          <div class="kpi-value" style="color:#dc2626">4.4/10</div>
+          <div class="kpi-badge down">apenas pixel browser</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #16a34a">
+          <div class="kpi-header"><span class="kpi-icon">🎯</span><span class="kpi-label">Match Quality Alvo</span></div>
+          <div class="kpi-value" style="color:#16a34a">9.0+</div>
+          <div class="kpi-badge up">com CAPI ativo</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #1877f2">
+          <div class="kpi-header"><span class="kpi-icon">⚡</span><span class="kpi-label">CAPI Ativo desde</span></div>
+          <div class="kpi-value" style="font-size:20px">18/05/26</div>
+          <div class="kpi-badge neutral">Purchase server-side</div>
+        </div>
+        <div class="kpi-card" style="border-left:4px solid #7c3aed">
+          <div class="kpi-header"><span class="kpi-icon">🔐</span><span class="kpi-label">Campos de Matching</span></div>
+          <div class="kpi-value" style="font-size:20px">8 campos</div>
+          <div class="kpi-badge up">email · tel · nome · endereço</div>
+        </div>
+      </div>
+
+      <!-- ══ INSTAGRAM — Painel Completo ══ -->
+      <div class="section-header" style="margin-top:36px;margin-bottom:16px">
+        <div><div class="section-title">📸 Instagram @nakedswimwear</div><div class="section-sub" id="ig-status">Carregando...</div></div>
+        <div style="display:flex;gap:8px">
+          <button onclick="loadIGData(7)"  id="ig-btn-7"  style="padding:5px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;cursor:pointer">7 dias</button>
+          <button onclick="loadIGData(30)" id="ig-btn-30" style="padding:5px 12px;border:1px solid #111827;border-radius:8px;font-size:12px;background:#111827;color:#fff;cursor:pointer">30 dias</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards Instagram -->
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px" id="ig-kpis">
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">👥</span><span class="kpi-label">Seguidores</span></div><div class="kpi-value" id="ig-followers">—</div><div class="kpi-badge neutral" id="ig-fol-badge">carregando</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">➕</span><span class="kpi-label">Novos Seg.</span></div><div class="kpi-value" id="ig-new-fol">—</div><div class="kpi-badge neutral" id="ig-nfol-badge">no período</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">👁</span><span class="kpi-label">Alcance Total</span></div><div class="kpi-value" id="ig-reach">—</div><div class="kpi-badge neutral" id="ig-reach-badge">pessoas únicas</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">📊</span><span class="kpi-label">Alcance Médio/dia</span></div><div class="kpi-value" id="ig-avg-reach">—</div><div class="kpi-badge neutral" id="ig-avg-badge">média diária</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">💬</span><span class="kpi-label">Engajamento</span></div><div class="kpi-value" id="ig-eng-rate">—</div><div class="kpi-badge neutral" id="ig-eng-badge">taxa média</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">🎬</span><span class="kpi-label">Views</span></div><div class="kpi-value" id="ig-views">—</div><div class="kpi-badge neutral" id="ig-views-badge">no período</div></div>
+      </div>
+
+      <!-- Gráficos Instagram -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div class="chart-card">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">ALCANCE DIÁRIO</div>
+          <div class="chart-wrap" style="height:180px"><canvas id="igReachChart" class="chart-canvas"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">NOVOS SEGUIDORES / DIA</div>
+          <div class="chart-wrap" style="height:180px"><canvas id="igFollChart" class="chart-canvas"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Últimos Posts -->
+      <div class="section-header" style="margin-bottom:12px">
+        <div><div class="section-title" style="font-size:14px">Últimas Publicações</div></div>
+      </div>
+      <div id="ig-media-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px">
+        <div style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:20px;font-size:13px">Carregando publicações...</div>
+      </div>
+
+    </div>
+
+    </div>
+
+        <!-- ============================================================ -->
     <!-- PAGE: WEB ANALYTICS -->
     <!-- ============================================================ -->
     <div class="page" id="page-webanalytics">
@@ -1242,135 +1375,6 @@ tbody tr:hover{background:#fafafa}
           </table>
         </div>
       </div><!-- fim pcontent-conferencia -->
-
-      <!-- ══ ATRIBUIÇÃO UTM — Pedidos por Canal ══ -->
-      <div class="section-header" style="margin-top:32px;margin-bottom:14px">
-        <div><div class="section-title">🔗 Atribuição por Canal (UTM Shopify)</div><div class="section-sub">Receita e pedidos por origem — dados reais dos pedidos pagos</div></div>
-        <span id="utm-status" style="font-size:11px;color:#9ca3af"></span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
-        <!-- Tabela canais -->
-        <div class="chart-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">POR CANAL</div>
-          <div class="table-wrap" style="max-height:260px;overflow-y:auto">
-            <table id="utmCanalTable">
-              <thead><tr><th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">% Ped.</th><th style="text-align:right">Receita</th></tr></thead>
-              <tbody id="utmCanalBody"><tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">Carregar dados Shopify para ver atribuição</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-        <!-- Tabela campanhas -->
-        <div class="chart-card" style="padding:0;overflow:hidden">
-          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">POR CAMPANHA / UTM</div>
-          <div class="table-wrap" style="max-height:260px;overflow-y:auto">
-            <table id="utmCampTable">
-              <thead><tr><th>Campanha / UTM</th><th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">Receita</th></tr></thead>
-              <tbody id="utmCampBody"><tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px">—</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ 2. COMPARATIVO META REPORTADO vs REAL ══ -->
-      <div class="section-header" style="margin-top:32px;margin-bottom:14px">
-        <div><div class="section-title">⚡ Meta Ads: Reportado vs Real (Shopify)</div><div class="section-sub">Diferença entre o que a Meta reporta e o que o Shopify confirma via UTM</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
-        <div class="kpi-card" style="border-left:4px solid #1877f2">
-          <div class="kpi-header"><span class="kpi-icon">📊</span><span class="kpi-label">Meta Reporta</span></div>
-          <div class="kpi-value" id="meta-rep-pedidos">—</div>
-          <div class="kpi-badge neutral">compras no Meta Ads Manager</div>
-        </div>
-        <div class="kpi-card" style="border-left:4px solid #16a34a">
-          <div class="kpi-header"><span class="kpi-icon">🛒</span><span class="kpi-label">Shopify Confirma</span></div>
-          <div class="kpi-value" id="shopify-meta-pedidos">—</div>
-          <div class="kpi-badge neutral" id="shopify-meta-sub">pedidos com UTM Meta</div>
-        </div>
-        <div class="kpi-card" style="border-left:4px solid #dc2626">
-          <div class="kpi-header"><span class="kpi-icon">🔍</span><span class="kpi-label">Gap (CAPI resolve)</span></div>
-          <div class="kpi-value" id="meta-gap">—</div>
-          <div class="kpi-badge neutral" id="meta-gap-badge">pedidos que a Meta não via</div>
-        </div>
-      </div>
-
-      <!-- ══ 3. MAPA DE JORNADA DO CLIENTE ══ -->
-      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
-        <div><div class="section-title">🗺️ Jornada do Cliente por Canal</div><div class="section-sub">Ticket médio e taxa de recompra por origem de tráfego</div></div>
-      </div>
-      <div class="table-wrap" style="margin-bottom:24px">
-        <table><thead><tr>
-          <th>Canal</th><th style="text-align:right">Pedidos</th><th style="text-align:right">Receita</th>
-          <th style="text-align:right">Ticket Médio</th><th style="text-align:right">% Recompra</th><th style="text-align:right">% Receita</th>
-        </tr></thead>
-          <tbody id="jornadaBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:20px">Carregar dados Shopify para ver jornada</td></tr></tbody>
-        </table>
-      </div>
-
-      <!-- ══ 4. MATCH QUALITY CAPI ══ -->
-      <div class="section-header" style="margin-top:16px;margin-bottom:14px">
-        <div><div class="section-title">🎯 CAPI — Match Quality & Eventos Server-Side</div><div class="section-sub">Qualidade do sinal enviado ao algoritmo Andromeda da Meta</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
-        <div class="kpi-card" style="border-left:4px solid #dc2626">
-          <div class="kpi-header"><span class="kpi-icon">📉</span><span class="kpi-label">Match Quality Antes</span></div>
-          <div class="kpi-value" style="color:#dc2626">4.4/10</div>
-          <div class="kpi-badge down">apenas pixel browser</div>
-        </div>
-        <div class="kpi-card" style="border-left:4px solid #16a34a">
-          <div class="kpi-header"><span class="kpi-icon">🎯</span><span class="kpi-label">Match Quality Alvo</span></div>
-          <div class="kpi-value" style="color:#16a34a">9.0+</div>
-          <div class="kpi-badge up">com CAPI ativo</div>
-        </div>
-        <div class="kpi-card" style="border-left:4px solid #1877f2">
-          <div class="kpi-header"><span class="kpi-icon">⚡</span><span class="kpi-label">CAPI Ativo desde</span></div>
-          <div class="kpi-value" style="font-size:20px">18/05/26</div>
-          <div class="kpi-badge neutral">Purchase server-side</div>
-        </div>
-        <div class="kpi-card" style="border-left:4px solid #7c3aed">
-          <div class="kpi-header"><span class="kpi-icon">🔐</span><span class="kpi-label">Campos de Matching</span></div>
-          <div class="kpi-value" style="font-size:20px">8 campos</div>
-          <div class="kpi-badge up">email · tel · nome · endereço</div>
-        </div>
-      </div>
-
-      <!-- ══ INSTAGRAM — Painel Completo ══ -->
-      <div class="section-header" style="margin-top:36px;margin-bottom:16px">
-        <div><div class="section-title">📸 Instagram @nakedswimwear</div><div class="section-sub" id="ig-status">Carregando...</div></div>
-        <div style="display:flex;gap:8px">
-          <button onclick="loadIGData(7)"  id="ig-btn-7"  style="padding:5px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;cursor:pointer">7 dias</button>
-          <button onclick="loadIGData(30)" id="ig-btn-30" style="padding:5px 12px;border:1px solid #111827;border-radius:8px;font-size:12px;background:#111827;color:#fff;cursor:pointer">30 dias</button>
-        </div>
-      </div>
-
-      <!-- KPI Cards Instagram -->
-      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px" id="ig-kpis">
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">👥</span><span class="kpi-label">Seguidores</span></div><div class="kpi-value" id="ig-followers">—</div><div class="kpi-badge neutral" id="ig-fol-badge">carregando</div></div>
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">➕</span><span class="kpi-label">Novos Seg.</span></div><div class="kpi-value" id="ig-new-fol">—</div><div class="kpi-badge neutral" id="ig-nfol-badge">no período</div></div>
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">👁</span><span class="kpi-label">Alcance Total</span></div><div class="kpi-value" id="ig-reach">—</div><div class="kpi-badge neutral" id="ig-reach-badge">pessoas únicas</div></div>
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">📊</span><span class="kpi-label">Alcance Médio/dia</span></div><div class="kpi-value" id="ig-avg-reach">—</div><div class="kpi-badge neutral" id="ig-avg-badge">média diária</div></div>
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">💬</span><span class="kpi-label">Engajamento</span></div><div class="kpi-value" id="ig-eng-rate">—</div><div class="kpi-badge neutral" id="ig-eng-badge">taxa média</div></div>
-        <div class="kpi-card"><div class="kpi-header"><span class="kpi-icon">🎬</span><span class="kpi-label">Views</span></div><div class="kpi-value" id="ig-views">—</div><div class="kpi-badge neutral" id="ig-views-badge">no período</div></div>
-      </div>
-
-      <!-- Gráficos Instagram -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
-        <div class="chart-card">
-          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">ALCANCE DIÁRIO</div>
-          <div class="chart-wrap" style="height:180px"><canvas id="igReachChart" class="chart-canvas"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div style="padding:12px 16px;border-bottom:1px solid #f3f4f6;font-size:11px;font-weight:700;color:#374151;letter-spacing:.05em">NOVOS SEGUIDORES / DIA</div>
-          <div class="chart-wrap" style="height:180px"><canvas id="igFollChart" class="chart-canvas"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Últimos Posts -->
-      <div class="section-header" style="margin-bottom:12px">
-        <div><div class="section-title" style="font-size:14px">Últimas Publicações</div></div>
-      </div>
-      <div id="ig-media-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px">
-        <div style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:20px;font-size:13px">Carregando publicações...</div>
-      </div>
 
     </div>
 
