@@ -767,6 +767,14 @@ tbody tr:hover{background:#fafafa}
     <!-- ============================================================ -->
     <div class="page" id="page-marketing">
 
+      <!-- Sub-tabs: Campanhas | Instagram -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid #f3f4f6;padding-bottom:0">
+        <button id="mtab-campanhas" onclick="switchMktTab('campanhas')" style="padding:8px 18px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid #111827;background:transparent;color:#111827;cursor:pointer;margin-bottom:-2px">📣 Campanhas</button>
+        <button id="mtab-instagram" onclick="switchMktTab('instagram')" style="padding:8px 18px;font-size:13px;font-weight:600;border:none;border-bottom:2px solid transparent;background:transparent;color:#9ca3af;cursor:pointer;margin-bottom:-2px">📸 Instagram</button>
+      </div>
+
+      <!-- Conteúdo: Campanhas -->
+      <div id="mcontent-campanhas">
       <div class="section-header">
         <div>
           <div class="section-title">Meta Ads — Visão Geral</div>
@@ -837,7 +845,11 @@ tbody tr:hover{background:#fafafa}
       <div id="adsContainer" style="margin-bottom:28px"></div>
     </div>
 
-<!-- ══ ATRIBUIÇÃO UTM — Pedidos por Canal ══ -->
+      </div><!-- fim mcontent-campanhas -->
+
+      <!-- Conteúdo: Instagram -->
+      <div id="mcontent-instagram" style="display:none">
+      <!-- ══ ATRIBUIÇÃO UTM — Pedidos por Canal ══ -->
       <div class="section-header" style="margin-top:32px;margin-bottom:14px">
         <div><div class="section-title">🔗 Atribuição por Canal (UTM Shopify)</div><div class="section-sub">Receita e pedidos por origem — dados reais dos pedidos pagos</div></div>
         <span id="utm-status" style="font-size:11px;color:#9ca3af"></span>
@@ -971,6 +983,10 @@ tbody tr:hover{background:#fafafa}
     </div>
 
         <!-- ============================================================ -->
+      </div><!-- fim mcontent-instagram -->
+
+    </div><!-- fim page-marketing -->
+
     <!-- PAGE: WEB ANALYTICS -->
     <!-- ============================================================ -->
     <div class="page" id="page-webanalytics">
@@ -1913,7 +1929,7 @@ function goTo(page, el) {
   if (page === 'metas')     renderGoals();
   if (page === 'admin')     loadUsersTable();
   if ((page === 'produtos' || page === 'vendas') && !_estoqueLoaded) loadEstoquePage();
-  if (page === 'marketing') loadIGData(_igPeriod);
+  if (page === 'marketing') { switchMktTab('campanhas'); }
 }
 
 function updateTopbar(page) {
@@ -7981,7 +7997,66 @@ function applyAtribuicao(d) {
    ===================================================================== */
 var _igPeriod = 30;
 
+function switchMktTab(tab) {
+  ['campanhas','instagram'].forEach(function(t) {
+    var btn = document.getElementById('mtab-' + t);
+    var div = document.getElementById('mcontent-' + t);
+    var active = t === tab;
+    if (btn) {
+      btn.style.borderBottomColor = active ? '#111827' : 'transparent';
+      btn.style.color = active ? '#111827' : '#9ca3af';
+    }
+    if (div) div.style.display = active ? 'block' : 'none';
+  });
+  if (tab === 'instagram' && !_igLoaded) {
+    loadIGData(_igPeriod);
+    loadSBData();
+  }
+}
+
+var _igLoaded = false;
+var _sbData   = null;
+
+async function loadSBData() {
+  try {
+    var r = await fetch('/api/socialblade');
+    var d = await r.json();
+    if (d.ok && d.data) {
+      _sbData = d.data;
+      applyIGSocialBlade(d.data);
+    }
+  } catch(e) { console.warn('[socialblade]', e.message); }
+}
+
+function applyIGSocialBlade(sb) {
+  // Atualizar card de engajamento com dados do SocialBlade
+  var engEl = document.getElementById('ig-eng-rate');
+  if (engEl && sb.eng_rate) engEl.textContent = sb.eng_rate;
+
+  var engBadge = document.getElementById('ig-eng-badge');
+  if (engBadge) {
+    engBadge.textContent = '★ ' + (sb.grade || 'B+') + ' · SocialBlade';
+    engBadge.className = 'kpi-badge neutral';
+  }
+
+  // Card de views → usar avg_likes como proxy
+  var viewsEl = document.getElementById('ig-views');
+  if (viewsEl && sb.avg_likes) viewsEl.textContent = sb.avg_likes.toFixed(1);
+  var viewsBadge = document.getElementById('ig-views-badge');
+  if (viewsBadge) { viewsBadge.textContent = 'avg likes/post'; viewsBadge.className = 'kpi-badge neutral'; }
+
+  // Alerta de perda de seguidores
+  if (sb.fol_14d !== null && sb.fol_14d < 0) {
+    var alertEl = document.getElementById('ig-fol-badge');
+    if (alertEl) {
+      alertEl.textContent = '⚠️ ' + sb.fol_14d.toLocaleString('pt-BR') + ' em 14d';
+      alertEl.className = 'kpi-badge down';
+    }
+  }
+}
+
 async function loadIGData(period) {
+  _igLoaded = true;
   _igPeriod = period || 30;
   // Atualizar botões
   ['7','30'].forEach(function(p) {

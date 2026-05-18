@@ -31,9 +31,16 @@ export default async function handler(req, res) {
     // Perfil básico
     const profile = await igFetch(`/${IG_ID}?fields=username,followers_count,media_count,biography,website,profile_picture_url`);
 
-    // Insights diários
-    const metrics = 'reach,follower_count,profile_views,accounts_engaged,total_interactions,likes,comments,shares,saves,follows_and_unfollows,views';
-    const insights = await igFetch(`/${IG_ID}/insights?metric=${metrics}&period=day&since=${since}&until=${until}`);
+    // Insights diários — separar métricas por tipo de período
+    const metricsDay  = 'reach,follower_count,profile_views,accounts_engaged,total_interactions,likes,comments,shares,saves,follows_and_unfollows';
+    const metricsLife = 'views'; // views às vezes só funciona com lifetime
+    const insights = await igFetch(`/${IG_ID}/insights?metric=${metricsDay}&period=day&since=${since}&until=${until}`);
+    // Tentar views separadamente
+    let viewsInsight = null;
+    try {
+      const vr = await igFetch(`/${IG_ID}/insights?metric=views&period=day&since=${since}&until=${until}`);
+      if (vr.data && vr.data.length) viewsInsight = vr.data[0];
+    } catch(_) {}
 
     // Últimas 12 mídias
     const media = await igFetch(`/${IG_ID}/media?fields=id,caption,media_type,timestamp,like_count,comments_count,thumbnail_url,media_url,permalink&limit=12`);
@@ -52,24 +59,36 @@ export default async function handler(req, res) {
 
     const reach     = insightMap['reach']               || [];
     const followers = insightMap['follower_count']       || [];
-    const views     = insightMap['views']                || [];
     const engaged   = insightMap['accounts_engaged']     || [];
     const interacts = insightMap['total_interactions']   || [];
+    const likes     = insightMap['likes']                || [];
+    const comments  = insightMap['comments']             || [];
+    const shares    = insightMap['shares']               || [];
+    const saves     = insightMap['saves']                || [];
     const profViews = insightMap['profile_views']        || [];
-    const follows   = insightMap['follows_and_unfollows']|| [];
+    // Views do endpoint separado
+    const views     = viewsInsight ? (viewsInsight.values || []) : [];
 
     const totalNewFollowers = sum(followers);
     const totalReach        = sum(reach);
     const avgDailyReach     = avg(reach);
     const avgEngaged        = avg(engaged);
-    const avgInteractions   = avg(interacts);
+    // Usar soma de likes+comments+shares+saves se total_interactions vier zerado
+    const totalInteractsSum = sum(interacts) || (sum(likes) + sum(comments) + sum(shares) + sum(saves));
+    const avgInteractions   = reach.length > 0 ? totalInteractsSum / reach.length : 0;
     const totalViews        = sum(views);
     const totalProfViews    = sum(profViews);
+    const totalLikes        = sum(likes);
+    const totalComments     = sum(comments);
+    const totalShares       = sum(shares);
+    const totalSaves        = sum(saves);
 
-    // Taxa de engajamento estimada
-    const engRate = profile.followers_count > 0
-      ? ((avgInteractions / profile.followers_count) * 100).toFixed(2)
-      : '0.00';
+    // Taxa de engajamento — usa média de interações por alcance (mais preciso)
+    const engRate = totalReach > 0
+      ? ((totalInteractsSum / totalReach) * 100).toFixed(3)
+      : (profile.followers_count > 0
+          ? ((avgInteractions / profile.followers_count) * 100).toFixed(3)
+          : '0.000');
 
     // Tendência: últimos 7 dias vs 7 anteriores
     const reach7  = reach.slice(-7);
@@ -94,15 +113,20 @@ export default async function handler(req, res) {
         picture:        profile.profile_picture_url,
       },
       kpis: {
-        new_followers:   totalNewFollowers,
-        total_reach:     totalReach,
-        avg_daily_reach: avgDailyReach,
-        avg_engaged:     avgEngaged,
-        eng_rate:        parseFloat(engRate),
-        total_views:     totalViews,
-        profile_views:   totalProfViews,
-        reach_trend_pct: reachTrend,
+        new_followers:      totalNewFollowers,
+        total_reach:        totalReach,
+        avg_daily_reach:    avgDailyReach,
+        avg_engaged:        avgEngaged,
+        eng_rate:           parseFloat(engRate),
+        total_views:        totalViews,
+        profile_views:      totalProfViews,
+        reach_trend_pct:    reachTrend,
         follower_trend_pct: folTrend,
+        total_likes:        totalLikes,
+        total_comments:     totalComments,
+        total_shares:       totalShares,
+        total_saves:        totalSaves,
+        total_interactions: totalInteractsSum,
       },
       daily: {
         reach:     reach.map(v => ({ date: v.end_time?.slice(0,10), value: v.value })),
