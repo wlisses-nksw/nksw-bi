@@ -792,6 +792,8 @@ function getClientesExport() {
     var iStatus  = findCol(h, ['status','status_pagamento','situacao','payment_status']);
     var iNome    = findCol(h, ['nome','name','nome_cliente','cliente','comprador','nome_comprador','nome do comprador']);
     var iTel     = findCol(h, ['telefone','celular','fone','phone','tel']);
+    var iCidade  = findCol(h, ['cidade','city','municipio','cidade_entrega']);
+    var iEstado  = findCol(h, ['estado','uf','state','estado_entrega','uf_entrega']);
     if (iEmail < 0) return { clientes: [], erro: 'Email nao encontrado' };
 
     var map = {};
@@ -807,11 +809,15 @@ function getClientesExport() {
       var nome = iNome >= 0 ? trim(r[iNome]) : '';
       var tel  = iTel  >= 0 ? trim(r[iTel])  : '';
       if (!map[email]) {
-        map[email] = { email: email, nome: nome, telefone: tel, ultima_compra: d };
+        var cid = iCidade >= 0 ? trim(r[iCidade]) : '';
+        var uf  = iEstado >= 0 ? trim(r[iEstado]) : '';
+        map[email] = { email: email, nome: nome, telefone: tel, cidade: cid, estado: uf, ultima_compra: d };
       } else if (d > map[email].ultima_compra) {
         map[email].ultima_compra = d;
         if (nome) map[email].nome = nome;
         if (tel)  map[email].telefone = tel;
+        if (!map[email].cidade && iCidade >= 0) map[email].cidade = trim(r[iCidade]);
+        if (!map[email].estado && iEstado >= 0) map[email].estado = trim(r[iEstado]);
       }
     });
 
@@ -820,6 +826,8 @@ function getClientesExport() {
         nome:          c.nome,
         email:         c.email,
         telefone:      c.telefone,
+        cidade:        c.cidade || '',
+        estado:        c.estado || '',
         ultima_compra: Utilities.formatDate(c.ultima_compra, 'America/Sao_Paulo', 'yyyy-MM-dd'),
         plataforma:    'NuvemShop'
       };
