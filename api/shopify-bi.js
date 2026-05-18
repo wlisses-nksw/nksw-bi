@@ -57,6 +57,50 @@ function brYM(isoStr) {
 /** Retorna true para cupons de troca */
 const isTroca = code => typeof code === 'string' && code.toLowerCase().includes('troca');
 
+/** Extrai UTMs do landing_site do pedido */
+function parseUTM(order) {
+  const raw = order.landing_site || '';
+  const ref = order.referring_site || '';
+  try {
+    const url    = new URL('https://x.com' + (raw.startsWith('/') ? raw : '/' + raw));
+    const p      = url.searchParams;
+    const fbclid = p.get('fbclid');
+    const gclid  = p.get('gclid');
+    const srsltid= p.get('srsltid'); // Google Shopping
+
+    let source   = p.get('utm_source')   || '';
+    let medium   = p.get('utm_medium')   || '';
+    let campaign = p.get('utm_campaign') || '';
+    let adId     = p.get('ad_id')        || '';
+    let campId   = p.get('campaign_id')  || '';
+
+    // Inferir canal pelo referrer/parâmetros quando UTM ausente
+    if (!source && fbclid) { source = 'facebook'; medium = medium || 'paid'; }
+    if (!source && gclid)  { source = 'google';   medium = medium || 'cpc'; }
+    if (!source && srsltid){ source = 'google';   medium = 'shopping'; }
+    if (!source && ref.includes('google'))    { source = 'google';    medium = medium || 'organic'; }
+    if (!source && ref.includes('instagram')) { source = 'instagram'; medium = medium || 'social'; }
+    if (!source && ref.includes('facebook'))  { source = 'facebook';  medium = medium || 'social'; }
+    if (!source && ref.includes('linktr'))    { source = 'linktree';  medium = medium || 'social'; }
+    if (!source && ref.includes('tiktok'))    { source = 'tiktok';    medium = medium || 'social'; }
+    if (!source) source = 'direto';
+
+    // Normalizar
+    const canal = source === 'facebook' || source === 'instagram'
+      ? (medium === 'paid' || fbclid || adId ? 'Meta Ads' : 'Meta Orgânico')
+      : source === 'google'
+      ? (medium === 'cpc' || gclid ? 'Google Ads' : medium === 'shopping' ? 'Google Shopping' : 'Google Orgânico')
+      : source === 'tiktok' ? 'TikTok'
+      : source === 'linktree' || medium === 'linktree' ? 'LinkTree'
+      : source === 'direto' ? 'Direto'
+      : source || 'Outros';
+
+    return { source, medium, campaign, canal, adId, campId };
+  } catch {
+    return { source: 'direto', medium: '', campaign: '', canal: 'Direto', adId: '', campId: '' };
+  }
+}
+
 /** Calcula dias úteis entre duas datas (exclui sáb e dom) */
 function diasUteis(dataInicio, dataFim) {
   const start = new Date(dataInicio + 'T00:00:00-03:00');
@@ -387,6 +431,59 @@ function buildClientes(orders, isCurrent, filterFn) {
   };
 }
 
+function buildAtribuicao(orders, isCurrent, filterFn) {
+  let base;
+  if (filterFn) {
+    base = orders.filter(filterFn);
+  } else {
+    const cutoff = isCurrent ? getD1BR() : null;
+    base = cutoff ? orders.filter(o => brISO(o.created_at) <= cutoff) : orders;
+  }
+  const paid = base.filter(o => o.financial_status === 'paid');
+
+  const canalMap = {}; // canal → { pedidos, receita }
+  const campMap  = {}; // campanha → { canal, pedidos, receita }
+  const diarMap  = {}; // dia → { pedidos, receita, canais:{} }
+
+  for (const o of paid) {
+    const total = parseFloat(o.total_price) || 0;
+    const { canal, campaign, source, medium } = parseUTM(o);
+    const dia = brISO(o.created_at);
+
+    if (!canalMap[canal]) canalMap[canal] = { canal, pedidos: 0, receita: 0 };
+    canalMap[canal].pedidos++;
+    canalMap[canal].receita += total;
+
+    const campKey = campaign || `${source}/${medium}` || canal;
+    if (campKey && campKey !== '/') {
+      if (!campMap[campKey]) campMap[campKey] = { campanha: campKey, canal, pedidos: 0, receita: 0 };
+      campMap[campKey].pedidos++;
+      campMap[campKey].receita += total;
+    }
+
+    if (!diarMap[dia]) diarMap[dia] = { dia, pedidos: 0, receita: 0, canais: {} };
+    diarMap[dia].pedidos++;
+    diarMap[dia].receita += total;
+    diarMap[dia].canais[canal] = (diarMap[dia].canais[canal] || 0) + 1;
+  }
+
+  const totalPed = paid.length;
+  const totalRec = paid.reduce((s,o) => s + (parseFloat(o.total_price)||0), 0);
+
+  return {
+    totalPedidos: totalPed,
+    totalReceita: r2(totalRec),
+    porCanal: Object.values(canalMap)
+      .sort((a,b) => b.receita - a.receita)
+      .map(c => ({ ...c, receita: r2(c.receita), pctPedidos: r1(totalPed>0 ? c.pedidos/totalPed*100 : 0) })),
+    porCampanha: Object.values(campMap)
+      .sort((a,b) => b.receita - a.receita).slice(0, 30)
+      .map(c => ({ ...c, receita: r2(c.receita) })),
+    diario: Object.values(diarMap).sort((a,b) => a.dia.localeCompare(b.dia))
+      .map(d => ({ ...d, receita: r2(d.receita) })),
+  };
+}
+
 // ── Handler ────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
@@ -434,10 +531,11 @@ export default async function handler(req, res) {
       ? (o) => { const d = brISO(o.created_at); return d >= startDate && d <= endDate; }
       : null;
 
-    if (section === 'vendas'    || section === 'all') out.vendas    = buildVendas(orders,    isCurrent, filterFn);
-    if (section === 'pedidos'   || section === 'all') out.pedidos   = buildPedidos(orders,   isCurrent, filterFn);
-    if (section === 'logistica' || section === 'all') out.logistica = buildLogistica(orders, isCurrent, filterFn);
-    if (section === 'clientes'  || section === 'all') out.clientes  = buildClientes(orders,  isCurrent, filterFn);
+    if (section === 'vendas'       || section === 'all') out.vendas      = buildVendas(orders,      isCurrent, filterFn);
+    if (section === 'pedidos'      || section === 'all') out.pedidos     = buildPedidos(orders,     isCurrent, filterFn);
+    if (section === 'logistica'    || section === 'all') out.logistica   = buildLogistica(orders,   isCurrent, filterFn);
+    if (section === 'clientes'     || section === 'all') out.clientes    = buildClientes(orders,    isCurrent, filterFn);
+    if (section === 'atribuicao'   || section === 'all') out.atribuicao  = buildAtribuicao(orders,  isCurrent, filterFn);
 
     res.setHeader('Cache-Control', isCurrent ? 's-maxage=60' : 's-maxage=3600');
     return res.status(200).json(out);

@@ -30,6 +30,7 @@ const FIELDS = [
   'billing_address', 'shipping_address',
   'fulfillments', 'discount_codes', 'shipping_lines',
   'payment_gateway', 'tags', 'note',
+  'landing_site', 'referring_site', 'source_name',
 ].join(',');
 
 // Cache do token OAuth em memória (válido 23h, reseta entre cold starts)
