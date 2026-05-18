@@ -775,6 +775,12 @@ tbody tr:hover{background:#fafafa}
 
       <!-- Conteúdo: Campanhas -->
       <div id="mcontent-campanhas">
+      <!-- Sub-tabs Marketing -->
+      <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid #f3f4f6">
+        <button id="mtab-campanhas" onclick="_showMktTab('campanhas')" style="padding:9px 20px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid #111827;background:transparent;color:#111827;cursor:pointer;margin-bottom:-2px">📣 Campanhas</button>
+        <button id="mtab-instagram" onclick="_showMktTab('instagram')" style="padding:9px 20px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid transparent;background:transparent;color:#9ca3af;cursor:pointer;margin-bottom:-2px">📸 Instagram</button>
+      </div>
+      <div id="mcontent-campanhas">
       <div class="section-header">
         <div>
           <div class="section-title">Meta Ads — Visão Geral</div>
@@ -848,6 +854,8 @@ tbody tr:hover{background:#fafafa}
       </div><!-- fim mcontent-campanhas -->
 
       <!-- Conteúdo: Instagram -->
+      <div id="mcontent-instagram" style="display:none">
+      </div><!-- fim mcontent-campanhas -->
       <div id="mcontent-instagram" style="display:none">
       <!-- ══ ATRIBUIÇÃO UTM — Pedidos por Canal ══ -->
       <div class="section-header" style="margin-top:32px;margin-bottom:14px">
@@ -985,6 +993,7 @@ tbody tr:hover{background:#fafafa}
         <!-- ============================================================ -->
       </div><!-- fim mcontent-instagram -->
 
+      </div><!-- fim mcontent-instagram -->
     </div><!-- fim page-marketing -->
 
     <!-- PAGE: WEB ANALYTICS -->
@@ -7996,6 +8005,32 @@ function applyAtribuicao(d) {
    INSTAGRAM INSIGHTS PANEL
    ===================================================================== */
 var _igPeriod = 30;
+var _igLoaded = false;
+
+function _showMktTab(tab) {
+  ['campanhas','instagram'].forEach(function(t) {
+    var btn = document.getElementById('mtab-' + t);
+    var div = document.getElementById('mcontent-' + t);
+    var active = t === tab;
+    if (btn) { btn.style.borderBottomColor = active ? '#111827' : 'transparent'; btn.style.color = active ? '#111827' : '#9ca3af'; }
+    if (div) div.style.display = active ? 'block' : 'none';
+  });
+  if (tab === 'instagram' && !_igLoaded) { _igLoaded=true; loadIGData(_igPeriod); _loadSBData(); }
+}
+
+async function _loadSBData() {
+  try {
+    var r = await fetch('/api/socialblade');
+    var d = await r.json();
+    if (!d.ok || !d.data) return;
+    var sb = d.data;
+    if (sb.eng_rate) { var el=document.getElementById('ig-eng-rate'); if(el) el.textContent=sb.eng_rate; }
+    var engBadge=document.getElementById('ig-eng-badge');
+    if (engBadge && sb.grade) { engBadge.textContent='★ '+sb.grade+' · SocialBlade'; engBadge.className='kpi-badge neutral'; }
+    if (sb.avg_likes) { var vEl=document.getElementById('ig-views'); if(vEl) vEl.textContent=sb.avg_likes.toFixed(1); var vb=document.getElementById('ig-views-badge'); if(vb){vb.textContent='avg likes/post';vb.className='kpi-badge neutral';} }
+    if (sb.fol_14d !== null && sb.fol_14d < 0) { var fb=document.getElementById('ig-fol-badge'); if(fb){fb.textContent='⚠️ '+sb.fol_14d.toLocaleString('pt-BR')+' em 14d';fb.className='kpi-badge down';} }
+  } catch(e) { console.warn('[sb]', e.message); }
+}
 
 function switchMktTab(tab) {
   ['campanhas','instagram'].forEach(function(t) {
