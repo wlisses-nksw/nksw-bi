@@ -7864,7 +7864,8 @@ function downloadConferenciaCSV() {
   var header = ['Variante','Código','Descrição','Cor','Tamanho','Curva','Est. SIG 1','Pré Estoque','Est. Shopify','Diferença'];
   var rows = lista.map(function(p) {
     var esc = function(v){ return '"' + String(v===null||v===undefined?'':v).replace(/"/g,'""') + '"'; };
-    return [esc(p.variante),esc(p.codigo),esc(p.descricao),esc(p.cor),esc(p.tamanho),esc(p.curva),p.sisplan,p.shopify===null?'':p.shopify,p.diff===null?'':p.diff].join(',');
+    return [esc(p.variante),esc(p.codigo),esc(p.descricao),esc(p.cor),esc(p.tamanho),esc(p.curva),
+            esc(p.sisplan||0),esc(p.pre_estoque||0),esc(p.shopify===null?'—':p.shopify),esc(p.diff===null?'—':p.diff)].join(',');
   });
   var csv  = '\uFEFF' + header.join(',') + '\n' + rows.join('\n');
   var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
