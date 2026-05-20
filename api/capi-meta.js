@@ -62,7 +62,8 @@ function buildPurchaseEvent(order) {
   const billing   = order.billing_address || order.shipping_address || {};
   const fbclid    = extractFbclid(order.landing_site);
   const eventTime = Math.floor(new Date(order.created_at).getTime() / 1000);
-  const eventId   = `purchase-${order.order_number}-${order.id}`;
+  // checkout_token é o mesmo ID que o pixel do Shopify usa no browser → Meta deduplica corretamente
+  const eventId   = order.checkout_token || `purchase-${order.order_number}-${order.id}`;
 
   // User data com todos os campos disponíveis para máximo Match Quality
   const userData = {
@@ -198,11 +199,12 @@ export default async function handler(req, res) {
       const result = await sendToCAPI([event]);
 
       const matchFields = Object.keys(event.user_data).length;
-      console.log(`[capi-meta] #${order.order_number} enviado · ${matchFields} campos de matching · fbclid=${!!event.user_data.click_id}`);
+      console.log(`[capi-meta] #${order.order_number} enviado · event_id=${event.event_id} · ${matchFields} campos de matching · fbclid=${!!event.user_data.click_id}`);
 
       return res.status(200).json({
         ok:           true,
         order:        order.order_number,
+        event_id:     event.event_id,
         match_fields: matchFields,
         fbclid:       !!event.user_data.click_id,
         capi_result:  result,
