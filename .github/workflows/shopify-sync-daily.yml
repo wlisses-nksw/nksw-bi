@@ -59,3 +59,17 @@ jobs:
           else
             echo "Não é dia 1 — pulando sync do mês anterior."
           fi
+
+      - name: Backup D-1 no Supabase (intranet)
+        run: |
+          # Grava os pedidos de ontem no Supabase como backup permanente
+          DATE=$(TZ="America/Sao_Paulo" date -d "yesterday" +"%Y-%m-%d")
+          echo "Gravando backup do dia $DATE no Supabase..."
+          URL="https://nksw-intranet.vercel.app/api/admin/shopify-daily-sync?date=${DATE}&secret=${{ secrets.INTRANET_SYNC_SECRET }}"
+          RESPONSE=$(curl -s -w "\n%{http_code}" "$URL")
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          CODE=$(echo "$RESPONSE" | tail -n 1)
+          echo "HTTP $CODE"
+          echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+          # Não falha o workflow se o backup falhar (é redundante)
+          exit 0
