@@ -1,11 +1,5 @@
 {
   "version": 2,
-  "crons": [
-    {
-      "path": "/api/cron/shopify-sync",
-      "schedule": "0 6 * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",

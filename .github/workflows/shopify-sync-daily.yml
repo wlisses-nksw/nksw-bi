@@ -1,0 +1,61 @@
+name: Shopify Sync Diário
+
+# Roda todo dia às 06:00 UTC = 03:00 BRT
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  # Permite disparo manual pelo GitHub UI (útil para forçar sync)
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'Mês para sincronizar (YYYY-MM). Padrão: mês corrente BRT.'
+        required: false
+        default: ''
+
+jobs:
+  sync:
+    name: Update Shopify orders
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Calcular mês corrente em BRT (UTC-3)
+        id: month
+        run: |
+          # 06:00 UTC = 03:00 BRT — BRT está 3h atrás de UTC
+          BRT_DATE=$(TZ="America/Sao_Paulo" date +"%Y-%m")
+          INPUT_MONTH="${{ github.event.inputs.month }}"
+          MONTH="${INPUT_MONTH:-$BRT_DATE}"
+          echo "month=$MONTH" >> "$GITHUB_OUTPUT"
+          echo "Sincronizando mês: $MONTH"
+
+      - name: Sync mês corrente
+        run: |
+          MONTH="${{ steps.month.outputs.month }}"
+          URL="https://nksw-api.vercel.app/api/shopify-sync?action=update&month=${MONTH}&secret=${{ secrets.ADMIN_SECRET }}"
+          echo "POST → $URL"
+          RESPONSE=$(curl -s -w "\n%{http_code}" "$URL")
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          CODE=$(echo "$RESPONSE" | tail -n 1)
+          echo "HTTP $CODE"
+          echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Sync falhou com HTTP $CODE"
+            exit 1
+          fi
+
+      - name: Sync mês anterior (apenas dia 1 do mês)
+        run: |
+          DAY=$(TZ="America/Sao_Paulo" date +"%d")
+          if [ "$DAY" = "01" ]; then
+            PREV_MONTH=$(TZ="America/Sao_Paulo" date -d "1 month ago" +"%Y-%m")
+            echo "Dia 1: fechando mês anterior $PREV_MONTH..."
+            URL="https://nksw-api.vercel.app/api/shopify-sync?action=update&month=${PREV_MONTH}&secret=${{ secrets.ADMIN_SECRET }}"
+            RESPONSE=$(curl -s -w "\n%{http_code}" "$URL")
+            BODY=$(echo "$RESPONSE" | head -n -1)
+            CODE=$(echo "$RESPONSE" | tail -n 1)
+            echo "HTTP $CODE"
+            echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+          else
+            echo "Não é dia 1 — pulando sync do mês anterior."
+          fi
