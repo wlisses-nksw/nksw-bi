@@ -73,3 +73,17 @@ jobs:
           echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
           # Não falha o workflow se o backup falhar (é redundante)
           exit 0
+
+      - name: Rebuild RFM de clientes (intranet)
+        run: |
+          # Recalcula KPIs + RFM + ABC + Cohort de toda a base de clientes
+          # Lê kpi_snapshots + shopify_daily → salva em kpi_snapshots[base][clientes]
+          echo "Recalculando RFM de clientes..."
+          URL="https://nksw-intranet.vercel.app/api/admin/rebuild-clientes?secret=${{ secrets.INTRANET_SYNC_SECRET }}"
+          RESPONSE=$(curl -s --max-time 65 -w "\n%{http_code}" "$URL")
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          CODE=$(echo "$RESPONSE" | tail -n 1)
+          echo "HTTP $CODE"
+          echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+          # Não falha o workflow se o rebuild falhar
+          exit 0
